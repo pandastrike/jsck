@@ -33,18 +33,18 @@ read_suite = (version) ->
     properties[key] = JSON.parse fs.readFileSync("test/suite/tests/#{version}/#{path}", "utf8")
   properties
 
-run_suite = (constructor, test_context, name, property) ->
-  test_context.test name, (t) ->
+run_suite = (constructor, context, name, property) ->
+  context.test name, (context) ->
 
     for suite, i in property
       if count && parseInt(count) == i
         return
 
-      t.test suite.description, (t) ->
+      context.test suite.description, (context) ->
         validator = new constructor(suite.schema)
 
         for document in suite.tests
-          t.test document.description, ->
+          context.test document.description, ->
             result = validator.validate(document.data)
             assert.equal result.valid, document.valid
 

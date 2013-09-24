@@ -10,12 +10,15 @@ module.exports = class Validator
       valid: @_validate(data)
 
   attributes:
+    $ref: {}
+    extends: {}
     type: {}
     enum: {}
     disallow: {}
 
-    required: {ignore: true}
     properties: {}
+    required: {ignore: true}
+    dependencies: {}
     patternProperties: {}
     additionalProperties:
       modifiers: [
@@ -30,6 +33,7 @@ module.exports = class Validator
     additionalItems: {ignore: true}
     maxItems: {}
     minItems: {}
+    uniqueItems: {}
 
 
     minimum:
@@ -46,6 +50,7 @@ module.exports = class Validator
 
     maxLength: {}
     minLength: {}
+    pattern: {}
 
 
   compile: (schema) ->
@@ -66,6 +71,15 @@ module.exports = class Validator
       for test in tests
         return false if !test(data)
       true
+
+  $ref: (uri) ->
+    console.log "\n", uri
+    (data) =>
+      false
+
+  extends: (schema) ->
+    (data) =>
+      throw new Error "Unimplemented"
 
 
 

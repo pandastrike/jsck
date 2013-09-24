@@ -14,6 +14,12 @@ module.exports =
       else
         true
 
+  uniqueItems: (definition) ->
+    throw new Error "uniqueItems is unimplemented because I'm protecting you from the Cartesian product"
+    (data) =>
+      false
+
+
   items: (definition, {additionalItems}) ->
     if @test_type "array", definition
       # This signifies a tuple, not a union

@@ -1,5 +1,46 @@
 module.exports =
 
+  dependencies: (definition) ->
+    if !@test_type "object", definition
+      throw new Error "Value of 'dependencies' must be an object"
+    else
+      tests = []
+      for property, dependency of definition
+
+        if @test_type "string", dependency
+          tests.push (data) =>
+            if data[property]
+              data[dependency]
+            else
+              true
+
+        else if @test_type "array", dependency
+          tests.push (data) =>
+            if data[property]
+              for item in dependency
+                return false if !data[item]
+            true
+
+        else if @test_type "object", dependency
+          fn = @compile(dependency)
+          tests.push (data) =>
+            if data[property]
+              fn(data)
+            else
+              true
+
+        else
+          throw new Error "Invalid dependency"
+
+    (data) =>
+      if !@test_type "object", data
+        true
+      else
+        for test in tests
+          return false if !test(data)
+        true
+
+
   properties: (definition) ->
     if !@test_type "object", definition
       throw new Error "The 'properties' attribute must be an object"
