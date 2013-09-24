@@ -41,3 +41,15 @@ module.exports =
         true
       else
         throw new Error "Bad type: '#{type_name}'"
+
+  disallow: (definition) ->
+    if @test_type "array", definition
+      tests = (@type(type) for type in definition)
+      (data) =>
+        for test in tests
+          return false if test(data)
+        true
+    else
+      (data) =>
+        !@test_type(definition, data)
+

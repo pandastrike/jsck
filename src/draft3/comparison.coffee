@@ -1,5 +1,16 @@
 module.exports =
 
+  enum: (values) ->
+    # TODO: add more cases to the draft3 test suite for enum.js,
+    # as they're not doing full coverage
+    if @test_type "array", values
+      (data) =>
+        for value in values
+          return true if @equal(data, value)
+        false
+    else
+      throw new Error "Value of 'enum' MUST be an Array"
+
   equal: (got, want) ->
     if want instanceof Array
       @array_equal(got, want)
