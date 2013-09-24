@@ -13,37 +13,40 @@ module.exports = class Validator
     type: {}
     enum: {}
     disallow: {}
+
+    required: {ignore: true}
+    properties: {}
+    patternProperties: {}
+    additionalProperties:
+      modifiers: [
+        "properties"
+        "patternProperties"
+      ]
+
     items:
       modifiers: [
         "additionalItems"
       ]
+    additionalItems: {ignore: true}
     maxItems: {}
     minItems: {}
-    properties:
-      modifiers: [
-        "additionalProperties"
-        "patternProperties" # additive
-      ]
+
+
     minimum:
       modifiers: [
         "exclusiveMinimum"
       ]
+    exclusiveMinimum: {ignore: true}
     maximum:
       modifiers: [
         "exclusiveMaximum"
       ]
+    exclusiveMaximum: {ignore: true}
     divisibleBy: {}
 
-    exclusiveMinimum:
-      ignore: true
-    exclusiveMaximum:
-      ignore: true
-    patternProperties:
-      ignore: true
-    additionalProperties:
-      ignore: true
-    additionalItems:
-      ignore: true
+    maxLength: {}
+    minLength: {}
+
 
   compile: (schema) ->
     tests = []
@@ -60,10 +63,9 @@ module.exports = class Validator
         throw new Error "Unknown attribute: '#{attribute}'"
 
     (data) =>
-      valid = true
       for test in tests
-        valid = test(data)
-      valid
+        return false if !test(data)
+      true
 
 
 
@@ -73,6 +75,7 @@ modules = [
   "comparison"
   "arrays"
   "objects"
+  "strings"
 ]
 
 for module_name in modules
