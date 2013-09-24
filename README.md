@@ -1,6 +1,6 @@
-# CompJSV
+# JSCK
 
-Canonical [test suite][canonical] failures:
+Currently passing the canonical [test suite][canonical] except for these items:
 
 * extends
 * ref

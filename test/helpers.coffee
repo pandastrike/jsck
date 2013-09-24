@@ -3,7 +3,6 @@ fs = require "fs"
 assert = require "assert"
 Testify = require "testify"
 
-
 [_n, _f, property_name, count] = process.argv
 
 exports.test = (constructor, version) ->
