@@ -1,6 +1,11 @@
 require "starter/tasks/npm"
 require "starter/tasks/git"
 
+task "test" => %w[ test:draft3 ]
+
+task "test:draft3" => %w[ test/suite ] do
+  sh "coffee test/draft3_test.coffee"
+end
 
 file "test/suite.tgz" do |t|
   Dir.chdir("test") do
