@@ -1,8 +1,8 @@
 {
-  "name": "compjsv",
+  "name": "jsck",
   "version": "0.1.0",
-  "description": "compiling JSON Schema validator",
-  "main": "src/compjsv.coffee",
+  "description": "JSON Schema Compiled checK",
+  "main": "src/draft3.coffee",
   "files": [
     "src",
     "README.md"
@@ -12,7 +12,7 @@
   "devDependencies": {
     "testify": "~0.2.8"
   },
-  "repository": "git@github.com:automatthew/compjsv.git",
+  "repository": "git@github.com:automatthew/jsck.git",
   "author": "Matthew King <automatthew@gmail.com>",
   "license": "MIT"
 }
