@@ -1,6 +1,6 @@
 {
   "name": "jsck",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "JSON Schema Compiled checK",
   "main": "src/draft3.coffee",
   "files": [
