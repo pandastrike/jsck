@@ -1,0 +1,18 @@
+{
+  "name": "compjsv",
+  "version": "0.1.0",
+  "description": "compiling JSON Schema validator",
+  "main": "src/compjsv.coffee",
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+    "testify": "~0.2.8"
+  },
+  "repository": "git@github.com:automatthew/compjsv.git",
+  "author": "Matthew King <automatthew@gmail.com>",
+  "license": "MIT"
+}
