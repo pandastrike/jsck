@@ -27,9 +27,11 @@ ignores = [ "optional" ]
 
 read_suite = (version) ->
   properties = {}
-  for path in fs.readdirSync("test/suite/tests/#{version}") when !(ignores.some (i) -> i == path)
+  files = fs.readdirSync("test/JSON-Schema-Test-Suite/tests/#{version}")
+  for path in files when !(ignores.some (i) -> i == path)
     key = path.split(".")[0]
-    properties[key] = JSON.parse fs.readFileSync("test/suite/tests/#{version}/#{path}", "utf8")
+    string = fs.readFileSync("test/JSON-Schema-Test-Suite/tests/#{version}/#{path}", "utf8")
+    properties[key] = JSON.parse string
   properties
 
 run_suite = (constructor, context, name, property) ->

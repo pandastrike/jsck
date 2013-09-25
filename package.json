@@ -1,6 +1,6 @@
 {
   "name": "jsck",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "JSON Schema Compiled checK",
   "main": "src/draft3.coffee",
   "files": [
@@ -12,7 +12,8 @@
     "testify": "~0.2.8",
     "testify-benchmark": "~0.1.0",
     "JSV": "~4.0.2",
-    "jsonschema": "~0.4.0"
+    "jsonschema": "~0.4.0",
+    "coffee-script": "~1.6.3"
   },
   "repository": "git@github.com:automatthew/jsck.git",
   "author": "Matthew King <automatthew@gmail.com>",

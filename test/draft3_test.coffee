@@ -1,3 +1,4 @@
 {test} = require "./helpers"
-test require("../src/draft3"), "draft3"
+{draft3} = require "../src/index"
+test draft3, "draft3"
 
