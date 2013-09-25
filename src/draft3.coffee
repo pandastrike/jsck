@@ -1,17 +1,24 @@
+# TODO: clone the input schema
 
+deap = require "deap"
 
 module.exports = class Validator
 
   constructor: (@_schema) ->
+    @references = {}
+    @tests = {}
+
     @_validate = @compile(@_schema)
+    #console.log Object.keys(@references)
 
   validate: (data) ->
     result =
       valid: @_validate(data)
 
   attributes:
-    $ref: {}
-    extends: {}
+    id: {ignore: true}
+    $ref: { ignore: true }
+    extends: {ignore: true}
     type: {}
     enum: {}
     disallow: {}
@@ -53,33 +60,90 @@ module.exports = class Validator
     pattern: {}
 
 
-  compile: (schema) ->
+  construct_ref: (stack) ->
+    if stack.length > 0
+      # escape characters
+      array = []
+      for string in stack
+        array.push string
+          .replace(/~/, "~0")
+          .replace(/\//, "~1")
+          .replace(/%/, "%25")
+
+      "#/#{array.join("/")}"
+    else
+      "#"
+
+
+  get_ref: (uri) ->
+    if schema = @references[uri]
+      schema
+    else
+      throw new Error "No schema found for $ref '#{uri}'"
+
+  compile: (schema, stack=[]) ->
+    ref = @construct_ref(stack)
+    @references[ref] = schema
+
     tests = []
+
+    if uri = schema.$ref
+      if ref.indexOf(uri) == 0
+        return @handle_recursion(schema, stack)
+      schema = @get_ref(uri)
+
+
+    if extended = schema.extends
+      delete schema.extends
+      if @test_type "array", extended
+        deap.merge(schema, extended...)
+      else
+        deap.merge(schema, extended)
+      #console.log schema
 
     for attribute, definition of schema
       if spec = @attributes[attribute]
         if !spec.ignore
-          options = {}
+          options =
+            stack: stack.concat([attribute])
           if spec.modifiers
             for key in spec.modifiers
               options[key] = schema[key]
-          tests.push @[attribute](definition, options)
+
+          test = @[attribute](definition, options)
+          test.ref = @construct_ref options.stack
+          tests.push test
       else
-        throw new Error "Unknown attribute: '#{attribute}'"
+        if @test_type "object", definition
+          @compile definition, stack.concat([attribute])
+        else
+          console.log "Unknown attribute: '#{attribute}' is not an object"
 
-    (data) =>
+    fn = (data) =>
       for test in tests
-        return false if !test(data)
+        if !test(data)
+          #console.log "Failed:", test.ref
+          return false
       true
+    @tests[ref] = fn
+    fn
 
-  $ref: (uri) ->
-    console.log "\n", uri
-    (data) =>
-      false
 
-  extends: (schema) ->
+  handle_recursion: (schema, stack) ->
+    uri = schema.$ref
+    if !@references[uri]
+      throw new Error "No schema found for $ref '#{uri}'"
+
     (data) =>
-      throw new Error "Unimplemented"
+      @tests[uri](data)
+
+
+
+  #extends: (schema) ->
+    #tests = []
+    #for attribute, definition of schema
+    #(data) =>
+      #throw new Error "Unimplemented"
 
 
 

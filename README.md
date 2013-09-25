@@ -10,8 +10,9 @@ validator.validate(document)
 
 Currently passing the canonical [test suite][canonical] for draft3 except for these items:
 
-* `extends`
 * `ref`
+  ** [nested refs](https://github.com/json-schema/JSON-Schema-Test-Suite/blob/develop/tests/draft3/ref.json#L106)
+  ** [remote ref](https://github.com/json-schema/JSON-Schema-Test-Suite/blob/develop/tests/draft3/ref.json#L129)
 * `refRemote`
 * `uniqueItems` (because this is a TERRIBLE idea performance-wise)
 * everything in `optional/`

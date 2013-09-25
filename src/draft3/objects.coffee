@@ -41,13 +41,16 @@ module.exports =
         true
 
 
-  properties: (definition) ->
+  properties: (definition, {stack}) ->
     if !@test_type "object", definition
       throw new Error "The 'properties' attribute must be an object"
     tests = {}
     required = []
     for property, schema of definition
-      tests[property] = @compile(schema)
+      new_stack = stack.concat([property])
+      test = @compile(schema, new_stack)
+      test.ref = @construct_ref new_stack
+      tests[property] = test
       if schema.required == true
         required.push property
 
@@ -57,9 +60,13 @@ module.exports =
       else
         for property, value of data
           if test = tests[property]
-            return false if !test(value)
+            if !test(value)
+              #console.log "Failed:", test.ref
+              return false
         for key in required
-          return false if !data[key]
+          if data[key] == undefined
+            #console.log "Failed:", test.ref, "required"
+            return false
         true
 
 
