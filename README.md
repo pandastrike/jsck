@@ -4,6 +4,8 @@ Usage:
 
 ```coffee
 Validator = require("jsck").draft3
+validator = new Validator(schema)
+validator.validate(document)
 ```
 
 Currently passing the canonical [test suite][canonical] for draft3 except for these items:
