@@ -3,7 +3,7 @@ fs = require "fs"
 assert = require "assert"
 Testify = require "testify"
 
-[_n, _f, property_name, count] = process.argv
+[_n, _f, property_name, test_number] = process.argv
 
 exports.test = (constructor, version) ->
 
@@ -17,10 +17,10 @@ exports.test = (constructor, version) ->
       if !property
         throw new Error "No such property to test: '#{property_name}'"
       else
-        run_suite constructor, t, property_name, property
+        run_attribute constructor, t, property_name, property
     else
       for name, property of properties
-        run_suite constructor, t, name, property
+        run_attribute constructor, t, name, property
 
 
 ignores = [ "optional" ]
@@ -29,28 +29,32 @@ read_suite = (version) ->
   properties = {}
   files = fs.readdirSync("test/JSON-Schema-Test-Suite/tests/#{version}")
   for path in files when !(ignores.some (i) -> i == path)
+    continue if path.indexOf(".") == 0
     key = path.split(".")[0]
     string = fs.readFileSync("test/JSON-Schema-Test-Suite/tests/#{version}/#{path}", "utf8")
     properties[key] = JSON.parse string
   properties
 
-run_suite = (constructor, context, name, property) ->
+run_attribute = (constructor, context, name, attribute) ->
   context.test name, (context) ->
 
-    for suite, i in property
-      if count && parseInt(count) == i
-        return
+    if test_number
+      suite = attribute[parseInt(test_number) - 1]
+      run_suite(constructor, context, suite)
+    else
 
-      context.test suite.description, (context) ->
-        validator = new constructor(suite.schema)
-
-        for document in suite.tests
-          context.test document.description, ->
-            result = validator.validate(document.data)
-            assert.equal result.valid, document.valid
+      for suite, i in attribute
+        run_suite(constructor, context, suite)
 
 
+run_suite = (constructor, context, suite) ->
+  context.test suite.description, (context) ->
+    validator = new constructor(suite.schema)
 
+    for document in suite.tests
+      context.test document.description, ->
+        result = validator.validate(document.data)
+        assert.equal result.valid, document.valid
 
 
 
