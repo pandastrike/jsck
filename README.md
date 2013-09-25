@@ -6,6 +6,7 @@ Currently passing the canonical [test suite][canonical] except for these items:
 * ref
 * refRemote
 * uniqueItems
+* everything in `optional/`
 
 [canonical]:https://github.com/json-schema/JSON-Schema-Test-Suite
 
