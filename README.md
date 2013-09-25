@@ -1,5 +1,12 @@
 # JSCK
 
+JSON Schema Compiled Check
+
+
+```
+$ npm install jsck
+```
+
 Usage:
 
 ```coffee
