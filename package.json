@@ -7,10 +7,12 @@
     "src",
     "README.md"
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "testify": "~0.2.8"
+    "testify": "~0.2.8",
+    "testify-benchmark": "~0.1.0",
+    "JSV": "~4.0.2",
+    "jsonschema": "~0.4.0"
   },
   "repository": "git@github.com:automatthew/jsck.git",
   "author": "Matthew King <automatthew@gmail.com>",
