@@ -1,11 +1,17 @@
 # JSCK
 
-Currently passing the canonical [test suite][canonical] except for these items:
+Usage:
 
-* extends
-* ref
-* refRemote
-* uniqueItems
+```coffee
+Validator = require("jsck").draft3
+```
+
+Currently passing the canonical [test suite][canonical] for draft3 except for these items:
+
+* `extends`
+* `ref`
+* `refRemote`
+* `uniqueItems` (because this is a TERRIBLE idea performance-wise)
 * everything in `optional/`
 
 Simple (probably flawed) benchmark against other libs:
