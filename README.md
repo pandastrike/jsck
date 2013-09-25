@@ -1,15 +1,13 @@
-# JSCK
-
-JSON Schema Compiled Check
+# JSON Schema Compiled ChecK
 
 
-## Install
+## Installation
 
 ```
 $ npm install jsck
 ```
 
-## Usage:
+## Usage
 
 ```coffee
 Validator = require("jsck").draft3
