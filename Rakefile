@@ -11,8 +11,12 @@ end
 
 task "test" => %w[ test:draft3 ]
 
-task "test:draft3" => %w[ test/JSON-Schema-Test-Suite ] do
+task "test:draft3" => %w[ update ] do
   sh "#{coffee} test/draft3_test.coffee"
 end
 
+task "update" do
+  sh "git submodule init"
+  sh "git submodule update"
+end
 
