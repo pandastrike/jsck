@@ -14,7 +14,8 @@
     "JSV": "~4.0.2",
     "jsonschema": "~0.4.0",
     "coffee-script": "~1.6.3",
-    "deap": "~0.2.0"
+    "deap": "~0.2.0",
+    "glob": "~3.2.6"
   },
   "repository": "git@github.com:automatthew/jsck.git",
   "author": "Matthew King <automatthew@gmail.com>",

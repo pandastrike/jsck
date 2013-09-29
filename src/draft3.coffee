@@ -9,7 +9,6 @@ module.exports = class Validator
     @tests = {}
 
     @_validate = @compile(@_schema)
-    #console.log Object.keys(@references)
 
   validate: (data) ->
     result =
@@ -58,6 +57,7 @@ module.exports = class Validator
     maxLength: {}
     minLength: {}
     pattern: {}
+    format: {}
 
 
   construct_ref: (stack) ->
@@ -133,18 +133,8 @@ module.exports = class Validator
     uri = schema.$ref
     if !@references[uri]
       throw new Error "No schema found for $ref '#{uri}'"
-
     (data) =>
       @tests[uri](data)
-
-
-
-  #extends: (schema) ->
-    #tests = []
-    #for attribute, definition of schema
-    #(data) =>
-      #throw new Error "Unimplemented"
-
 
 
 modules = [

@@ -1,4 +1,5 @@
 fs = require "fs"
+glob = require "glob"
 
 assert = require "assert"
 Testify = require "testify"
@@ -27,11 +28,12 @@ ignores = [ "optional" ]
 
 read_suite = (version) ->
   properties = {}
-  files = fs.readdirSync("test/JSON-Schema-Test-Suite/tests/#{version}")
-  for path in files when !(ignores.some (i) -> i == path)
-    continue if path.indexOf(".") == 0
-    key = path.split(".")[0]
-    string = fs.readFileSync("test/JSON-Schema-Test-Suite/tests/#{version}/#{path}", "utf8")
+
+  files = glob.sync "test/JSON-Schema-Test-Suite/tests/#{version}/**/*.json"
+  l = "test/JSON-Schema-Test-Suite/tests/#{version}/".length
+  for file in files
+    key = file.slice(l, -5)
+    string = fs.readFileSync(file, "utf8")
     properties[key] = JSON.parse string
   properties
 
