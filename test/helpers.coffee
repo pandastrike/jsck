@@ -24,7 +24,7 @@ exports.test = (constructor, version) ->
         run_attribute constructor, t, name, property
 
 
-ignores = [ "optional" ]
+ignores = [ "optional", "uniqueItems", "refRemote", "optional/zeroTerminatedFloats" ]
 
 read_suite = (version) ->
   properties = {}
@@ -33,6 +33,7 @@ read_suite = (version) ->
   l = "test/JSON-Schema-Test-Suite/tests/#{version}/".length
   for file in files
     key = file.slice(l, -5)
+    continue if ignores.some (element) -> element == key
     string = fs.readFileSync(file, "utf8")
     properties[key] = JSON.parse string
   properties
