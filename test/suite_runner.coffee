@@ -30,7 +30,7 @@ module.exports = class SuiteRunner
           throw new Error "No such attribute to test: '#{attribute}'"
         else
           @run_attribute({constructor, context, attribute, attribute_suite, test_number})
-        if @ignore
+        if @ignore?[attribute]
           process.on "exit", =>
             console.log "Ignored these tests:", @ignore[attribute]
       else
