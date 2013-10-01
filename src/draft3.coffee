@@ -7,6 +7,7 @@ module.exports = class Validator
   constructor: (@_schema) ->
     @references = {}
     @tests = {}
+    @compile_references(@_schema)
 
     @_validate = @compile(@_schema)
 
@@ -81,9 +82,76 @@ module.exports = class Validator
     else
       throw new Error "No schema found for $ref '#{uri}'"
 
-  compile: (schema, stack=[]) ->
+  resolve_ref: (uri) ->
+    if schema = @references[uri]
+      if !schema.$ref
+        return schema
+      else
+        @resolve_ref(schema.$ref)
+    else
+      null
+
+
+  compile_references: (schema, stack=[]) ->
     ref = @construct_ref(stack)
     @references[ref] = schema
+
+    if @test_type "object", schema
+      for attribute, definition of schema
+        new_stack = stack.concat([attribute])
+        switch attribute
+          when "$ref"
+
+            # don't try to resolve recursive references
+            if ref.indexOf(definition) != 0
+              if schema = @resolve_ref(definition)
+                @compile_references schema, stack
+              else
+                throw new Error "Cannot resolve $ref: '#{attribute}'"
+
+          when "type"
+            if @test_type "array", definition
+              @type_refs definition, new_stack
+          when "properties"
+            @properties_refs definition, new_stack
+          when "patternProperties"
+            @pattern_props_refs definition, new_stack
+          when "additionalProperties"
+            @compile_references definition, new_stack
+          when "items"
+            @items_refs definition, new_stack
+          when "additionalItems"
+            @compile_references definition, new_stack
+          when "extends"
+            @compile_references definition, new_stack
+          else
+            if !@attributes[attribute] && @test_type "object", definition
+              @compile_references definition, stack.concat([attribute])
+
+
+  type_refs: (union, stack) ->
+    for schema, i in union
+      if @test_type "object", schema
+        @compile_references schema, stack.concat([i.toString()])
+
+  properties_refs: (properties, stack) ->
+    for attribute, schema of properties
+      @compile_references schema, stack.concat([attribute])
+  
+  pattern_props_refs: (patterns, stack) ->
+    for pattern, schema of patterns
+      @compile_references schema, stack.concat([pattern])
+    
+  items_refs: (definition, stack) ->
+    if @test_type "array", definition
+      for def, i in definition
+        @compile_references def, stack.concat([i.toString()])
+    else
+      @compile_references definition, stack
+
+
+  compile: (schema, stack=[]) ->
+    ref = @construct_ref(stack)
 
     tests = []
 
@@ -99,7 +167,7 @@ module.exports = class Validator
         deap.merge(schema, extended...)
       else
         deap.merge(schema, extended)
-      #console.log schema
+
 
     for attribute, definition of schema
       if spec = @attributes[attribute]
