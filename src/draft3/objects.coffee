@@ -70,7 +70,7 @@ module.exports =
         true
 
 
-  patternProperties: (definition) ->
+  patternProperties: (definition, {stack}) ->
     if !@test_type "object", definition
       throw new Error "The 'patternProperties' attribute must be an object"
 
@@ -78,7 +78,7 @@ module.exports =
     for pattern, schema of definition
       tests[pattern] =
         regex: new RegExp(pattern)
-        test: @compile(schema)
+        test: @compile schema, stack.concat([pattern])
 
     (data) =>
       for property, value of data

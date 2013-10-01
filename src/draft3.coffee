@@ -7,7 +7,19 @@ module.exports = class Validator
   constructor: (@_schema) ->
     @references = {}
     @tests = {}
+    @unresolved = {}
+
     @compile_references(@_schema)
+
+    # We try one more time to resolve $ref values, because
+    # a schema may have been defined after we initially
+    # tried to resolve the $ref.
+    for ref, uri of @unresolved
+      if schema = @resolve_ref(uri)
+        delete @unresolved[ref]
+        @references[ref] = schema
+    if Object.keys(@unresolved).length > 0
+      console.log "Unresolvable $ref values:", @unresolved
 
     @_validate = @compile(@_schema)
 
@@ -107,7 +119,7 @@ module.exports = class Validator
               if schema = @resolve_ref(definition)
                 @compile_references schema, stack
               else
-                throw new Error "Cannot resolve $ref: '#{attribute}'"
+                @unresolved[ref] = definition
 
           when "type"
             if @test_type "array", definition
@@ -158,10 +170,14 @@ module.exports = class Validator
     if uri = schema.$ref
       if ref.indexOf(uri) == 0
         return @handle_recursion(schema, stack)
-      schema = @get_ref(uri)
-
+      schema = @references[uri]
+      if !schema
+        throw new Error "No schema found for $ref '#{uri}'"
 
     if extended = schema.extends
+      if extended.$ref
+        extended = @get_ref(extended.$ref)
+
       delete schema.extends
       if @test_type "array", extended
         deap.merge(schema, extended...)
@@ -190,7 +206,6 @@ module.exports = class Validator
     fn = (data) =>
       for test in tests
         if !test(data)
-          #console.log "Failed:", test.ref
           return false
       true
     @tests[ref] = fn
