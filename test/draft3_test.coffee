@@ -11,7 +11,11 @@ runner = new SuiteRunner "draft3",
     refRemote: true
     uniqueItems: true
     "optional/zeroTerminatedFloats": true
-    "optional/format": true
+    "optional/format": [
+      "validation of date-time strings"
+      "validation of CSS colors"
+      "validation of host names"
+    ]
 
 runner.test
   constructor: draft3
