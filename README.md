@@ -30,14 +30,28 @@ At this time, JSCK can only tell you whether a document passes validation, not w
 
 Currently passing the canonical [test suite][canonical] for draft3 except for these items:
 
-* `ref`
-  * [nested refs](https://github.com/json-schema/JSON-Schema-Test-Suite/blob/develop/tests/draft3/ref.json#L106)
-  * [remote ref](https://github.com/json-schema/JSON-Schema-Test-Suite/blob/develop/tests/draft3/ref.json#L129)
-* `refRemote`
-* `uniqueItems` (because this is a TERRIBLE idea performance-wise)
-* everything in `optional/`
+ref: [ 'remote ref, containing refs itself' ]
+refRemote
+uniqueItems
+optional/zeroTerminatedFloats
+optional/format: [ 'validation of date-time strings',
+  'validation of CSS colors',
+  'validation of host names' ]
 
-Simple (probably flawed) benchmark against other libs:
+* `refRemote` (Trying to keep this lib synchronous)
+* `ref`
+  * remote ref, containing refs itself
+* `uniqueItems` (because this is a TERRIBLE idea performance-wise)
+* `optional/zeroTerminatedFloats`
+* `optional/format` (some of the regexes borrowed from [tdegrunt's validator](https://github.com/tdegrunt/jsonschema) aren't working for me)
+  * validation of date-time strings
+  * validation of CSS colors
+  * validation of host names
+
+
+## Benchmarks
+
+Results of a simple (probably flawed) benchmark against other libs:
 
 ```
 
