@@ -17,9 +17,14 @@ module.exports = class Validator
     @tests = {}
     @unresolved = {}
 
-    @_schema.id ||= "urn:jsck.anon#"
+    if @_schema.id
+      # Make sure the schema id always ends with "#"
+      @_schema.id = @_schema.id.replace /#?$/, "#"
+    else
+      @_schema.id = "urn:jsck.anon#"
 
     @compile_references(@_schema, @_schema.id)
+
     # We try one more time to resolve $ref values, because
     # a schema may have been defined after we initially
     # tried to resolve the $ref.
@@ -40,7 +45,7 @@ module.exports = class Validator
     if @tests[uri]
       valid: @tests[uri](data)
     else
-      throw new Error "No such reference '#{ref}'"
+      throw new Error "No such reference '#{uri}'"
 
   find_schema: (uri, scope=null) ->
     uri = escape(uri)
@@ -62,24 +67,26 @@ module.exports = class Validator
       null
 
 
-  compile_references: (schema, ref) ->
-    #ref = @construct_ref(stack)
-    @references[ref] = schema
+  compile_references: (schema, scope) ->
+    @references[scope] = schema
+    if schema.id
+      id = URI.resolve(scope, schema.id)
+      @references[id] = schema
 
     if @test_type "object", schema
       for attribute, definition of schema
         #new_stack = stack.concat([attribute])
-        new_ref = "#{ref}/#{attribute}"
+        new_ref = "#{scope}/#{attribute}"
         switch attribute
           when "$ref"
-            definition = URI.resolve(ref, definition)
+            definition = URI.resolve(scope, definition)
 
             # don't try to resolve recursive references
-            if ref.indexOf(definition) != 0
+            if scope.indexOf(definition) != 0
               if schema = @resolve_ref(definition)
-                @compile_references schema, ref
+                @compile_references schema, scope
               else
-                @unresolved[ref] = definition
+                @unresolved[scope] = definition
 
           when "type"
             if @test_type "array", definition
@@ -101,37 +108,36 @@ module.exports = class Validator
               @compile_references definition, new_ref
 
 
-  type_refs: (union, ref) ->
+  type_refs: (union, scope) ->
     for schema, i in union
       if @test_type "object", schema
         #@compile_references schema, stack.concat([i.toString()])
-        @compile_references schema, "#{ref}/#{i}"
+        @compile_references schema, "#{scope}/#{i}"
 
-  properties_refs: (properties, ref) ->
+  properties_refs: (properties, scope) ->
     for attribute, schema of properties
-      @compile_references schema, "#{ref}/#{attribute}"
+      @compile_references schema, "#{scope}/#{attribute}"
   
-  pattern_props_refs: (patterns, ref) ->
+  pattern_props_refs: (patterns, scope) ->
     for pattern, schema of patterns
-      @compile_references schema, "#{ref}/#{pattern}"
+      @compile_references schema, "#{scope}/#{pattern}"
     
-  items_refs: (definition, ref) ->
+  items_refs: (definition, scope) ->
     if @test_type "array", definition
       for def, i in definition
-        @compile_references def, "#{ref}/#{i}"
+        @compile_references def, "#{scope}/#{i}"
     else
-      @compile_references definition, ref
+      @compile_references definition, scope
 
 
-  compile: (schema, ref) ->
-    #ref = @construct_ref(stack)
+  compile: (schema, scope) ->
 
     tests = []
 
     if uri = schema.$ref
-      uri = URI.resolve(ref, uri)
-      if ref.indexOf(uri) == 0
-        return @handle_recursion(schema, ref)
+      uri = URI.resolve(scope, uri)
+      if scope.indexOf(uri) == 0
+        return @handle_recursion(schema, scope)
       schema = @find_schema(uri)
       if !schema
         throw new Error "No schema found for $ref '#{uri}'"
@@ -151,18 +157,17 @@ module.exports = class Validator
       if spec = @attributes[attribute]
         if !spec.ignore
           options =
-            ref: "#{ref}/#{attribute}"
+            scope: "#{scope}/#{attribute}"
           if spec.modifiers
             for key in spec.modifiers
               options[key] = schema[key]
 
           test = @[attribute](definition, options)
-          #test.ref = @construct_ref options.ref
-          test.ref = options.ref
+          test.scope = options.scope
           tests.push test
       else
         if @test_type "object", definition
-          @compile definition, "#{ref}/#{attribute}"
+          @compile definition, "#{scope}/#{attribute}"
         else
           console.log "Unknown attribute: '#{attribute}' is not an object"
 
@@ -171,12 +176,16 @@ module.exports = class Validator
         if !test(data)
           return false
       true
-    @tests[ref] = fn
+
+    if schema.id
+      id = URI.resolve(scope, schema.id)
+      @tests[id] = fn
+    @tests[scope] = fn
     fn
 
 
-  handle_recursion: (schema, ref) ->
-    uri = URI.resolve(ref, schema.$ref)
+  handle_recursion: (schema, scope) ->
+    uri = URI.resolve(scope, schema.$ref)
     if !@find_schema(uri)
       throw new Error "No schema found for $ref '#{uri}'"
     (data) =>

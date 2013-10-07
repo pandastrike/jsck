@@ -20,13 +20,13 @@ module.exports =
       false
 
 
-  items: (definition, {additionalItems, ref}) ->
+  items: (definition, {additionalItems, scope}) ->
     if @test_type "array", definition
       # This signifies a tuple, not a union
 
       if additionalItems?
         if (@test_type "object", additionalItems)
-          add_item_test = @compile(additionalItems)
+          add_item_test = @compile(additionalItems, scope)
         else if additionalItems == false
           add_item_test = ->
             false
@@ -38,7 +38,7 @@ module.exports =
 
       tests = []
       for schema, i in definition
-        tests.push @compile(schema, "#{ref}/#{i}")
+        tests.push @compile(schema, "#{scope}/#{i}")
       (data) =>
         if !@test_type "array", data
           true
@@ -50,7 +50,7 @@ module.exports =
               return false if !add_item_test(item)
           true
     else
-      test = @compile(definition)
+      test = @compile(definition, scope)
       # TODO check for array data?
       (data) =>
         for item in data

@@ -41,16 +41,16 @@ module.exports =
         true
 
 
-  properties: (definition, {ref}) ->
+  properties: (definition, {scope}) ->
     if !@test_type "object", definition
       throw new Error "The 'properties' attribute must be an object"
     tests = {}
     required = []
     for property, schema of definition
       #new_stack = stack.concat([property])
-      new_ref = "#{ref}/#{property}"
+      new_ref = "#{scope}/#{property}"
       test = @compile(schema, new_ref)
-      test.ref = new_ref
+      test.scope = new_ref
       tests[property] = test
       if schema.required == true
         required.push property
@@ -62,16 +62,16 @@ module.exports =
         for property, value of data
           if test = tests[property]
             if !test(value)
-              #console.log "Failed:", test.ref
+              #console.log "Failed:", test.scope
               return false
         for key in required
           if data[key] == undefined
-            #console.log "Failed:", test.ref, "required"
+            #console.log "Failed:", test.scope, "required"
             return false
         true
 
 
-  patternProperties: (definition, {ref}) ->
+  patternProperties: (definition, {scope}) ->
     if !@test_type "object", definition
       throw new Error "The 'patternProperties' attribute must be an object"
 
@@ -79,7 +79,7 @@ module.exports =
     for pattern, schema of definition
       tests[pattern] =
         regex: new RegExp(pattern)
-        test: @compile schema, "#{ref}/#{pattern}"
+        test: @compile schema, "#{scope}/#{pattern}"
 
     (data) =>
       for property, value of data
@@ -89,9 +89,9 @@ module.exports =
       true
 
 
-  additionalProperties: (definition, {properties, patternProperties}) ->
+  additionalProperties: (definition, {properties, patternProperties, scope}) ->
     if @test_type "object", definition
-      add_prop_test = @compile(definition)
+      add_prop_test = @compile(definition, scope)
     else if definition == false
       add_prop_test = -> false
     else if definition == undefined
