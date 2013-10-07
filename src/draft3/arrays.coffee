@@ -20,7 +20,7 @@ module.exports =
       false
 
 
-  items: (definition, {additionalItems, stack}) ->
+  items: (definition, {additionalItems, ref}) ->
     if @test_type "array", definition
       # This signifies a tuple, not a union
 
@@ -38,7 +38,7 @@ module.exports =
 
       tests = []
       for schema, i in definition
-        tests.push @compile(schema, stack.concat([i.toString()]))
+        tests.push @compile(schema, "#{ref}/#{i}")
       (data) =>
         if !@test_type "array", data
           true

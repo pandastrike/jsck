@@ -41,15 +41,16 @@ module.exports =
         true
 
 
-  properties: (definition, {stack}) ->
+  properties: (definition, {ref}) ->
     if !@test_type "object", definition
       throw new Error "The 'properties' attribute must be an object"
     tests = {}
     required = []
     for property, schema of definition
-      new_stack = stack.concat([property])
-      test = @compile(schema, new_stack)
-      test.ref = @construct_ref new_stack
+      #new_stack = stack.concat([property])
+      new_ref = "#{ref}/#{property}"
+      test = @compile(schema, new_ref)
+      test.ref = new_ref
       tests[property] = test
       if schema.required == true
         required.push property
@@ -70,7 +71,7 @@ module.exports =
         true
 
 
-  patternProperties: (definition, {stack}) ->
+  patternProperties: (definition, {ref}) ->
     if !@test_type "object", definition
       throw new Error "The 'patternProperties' attribute must be an object"
 
@@ -78,7 +79,7 @@ module.exports =
     for pattern, schema of definition
       tests[pattern] =
         regex: new RegExp(pattern)
-        test: @compile schema, stack.concat([pattern])
+        test: @compile schema, "#{ref}/#{pattern}"
 
     (data) =>
       for property, value of data
