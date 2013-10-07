@@ -46,8 +46,8 @@ report = (results) ->
     console.log "    median:", summary.median / 1000, "ms"
     console.log "    min:", summary.min / 1000, "ms"
 
-iterations = 10
-repeats = 500
+iterations = 3
+repeats = 3
 
 jsv_test = Benchmark.measure "JSV", (bm) ->
   bm.measure "JSV", (bm) ->
@@ -71,9 +71,25 @@ jsck_test = Benchmark.measure "jsck", (bm) ->
         valid = validator.validate(valid_doc)
         throw new Error("fail") unless valid
 
+main = Benchmark.measure "Validators", (bm) ->
+  validator = new JSCK(schema)
+
+  bm.measure "jsck, valid document, #{repeats} times", ->
+    for i in [1..repeats]
+      valid = validator.validate(valid_doc)
+      throw new Error("fail") unless valid
+
+  bm.measure "jsonschema, valid document, #{repeats} times", ->
+    for i in [1..repeats]
+      errors = jsonschema.validate(valid_doc, schema).errors
+      throw new Error("fail") unless errors.length == 0
+
+main.run {iterations: iterations}, (results) ->
+  console.log results.data.constructor
+
 #jsv_test.run {iterations: iterations}, (results) -> report(results)
-jsonschema_test.run {iterations: iterations}, (results) -> report(results)
-jsck_test.run {iterations: iterations}, (results) -> report(results)
+#jsonschema_test.run {iterations: iterations}, (results) -> report(results)
+#jsck_test.run {iterations: iterations}, (results) -> report(results)
 
 
 
