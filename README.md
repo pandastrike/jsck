@@ -1,5 +1,7 @@
 # JSON Schema Compiled ChecK
 
+Fast validation against JSON Schema Draft 3
+
 ## Installation
 
 ```
@@ -51,24 +53,30 @@ optional/format: [ 'validation of date-time strings',
 
 ## Benchmarks
 
-Results of a simple (probably flawed) benchmark against other libs:
+Results of a simple (probably flawed) [benchmark against other libs](./benchmarks/event.coffee). 8 iterations.  Units are ms.
 
 ```
 
-JSV, valid document, 500 times
-    max: 6974.391 ms
-    median: 6847.857 ms
-    min: 6803.736 ms
+JSCK: valid document, 400 times { max: 2.596,
+  median: 0.494,
+  min: 0.491,
+  mean: 0.76,
+  stdDev: 0.6940034221817643,
+  sample_size: 8 }
 
-jsonschema, valid document, 500 times
-    max: 293.52 ms
-    median: 266.3855 ms
-    min: 252.324 ms
+jsonschema: valid document, 400 times { max: 224.818,
+  median: 194.503,
+  min: 183.965,
+  mean: 198.83875,
+  stdDev: 14.102769335754596,
+  sample_size: 8 }
 
-jsck, valid document, 500 times
-    max: 2.478 ms
-    median: 0.9375 ms
-    min: 0.897 ms
+JSV: valid document, 400 times { max: 5778.058,
+  median: 5707.239,
+  min: 5664.46,
+  mean: 5713.368375,
+  stdDev: 38.30406714024464,
+  sample_size: 8 }
 
 ```
 

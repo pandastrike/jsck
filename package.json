@@ -1,20 +1,21 @@
 {
   "name": "jsck",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "JSON Schema Compiled checK",
   "main": "lib/index.js",
   "files": [
     "lib",
     "README.md"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "deap": "~0.2.0"
+  },
   "devDependencies": {
     "testify": "~0.2.8",
-    "testify-benchmark": "~0.1.0",
+    "microtime": "~0.4.0",
     "JSV": "~4.0.2",
     "jsonschema": "~0.4.0",
     "coffee-script": "~1.6.3",
-    "deap": "~0.2.0",
     "glob": "~3.2.6"
   },
   "repository": "git@github.com:automatthew/jsck.git",

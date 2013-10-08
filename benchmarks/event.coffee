@@ -1,17 +1,11 @@
-
 JSV = require("JSV").JSV
-jsv = JSV.createEnvironment("json-schema-draft-03")
-JSONSchema= require('jsonschema').Validator;
-jsonschema = new JSONSchema()
-
+JSONSchema= require('jsonschema').Validator
 JSCK = require "../src/draft3"
 
-Benchmark = require "testify-benchmark"
+Benchmark = require "./benchmark.coffee"
 
 schema =
   type: "object"
-  #extends: {$ref: "#resource"}
-  #mediaType: media_type("event")
   additionalProperties: false
   properties:
     origin:
@@ -25,7 +19,7 @@ schema =
       items: {type: "string"}
     timestamp:
       type: "integer"
-      #format: "utc-millisec"
+      format: "utc-millisec"
     data: { type: "object" }
 
 
@@ -38,58 +32,36 @@ valid_doc =
     uno: 1
     dos: 2
 
-report = (results) ->
-  for key, value of results.data
-    summary = value.data.summarize()
-    console.log key
-    console.log "    max:", summary.max / 1000, "ms"
-    console.log "    median:", summary.median / 1000, "ms"
-    console.log "    min:", summary.min / 1000, "ms"
+repeats = 400
 
-iterations = 3
-repeats = 3
-
-jsv_test = Benchmark.measure "JSV", (bm) ->
-  bm.measure "JSV", (bm) ->
-    bm.measure "JSV, valid document, #{repeats} times", ->
-      for i in [1..repeats]
-        errors = jsv.validate(valid_doc, schema).errors
-        throw new Error("fail") unless errors.length == 0
-
-jsonschema_test = Benchmark.measure "jsonschema", (bm) ->
-  bm.measure "jsonschema", (bm) ->
-    bm.measure "jsonschema, valid document, #{repeats} times", ->
-      for i in [1..repeats]
-        errors = jsonschema.validate(valid_doc, schema).errors
-        throw new Error("fail") unless errors.length == 0
-
-jsck_test = Benchmark.measure "jsck", (bm) ->
-  validator = new JSCK(schema)
-  bm.measure "jsck", (bm) ->
-    bm.measure "jsck, valid document, #{repeats} times", ->
-      for i in [1..repeats]
-        valid = validator.validate(valid_doc)
-        throw new Error("fail") unless valid
-
-main = Benchmark.measure "Validators", (bm) ->
-  validator = new JSCK(schema)
-
-  bm.measure "jsck, valid document, #{repeats} times", ->
+jsck = new Benchmark "JSCK: valid document, #{repeats} times", (bm) ->
+  bm.setup -> new JSCK(schema)
+  bm.measure (validator) ->
     for i in [1..repeats]
       valid = validator.validate(valid_doc)
-      throw new Error("fail") unless valid
 
-  bm.measure "jsonschema, valid document, #{repeats} times", ->
+
+jsonschema = new Benchmark "jsonschema: valid document, #{repeats} times", (bm) ->
+  bm.setup -> new JSONSchema()
+  bm.measure (validator) ->
     for i in [1..repeats]
-      errors = jsonschema.validate(valid_doc, schema).errors
-      throw new Error("fail") unless errors.length == 0
+      errors = validator.validate(valid_doc, schema).errors
 
-main.run {iterations: iterations}, (results) ->
-  console.log results.data.constructor
+jsv_bm = new Benchmark "JSV: valid document, #{repeats} times", (bm) ->
+  bm.setup -> JSV.createEnvironment("json-schema-draft-03")
+  bm.measure (validator) ->
+    for i in [1..repeats]
+      errors = validator.validate(valid_doc, schema).errors
 
-#jsv_test.run {iterations: iterations}, (results) -> report(results)
-#jsonschema_test.run {iterations: iterations}, (results) -> report(results)
-#jsck_test.run {iterations: iterations}, (results) -> report(results)
 
+
+results = Benchmark.compare [jsck, jsonschema, jsv_bm],
+  #warmup: 8
+  iterations: 8
+
+console.log()
+for name, result of results
+  console.log name, result.summarize()
+  console.log()
 
 
