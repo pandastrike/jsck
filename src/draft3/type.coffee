@@ -1,20 +1,35 @@
 module.exports =
 
-  type: (definition) ->
+  # handlers
+
+  type: (definition, {pointer_scope}) ->
     if @test_type "array", definition
       tests = []
       for type in definition
-        tests.push @type(type)
+        tests.push @type(type, {pointer_scope})
 
       (data) =>
         for test in tests
           return true if test(data)
         false
     else if @test_type "object", definition
-      @compile(definition)
+      @compile(definition, {pointer_scope})
     else
       (data) =>
         @test_type(definition, data)
+
+  disallow: (definition, {pointer_scope}) ->
+    if @test_type "array", definition
+      tests = (@type(type, {pointer_scope}) for type in definition)
+      (data) =>
+        for test in tests
+          return false if test(data)
+        true
+    else
+      (data) =>
+        !@test_type(definition, data)
+
+  # helpers
 
   is_object: (data) ->
     data? && (typeof data) == "object" &&
@@ -41,15 +56,4 @@ module.exports =
         true
       else
         throw new Error "Bad type: '#{type_name}'"
-
-  disallow: (definition) ->
-    if @test_type "array", definition
-      tests = (@type(type) for type in definition)
-      (data) =>
-        for test in tests
-          return false if test(data)
-        true
-    else
-      (data) =>
-        !@test_type(definition, data)
 

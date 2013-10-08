@@ -1,5 +1,7 @@
 module.exports =
 
+  # handlers
+
   maxItems: (value) ->
     (data) =>
       if @test_type "array", data
@@ -20,13 +22,13 @@ module.exports =
       false
 
 
-  items: (definition, {additionalItems, scope}) ->
+  items: (definition, {additionalItems, pointer_scope}) ->
     if @test_type "array", definition
       # This signifies a tuple, not a union
 
       if additionalItems?
         if (@test_type "object", additionalItems)
-          add_item_test = @compile(additionalItems, scope)
+          add_item_test = @compile(additionalItems, {pointer_scope})
         else if additionalItems == false
           add_item_test = ->
             false
@@ -38,7 +40,7 @@ module.exports =
 
       tests = []
       for schema, i in definition
-        tests.push @compile(schema, "#{scope}/#{i}")
+        tests.push @compile(schema, {pointer_scope: "#{pointer_scope}/#{i}"})
       (data) =>
         if !@test_type "array", data
           true
@@ -50,7 +52,7 @@ module.exports =
               return false if !add_item_test(item)
           true
     else
-      test = @compile(definition, scope)
+      test = @compile(definition, {pointer_scope})
       # TODO check for array data?
       (data) =>
         for item in data

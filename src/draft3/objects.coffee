@@ -1,6 +1,8 @@
 module.exports =
 
-  dependencies: (definition) ->
+  # handlers
+
+  dependencies: (definition, {pointer_scope}) ->
     if !@test_type "object", definition
       throw new Error "Value of 'dependencies' must be an object"
     else
@@ -22,7 +24,7 @@ module.exports =
             true
 
         else if @test_type "object", dependency
-          fn = @compile(dependency)
+          fn = @compile(dependency, {pointer_scope: "#{pointer_scope}/#{property}"})
           tests.push (data) =>
             if data[property]
               fn(data)
@@ -41,16 +43,16 @@ module.exports =
         true
 
 
-  properties: (definition, {scope}) ->
+  properties: (definition, {pointer_scope}) ->
     if !@test_type "object", definition
       throw new Error "The 'properties' attribute must be an object"
     tests = {}
     required = []
     for property, schema of definition
       #new_stack = stack.concat([property])
-      new_ref = "#{scope}/#{property}"
-      test = @compile(schema, new_ref)
-      test.scope = new_ref
+      new_ref = "#{pointer_scope}/#{property}"
+      test = @compile(schema, {pointer_scope: new_ref})
+      test.pointer_scope = new_ref
       tests[property] = test
       if schema.required == true
         required.push property
@@ -62,16 +64,16 @@ module.exports =
         for property, value of data
           if test = tests[property]
             if !test(value)
-              #console.log "Failed:", test.scope
+              #console.log "Failed:", test.pointer_scope
               return false
         for key in required
           if data[key] == undefined
-            #console.log "Failed:", test.scope, "required"
+            #console.log "Failed:", test.pointer_scope, "required"
             return false
         true
 
 
-  patternProperties: (definition, {scope}) ->
+  patternProperties: (definition, {pointer_scope}) ->
     if !@test_type "object", definition
       throw new Error "The 'patternProperties' attribute must be an object"
 
@@ -79,7 +81,7 @@ module.exports =
     for pattern, schema of definition
       tests[pattern] =
         regex: new RegExp(pattern)
-        test: @compile schema, "#{scope}/#{pattern}"
+        test: @compile schema, {pointer_scope: "#{pointer_scope}/#{pattern}"}
 
     (data) =>
       for property, value of data
@@ -89,9 +91,9 @@ module.exports =
       true
 
 
-  additionalProperties: (definition, {properties, patternProperties, scope}) ->
+  additionalProperties: (definition, {properties, patternProperties, pointer_scope}) ->
     if @test_type "object", definition
-      add_prop_test = @compile(definition, scope)
+      add_prop_test = @compile(definition, {pointer_scope})
     else if definition == false
       add_prop_test = -> false
     else if definition == undefined
@@ -103,7 +105,7 @@ module.exports =
     for pattern, schema of patternProperties
       patterns[pattern] =
         regex: new RegExp(pattern)
-        test: @compile(schema, "#{scope}/#{pattern}")
+        test: @compile(schema, {pointer_scope: "#{pointer_scope}/#{pattern}"})
 
 
     (data) =>

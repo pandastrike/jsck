@@ -10,6 +10,8 @@ escape = (string) ->
     .replace(/~1/g, "/")
     .replace(/%25/g, "%")
 
+
+
 module.exports = class Validator
 
   constructor: (schema) ->
@@ -24,7 +26,7 @@ module.exports = class Validator
     else
       @_schema.id = "urn:jsck.anon#"
 
-    @compile_references(@_schema, @_schema.id)
+    @compile_references(@_schema, {})
 
     # We try one more time to resolve $ref values, because
     # a schema may have been defined after we initially
@@ -36,7 +38,7 @@ module.exports = class Validator
     if Object.keys(@unresolved).length > 0
       console.log "Unresolvable $ref values:", @unresolved
 
-    @_validate = @compile(@_schema, @_schema.id)
+    @_validate = @compile(@_schema, {})
 
   validate: (data) ->
     result =
@@ -48,14 +50,13 @@ module.exports = class Validator
     else
       throw new Error "No such reference '#{uri}'"
 
-  find_schema: (uri, scope=null) ->
+  find_schema: (uri) ->
     uri = escape(uri)
 
     if URI.is_absolute(uri)
       @references[uri]
     else
-      scope ||= @_schema.id
-      uri = URI.resolve(scope, uri)
+      uri = URI.resolve(@_schema.id, uri)
       @references[uri]
 
   resolve_ref: (uri) ->
@@ -68,26 +69,27 @@ module.exports = class Validator
       null
 
 
-  compile_references: (schema, scope) ->
-    @references[scope] = schema
+  compile_references: (schema, {pointer_scope}) ->
+    pointer_scope ||= schema.id
+    @references[pointer_scope] = schema
     if schema.id
-      id = URI.resolve(scope, schema.id)
+      id = URI.resolve(pointer_scope, schema.id)
       @references[id] = schema
 
     if @test_type "object", schema
       for attribute, definition of schema
         #new_stack = stack.concat([attribute])
-        new_ref = "#{scope}/#{attribute}"
+        new_ref = "#{pointer_scope}/#{attribute}"
         switch attribute
           when "$ref"
-            definition = URI.resolve(scope, definition)
+            definition = URI.resolve(pointer_scope, definition)
 
             # don't try to resolve recursive references
-            if scope.indexOf(definition) != 0
+            if pointer_scope.indexOf(definition) != 0
               if schema = @resolve_ref(definition)
-                @compile_references schema, scope
+                @compile_references schema, {pointer_scope}
               else
-                @unresolved[scope] = definition
+                @unresolved[pointer_scope] = definition
 
           when "type"
             if @test_type "array", definition
@@ -97,48 +99,49 @@ module.exports = class Validator
           when "patternProperties"
             @pattern_props_refs definition, new_ref
           when "additionalProperties"
-            @compile_references definition, new_ref
+            @compile_references definition, pointer_scope: new_ref
           when "items"
             @items_refs definition, new_ref
           when "additionalItems"
-            @compile_references definition, new_ref
+            @compile_references definition, pointer_scope: new_ref
           when "extends"
-            @compile_references definition, new_ref
+            @compile_references definition, pointer_scope: new_ref
           else
             if !@attributes[attribute] && @test_type "object", definition
-              @compile_references definition, new_ref
+              @compile_references definition, pointer_scope: new_ref
 
 
-  type_refs: (union, scope) ->
+  type_refs: (union, pointer_scope) ->
     for schema, i in union
       if @test_type "object", schema
         #@compile_references schema, stack.concat([i.toString()])
-        @compile_references schema, "#{scope}/#{i}"
+        @compile_references schema, pointer_scope: "#{pointer_scope}/#{i}"
 
-  properties_refs: (properties, scope) ->
+  properties_refs: (properties, pointer_scope) ->
     for attribute, schema of properties
-      @compile_references schema, "#{scope}/#{attribute}"
+      @compile_references schema, pointer_scope: "#{pointer_scope}/#{attribute}"
   
-  pattern_props_refs: (patterns, scope) ->
+  pattern_props_refs: (patterns, pointer_scope) ->
     for pattern, schema of patterns
-      @compile_references schema, "#{scope}/#{pattern}"
+      @compile_references schema, pointer_scope: "#{pointer_scope}/#{pattern}"
     
-  items_refs: (definition, scope) ->
+  items_refs: (definition, pointer_scope) ->
     if @test_type "array", definition
       for def, i in definition
-        @compile_references def, "#{scope}/#{i}"
+        @compile_references def, pointer_scope: "#{pointer_scope}/#{i}"
     else
-      @compile_references definition, scope
+      @compile_references definition, pointer_scope: pointer_scope
 
 
-  compile: (schema, scope) ->
+  compile: (schema, {pointer_scope}) ->
+    pointer_scope ||= schema.id
 
     tests = []
 
     if uri = schema.$ref
-      uri = URI.resolve(scope, uri)
-      if scope.indexOf(uri) == 0
-        return @handle_recursion(schema, scope)
+      uri = URI.resolve(pointer_scope, uri)
+      if pointer_scope.indexOf(uri) == 0
+        return @handle_recursion(schema, {pointer_scope})
       schema = @find_schema(uri)
       if !schema
         throw new Error "No schema found for $ref '#{uri}'"
@@ -160,17 +163,17 @@ module.exports = class Validator
       if spec = @attributes[attribute]
         if !spec.ignore
           options =
-            scope: "#{scope}/#{attribute}"
+            pointer_scope: "#{pointer_scope}/#{attribute}"
           if spec.modifiers
             for key in spec.modifiers
               options[key] = schema[key]
 
           test = @[attribute](definition, options)
-          test.scope = options.scope
+          test.pointer_scope = options.pointer_scope
           tests.push test
       else
         if @test_type "object", definition
-          @compile definition, "#{scope}/#{attribute}"
+          @compile definition, pointer_scope: "#{pointer_scope}/#{attribute}"
         else
           console.log "Unknown attribute: '#{attribute}' is not an object"
 
@@ -181,14 +184,14 @@ module.exports = class Validator
       true
 
     if schema.id
-      id = URI.resolve(scope, schema.id)
+      id = URI.resolve(pointer_scope, schema.id)
       @tests[id] = fn
-    @tests[scope] = fn
+    @tests[pointer_scope] = fn
     fn
 
 
-  handle_recursion: (schema, scope) ->
-    uri = URI.resolve(scope, schema.$ref)
+  handle_recursion: (schema, {pointer_scope}) ->
+    uri = URI.resolve(pointer_scope, schema.$ref)
     if !@find_schema(uri)
       throw new Error "No schema found for $ref '#{uri}'"
     (data) =>
