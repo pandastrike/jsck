@@ -201,11 +201,15 @@ module.exports = class Validator
       @tests[uri](data)
 
   attributes:
+    $schema: {ignore: true}
     id: {ignore: true}
     $ref: { ignore: true }
     extends: {ignore: true}
+
     title: {ignore: true}
     description: {ignore: true}
+    default: {ignore: true}
+
     type: {}
     enum: {}
     disallow: {}

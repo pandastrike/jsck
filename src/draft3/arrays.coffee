@@ -17,9 +17,10 @@ module.exports =
         true
 
   uniqueItems: (definition, context) ->
-    throw new Error "uniqueItems is unimplemented because I'm protecting you from the Cartesian product"
     (data) =>
-      false
+      console.error "uniqueItems is a no-op because I'm protecting you from the Cartesian product"
+      console.log context.pointer
+      true
 
 
   items: (definition, context) ->
