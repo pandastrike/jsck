@@ -23,3 +23,6 @@ task "update" do
   sh "git submodule update"
 end
 
+task "run:remotes" do
+  system "node_modules/.bin/nserver -p 5725 -d test/JSON-Schema-Test-Suite/remotes"
+end
