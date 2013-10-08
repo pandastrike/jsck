@@ -40,7 +40,7 @@ optional/format: [ 'validation of date-time strings',
   'validation of CSS colors',
   'validation of host names' ]
 
-* `refRemote` (Trying to keep this lib synchronous)
+* `refRemote` (Trying to keep this lib synchronous for v0.1.x)
 * `ref`
   * remote ref, containing refs itself
 * `uniqueItems` (because this is a TERRIBLE idea performance-wise)

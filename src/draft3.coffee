@@ -12,7 +12,8 @@ escape = (string) ->
 
 module.exports = class Validator
 
-  constructor: (@_schema) ->
+  constructor: (schema) ->
+    @_schema = deap.clone(schema)
     @references = {}
     @tests = {}
     @unresolved = {}
