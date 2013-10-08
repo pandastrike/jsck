@@ -2,25 +2,25 @@ module.exports =
 
   # handlers
 
-  type: (definition, {pointer_scope}) ->
+  type: (definition, context) ->
     if @test_type "array", definition
       tests = []
       for type in definition
-        tests.push @type(type, {pointer_scope})
+        tests.push @type(type, context)
 
       (data) =>
         for test in tests
           return true if test(data)
         false
     else if @test_type "object", definition
-      @compile(definition, {pointer_scope})
+      @compile(definition, context)
     else
       (data) =>
         @test_type(definition, data)
 
-  disallow: (definition, {pointer_scope}) ->
+  disallow: (definition, context) ->
     if @test_type "array", definition
-      tests = (@type(type, {pointer_scope}) for type in definition)
+      tests = (@type(type, context) for type in definition)
       (data) =>
         for test in tests
           return false if test(data)

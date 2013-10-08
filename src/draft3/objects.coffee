@@ -2,7 +2,7 @@ module.exports =
 
   # handlers
 
-  dependencies: (definition, {pointer_scope}) ->
+  dependencies: (definition, context) ->
     if !@test_type "object", definition
       throw new Error "Value of 'dependencies' must be an object"
     else
@@ -24,7 +24,7 @@ module.exports =
             true
 
         else if @test_type "object", dependency
-          fn = @compile(dependency, {pointer_scope: "#{pointer_scope}/#{property}"})
+          fn = @compile dependency, context.child(property)
           tests.push (data) =>
             if data[property]
               fn(data)
@@ -43,16 +43,14 @@ module.exports =
         true
 
 
-  properties: (definition, {pointer_scope}) ->
+  properties: (definition, context) ->
     if !@test_type "object", definition
       throw new Error "The 'properties' attribute must be an object"
     tests = {}
     required = []
     for property, schema of definition
-      #new_stack = stack.concat([property])
-      new_ref = "#{pointer_scope}/#{property}"
-      test = @compile(schema, {pointer_scope: new_ref})
-      test.pointer_scope = new_ref
+      new_context = context.child(property)
+      test = @compile(schema, new_context)
       tests[property] = test
       if schema.required == true
         required.push property
@@ -64,16 +62,14 @@ module.exports =
         for property, value of data
           if test = tests[property]
             if !test(value)
-              #console.log "Failed:", test.pointer_scope
               return false
         for key in required
           if data[key] == undefined
-            #console.log "Failed:", test.pointer_scope, "required"
             return false
         true
 
 
-  patternProperties: (definition, {pointer_scope}) ->
+  patternProperties: (definition, context) ->
     if !@test_type "object", definition
       throw new Error "The 'patternProperties' attribute must be an object"
 
@@ -81,7 +77,7 @@ module.exports =
     for pattern, schema of definition
       tests[pattern] =
         regex: new RegExp(pattern)
-        test: @compile schema, {pointer_scope: "#{pointer_scope}/#{pattern}"}
+        test: @compile schema, context.child(pattern)
 
     (data) =>
       for property, value of data
@@ -91,9 +87,10 @@ module.exports =
       true
 
 
-  additionalProperties: (definition, {properties, patternProperties, pointer_scope}) ->
+  additionalProperties: (definition, context) ->
+    {properties, patternProperties} = context.modifiers
     if @test_type "object", definition
-      add_prop_test = @compile(definition, {pointer_scope})
+      add_prop_test = @compile(definition, context)
     else if definition == false
       add_prop_test = -> false
     else if definition == undefined
@@ -105,7 +102,7 @@ module.exports =
     for pattern, schema of patternProperties
       patterns[pattern] =
         regex: new RegExp(pattern)
-        test: @compile(schema, {pointer_scope: "#{pointer_scope}/#{pattern}"})
+        test: @compile(schema, context.child(pattern))
 
 
     (data) =>

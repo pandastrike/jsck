@@ -1,6 +1,6 @@
 module.exports =
 
-  pattern: (pattern) ->
+  pattern: (pattern, context) ->
     regex = new RegExp(pattern)
     (data) =>
       if !@test_type "string", data
@@ -8,21 +8,21 @@ module.exports =
       else
         regex.test(data)
 
-  minLength: (value) ->
+  minLength: (value, context) ->
     (data) =>
       if !@test_type "string", data
         true
       else
         data.length >= value
 
-  maxLength: (value) ->
+  maxLength: (value, context) ->
     (data) =>
       if !@test_type "string", data
         true
       else
         data.length <= value
 
-  format: (format_name) ->
+  format: (format_name, context) ->
     if format_name == "regex"
       (data) =>
         if !@test_type "string", data

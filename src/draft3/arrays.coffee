@@ -2,33 +2,34 @@ module.exports =
 
   # handlers
 
-  maxItems: (value) ->
+  maxItems: (value, context) ->
     (data) =>
       if @test_type "array", data
         data.length <= value
       else
         true
 
-  minItems: (value) ->
+  minItems: (value, context) ->
     (data) =>
       if @test_type "array", data
         data.length >= value
       else
         true
 
-  uniqueItems: (definition) ->
+  uniqueItems: (definition, context) ->
     throw new Error "uniqueItems is unimplemented because I'm protecting you from the Cartesian product"
     (data) =>
       false
 
 
-  items: (definition, {additionalItems, pointer_scope}) ->
+  items: (definition, context) ->
+    {additionalItems} = context.modifiers
     if @test_type "array", definition
       # This signifies a tuple, not a union
 
       if additionalItems?
         if (@test_type "object", additionalItems)
-          add_item_test = @compile(additionalItems, {pointer_scope})
+          add_item_test = @compile(additionalItems, context)
         else if additionalItems == false
           add_item_test = ->
             false
@@ -40,7 +41,8 @@ module.exports =
 
       tests = []
       for schema, i in definition
-        tests.push @compile(schema, {pointer_scope: "#{pointer_scope}/#{i}"})
+        #tests.push @compile(schema, {pointer: "#{pointer}/#{i}"})
+        tests.push @compile schema, context.child(i.toString())
       (data) =>
         if !@test_type "array", data
           true
@@ -52,7 +54,7 @@ module.exports =
               return false if !add_item_test(item)
           true
     else
-      test = @compile(definition, {pointer_scope})
+      test = @compile(definition, context)
       # TODO check for array data?
       (data) =>
         for item in data

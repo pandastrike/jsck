@@ -1,6 +1,8 @@
 module.exports =
 
-  enum: (values) ->
+  # handlers
+
+  enum: (values, context) ->
     # TODO: add more cases to the draft3 test suite for enum.js,
     # as they're not doing full coverage
     if @test_type "array", values
@@ -10,6 +12,8 @@ module.exports =
         false
     else
       throw new Error "Value of 'enum' MUST be an Array"
+
+  # helpers
 
   equal: (got, want) ->
     if want instanceof Array
