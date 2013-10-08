@@ -18,7 +18,7 @@ validator.validate(document)
 
 ## About
 
-The JSON Schema Draft 3 [documentation][draft3_doc] and [implementation][draft3_impl]
+Supports most of JSON Schema Draft 3. [Documentation][draft3_doc] and [implementation][draft3_impl].
 
 JSCK is a "compiling" schema validator, meaning that it traverses a schema only once (at instantiation)
 and generates the functions needed to validate documents against the schema.
@@ -81,6 +81,26 @@ JSV: valid document, 400 times { max: 5778.058,
 ```
 
 I find it difficult to believe JSV is actually that slow, so it's probably my fault. Possibly incorrect usage of JSV.
+
+
+## Plans
+
+### 0.1.0
+
+* Boolean validation.
+* Correct coverage of most of Draft 3
+* benchmarking schemas of varying levels of complexity
+
+### 0.2.0
+
+* validation error reports
+* complete support for "format"
+* adding more comprehensive tests to the official test suite
+* support remote references
+
+### 0.3
+
+* Support Draft 4
 
 [draft3_doc]:http://tools.ietf.org/html/draft-zyp-json-schema-03
 [draft3_impl]:https://github.com/json-schema/json-schema/tree/master/draft-03
