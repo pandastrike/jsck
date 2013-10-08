@@ -144,8 +144,10 @@ module.exports = class Validator
         throw new Error "No schema found for $ref '#{uri}'"
 
     if extended = schema.extends
-      if extended.$ref
-        extended = @find_schema(extended.$ref)
+      if ref = extended.$ref
+        extended = @find_schema(ref)
+        if !extended
+          throw new Error "No schema found for $ref '#{ref}'"
 
       delete schema.extends
       if @test_type "array", extended
@@ -196,6 +198,8 @@ module.exports = class Validator
     id: {ignore: true}
     $ref: { ignore: true }
     extends: {ignore: true}
+    title: {ignore: true}
+    description: {ignore: true}
     type: {}
     enum: {}
     disallow: {}

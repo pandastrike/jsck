@@ -103,7 +103,7 @@ module.exports =
     for pattern, schema of patternProperties
       patterns[pattern] =
         regex: new RegExp(pattern)
-        test: @compile(schema)
+        test: @compile(schema, "#{scope}/#{pattern}")
 
 
     (data) =>
@@ -113,7 +113,7 @@ module.exports =
         for property, value of data
           explicit = false
           patterned = false
-          if properties[property]
+          if properties?[property]
             explicit = true
           else
             if patterns
