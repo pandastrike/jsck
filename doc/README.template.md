@@ -11,14 +11,15 @@ $ npm install jsck
 
 ## About
 
-Supports most of JSON Schema Draft 3. [Documentation][draft3_doc] and [implementation][draft3_impl].
 
 JSCK is a "compiling" schema validator, meaning that it traverses a schema only once (at instantiation)
 and generates the functions needed to validate documents against the schema.
 By doing so, it avoids the need to re-traverse the schema structure for every document it validates.
 This leads to substantial performance improvements.
 
-At this time, JSCK can only tell you whether a document passes validation, not where it failed or why.
+For the initial (0.1.x) release, JSCK will only tell you whether a document passes validation, not where it failed or why.
+
+Supports most of JSON Schema Draft 3. [Documentation][draft3_doc] and [implementation][draft3_impl].
 
 
 ## Usage
