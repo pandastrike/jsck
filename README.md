@@ -54,7 +54,7 @@ console.log "Anonymous schema:", valid
 ```
 
 
-[Advanced usage](examples/draft3_advanced.coffee)
+### [Advanced usage examples](examples/draft3_advanced.coffee)
 
 
 
