@@ -31,7 +31,6 @@ Validator = require("../src/index").draft3
 # a schema without an "id" declaration
 
 validator = new Validator
-  type: "object"
   definitions:
     user:
       type: "object"
