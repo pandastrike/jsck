@@ -8,6 +8,19 @@ Fast validation against JSON Schema Draft 3
 $ npm install jsck
 ```
 
+
+## About
+
+Supports most of JSON Schema Draft 3. [Documentation][draft3_doc] and [implementation][draft3_impl].
+
+JSCK is a "compiling" schema validator, meaning that it traverses a schema only once (at instantiation)
+and generates the functions needed to validate documents against the schema.
+By doing so, it avoids the need to re-traverse the schema structure for every document it validates.
+This leads to substantial performance improvements.
+
+At this time, JSCK can only tell you whether a document passes validation, not where it failed or why.
+
+
 ## Usage
 
 ```.coffee
@@ -69,29 +82,10 @@ console.log "Schema identified by JSON Pointer:", valid
 
 ```
 
-## About
-
-Supports most of JSON Schema Draft 3. [Documentation][draft3_doc] and [implementation][draft3_impl].
-
-JSCK is a "compiling" schema validator, meaning that it traverses a schema only once (at instantiation)
-and generates the functions needed to validate documents against the schema.
-By doing so, it avoids the need to re-traverse the schema structure for every document it validates.
-This leads to substantial performance improvements.
-
-At this time, JSCK can only tell you whether a document passes validation, not where it failed or why.
-
 
 ## Coverage
 
 Currently passing the canonical [test suite][canonical] for draft3 except for these items:
-
-ref: [ 'remote ref, containing refs itself' ]
-refRemote
-uniqueItems
-optional/zeroTerminatedFloats
-optional/format: [ 'validation of date-time strings',
-  'validation of CSS colors',
-  'validation of host names' ]
 
 * `refRemote` (Trying to keep this lib synchronous for v0.1.x)
 * `ref`
@@ -104,7 +98,7 @@ optional/format: [ 'validation of date-time strings',
   * validation of host names
 
 
-## The "id" mess
+### The "id" mess
 
 I agree with the objections stated in this issue: https://github.com/json-schema/json-schema/issues/77.
 

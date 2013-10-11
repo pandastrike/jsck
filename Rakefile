@@ -28,6 +28,7 @@ task "run:remotes" do
 end
 
 
+task "doc" => %w[ doc:readme ]
 
 task "doc:readme"  do |t|
   File.open("README.md", "w") do |f|
