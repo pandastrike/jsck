@@ -23,7 +23,12 @@ At this time, JSCK can only tell you whether a document passes validation, not w
 
 ## Usage
 
+
 ```../examples/draft3_basic.coffee```
+
+
+[Advanced usage](examples/draft3_advanced.coffee)
+
 
 
 ## Coverage
