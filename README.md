@@ -65,7 +65,7 @@ Currently passing the canonical [test suite][canonical] for draft3 except for th
 * `refRemote` (Trying to keep this lib synchronous for v0.1.x)
 * `ref`
   * remote ref, containing refs itself
-* `uniqueItems` (because this is a TERRIBLE idea performance-wise)
+* `uniqueItems`
 * `optional/zeroTerminatedFloats`
 * `optional/format` (some of the regexes borrowed from [tdegrunt's validator](https://github.com/tdegrunt/jsonschema) aren't working for me)
   * validation of date-time strings
@@ -73,14 +73,15 @@ Currently passing the canonical [test suite][canonical] for draft3 except for th
   * validation of host names
 
 
-### The "id" mess
+### Managing resolution scope with the "id" attribute
 
-I agree with the objections stated in this issue: https://github.com/json-schema/json-schema/issues/77.
 
-JSCK, therefore, does not support the full range of scope manipulations suggested by drafts 3 and 4.  It ignores "id" declarations except in these cases:
+JSCK does not support the full range of scope manipulations suggested by drafts 3 and 4.  It uses "id" declarations only in these cases:
 
 * at the top level of a schema, to provide a namespace for schemas not loaded from URIs.
 * non-JSON-pointer fragments (`"id": "#user"`), which serve merely as aliases for specific subschemas, and are thus convenient and unambiguous.
+
+For more information on the topic of scope manipulation, see this issue: https://github.com/json-schema/json-schema/issues/77.
 
 
 ## Benchmarks
