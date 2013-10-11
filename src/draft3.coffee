@@ -186,7 +186,6 @@ module.exports = class Validator
     test_function = (data) =>
       for test in tests
         if !test(data)
-          console.log test.pointer
           return false
       true
 
