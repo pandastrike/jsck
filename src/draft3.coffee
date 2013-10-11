@@ -34,28 +34,28 @@ module.exports = class Validator
 
 
   add: (schema) ->
-    @_schema = deap.clone(schema)
+    schema = deap.clone(schema)
 
-    if @_schema.id
+    if schema.id
       # Make sure the schema id always ends with "#"
-      @_schema.id = @_schema.id.replace /#?$/, "#"
+      schema.id = schema.id.replace /#?$/, "#"
 
     context = new Context
-      pointer: @_schema.id || "#"
-      scope: @_schema.id || "#"
-    @compile_references @_schema, context
+      pointer: schema.id || "#"
+      scope: schema.id || "#"
+    @compile_references schema, context
 
     # We try one more time to resolve $ref values, because
     # a schema may have been defined after we initially
     # tried to resolve the $ref.
     for ref, {scope, uri} of @unresolved
-      if schema = @resolve_ref(uri, scope)
+      if found_schema = @resolve_ref(uri, scope)
         delete @unresolved[ref]
-        @references[ref] = schema
+        @references[ref] = found_schema
     if Object.keys(@unresolved).length > 0
       console.log "Unresolvable $ref values:", @unresolved
 
-    @_validate = @compile(@_schema, context)
+    @compile(schema, context)
 
 
 
