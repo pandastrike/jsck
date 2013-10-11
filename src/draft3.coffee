@@ -19,33 +19,37 @@ class Context
       pointer: "#{@pointer}/#{token}"
       scope: @scope
 
-  change_scope: (id) ->
-    @scope = URI.resolve(@scope, id)
+  #change_scope: (id) ->
+    #@scope = URI.resolve(@scope, id)
 
 module.exports = class Validator
 
-  constructor: (schema) ->
-    @_schema = deap.clone(schema)
+  constructor: (schemas...) ->
     @references = {}
     @tests = {}
     @unresolved = {}
 
+    for schema in schemas
+      @add(schema)
+
+
+  add: (schema) ->
+    @_schema = deap.clone(schema)
+
     if @_schema.id
       # Make sure the schema id always ends with "#"
       @_schema.id = @_schema.id.replace /#?$/, "#"
-    else
-      @_schema.id = "urn:jsck.anon#"
 
     context = new Context
-      pointer: @_schema.id
-      scope: @_schema.id
+      pointer: @_schema.id || "#"
+      scope: @_schema.id || "#"
     @compile_references @_schema, context
 
     # We try one more time to resolve $ref values, because
     # a schema may have been defined after we initially
     # tried to resolve the $ref.
-    for ref, uri of @unresolved
-      if schema = @resolve_ref(uri)
+    for ref, {scope, uri} of @unresolved
+      if schema = @resolve_ref(uri, scope)
         delete @unresolved[ref]
         @references[ref] = schema
     if Object.keys(@unresolved).length > 0
@@ -53,56 +57,55 @@ module.exports = class Validator
 
     @_validate = @compile(@_schema, context)
 
+
+
+
   validate: (data) ->
-    result =
-      valid: @_validate(data)
+    @validate_schema("#", data)
 
   validate_schema: (uri, data) ->
     if @tests[uri]
       valid: @tests[uri](data)
     else
-      throw new Error "No such reference '#{uri}'"
+      throw new Error "No schema found for '#{uri}'"
 
-  find_schema: (uri) ->
+  find: (uri) ->
     uri = escape(uri)
+    @references[uri]
 
-    if URI.is_absolute(uri)
-      @references[uri]
-    else
-      uri = URI.resolve(@_schema.id, uri)
-      @references[uri]
-
-  resolve_ref: (uri) ->
-    if schema = @find_schema(uri)
-      if !schema.$ref
-        return schema
+  resolve_ref: (uri, scope) ->
+    if schema = @find(uri)
+      if schema.$ref
+        uri = URI.resolve(scope, schema.$ref)
+        @resolve_ref(uri)
       else
-        @resolve_ref(schema.$ref)
+        return schema
     else
       null
 
 
   compile_references: (schema, context) ->
-    {pointer} = context
+    {scope, pointer} = context
     @references[pointer] = schema
-    if schema.id
-      context.change_scope(schema.id)
-      #id = URI.resolve(pointer, schema.id)
-      @references[context.scope] = schema
+    # This is one of the two places we pay attention to "id".
+    # Here, we treat non-JSON-pointer fragments (such as "#user") as aliases.
+    if schema.id && schema.id.indexOf("#") == 0
+      uri = URI.resolve scope, schema.id
+      @references[uri] = schema
 
     if @test_type "object", schema
       for attribute, definition of schema
         new_context = context.child(attribute)
         switch attribute
           when "$ref"
-            uri = URI.resolve(pointer, definition)
+            uri = URI.resolve(scope, definition)
 
-            # don't try to resolve recursive references
+            # ignore recursive references
             if pointer.indexOf(uri) != 0
-              if schema = @resolve_ref(uri)
+              if schema = @resolve_ref(uri, scope)
                 @compile_references schema, context
               else
-                @unresolved[pointer] = uri
+                @unresolved[pointer] = {scope: context.scope, uri: uri}
 
           when "type"
             if @test_type "array", definition
@@ -136,22 +139,21 @@ module.exports = class Validator
 
 
   compile: (schema, context) ->
-    {pointer} = context
-    if schema.id
-      context.change_scope(schema.id)
+    {scope, pointer} = context
     tests = []
 
     if uri = schema.$ref
-      uri = URI.resolve(pointer, uri)
+      uri = URI.resolve(scope, uri)
       if pointer.indexOf(uri) == 0
-        return @handle_recursion(schema, {pointer})
-      schema = @find_schema(uri)
+        return @handle_recursion(schema, context)
+      schema = @find(uri)
       if !schema
         throw new Error "No schema found for $ref '#{uri}'"
 
     if extended = schema.extends
       if ref = extended.$ref
-        extended = @find_schema(ref)
+        uri = URI.resolve(scope, ref)
+        extended = @find(uri)
         if !extended
           throw new Error "No schema found for $ref '#{ref}'"
 
@@ -181,21 +183,23 @@ module.exports = class Validator
         else
           console.log "Unknown attribute: '#{attribute}' is not an object"
 
-    fn = (data) =>
+    test_function = (data) =>
       for test in tests
         if !test(data)
+          console.log test.pointer
           return false
       true
 
-    if schema.id
-      @tests[context.scope] = fn
-    @tests[pointer] = fn
-    fn
+    if schema.id && schema.id.indexOf("#") == 0
+      uri = URI.resolve scope, schema.id
+      @tests[uri] = test_function
+    @tests[pointer] = test_function
+    test_function
 
 
-  handle_recursion: (schema, {pointer}) ->
-    uri = URI.resolve(pointer, schema.$ref)
-    if !@find_schema(uri)
+  handle_recursion: (schema, {scope, pointer}) ->
+    uri = URI.resolve(scope, schema.$ref)
+    if !@find(uri)
       throw new Error "No schema found for $ref '#{uri}'"
     (data) =>
       @tests[uri](data)

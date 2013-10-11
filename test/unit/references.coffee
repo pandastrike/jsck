@@ -31,12 +31,30 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
       assert.equal result.valid, true
 
     context.test "id fragment", ->
+      console.log validator.references
       result = validator.validate_schema "urn:jsck.test#user", {name: "automatthew"}
       assert.equal result.valid, true
 
 
+  context.test "schema without 'id'", (context) ->
 
-  context.test "find_schema", (context) ->
+    test_schema =
+      definitions:
+        schema1:
+          id: "#foo"
+          type: "string"
+          format: "uri"
+
+    validator = new Validator(test_schema)
+    context.test "JSON pointers", (context) ->
+
+      context.test "Pointer relative to empty URI", ->
+        schema = validator.find "#/foo"
+        assert.deepEqual schema, test_schema.schema1
+
+
+
+  context.test "find", (context) ->
     test_schema =
       id: "http://x.y.z/rootschema.json#"
       schema1:
@@ -57,36 +75,29 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
 
     context.test "JSON pointers", (context) ->
 
-      context.test "URI relative to root", ->
-        schema = validator.find_schema "#/schema1"
-        assert.deepEqual schema, test_schema.schema1
-
-        schema = validator.find_schema "#/schema2/nested"
-        assert.deepEqual schema, test_schema.schema2.nested
-
       context.test "Absolute URI", ->
-        schema = validator.find_schema "http://x.y.z/rootschema.json#/schema1"
+        schema = validator.find "http://x.y.z/rootschema.json#/schema1"
         assert.deepEqual schema, test_schema.schema1
 
-        schema = validator.find_schema "http://x.y.z/rootschema.json#/schema2/nested"
+        schema = validator.find "http://x.y.z/rootschema.json#/schema2/nested"
         assert.deepEqual schema, test_schema.schema2.nested
 
     context.test "Setting scope with 'id'", (context) ->
 
-      context.test "fragment", ->
-        schema = validator.find_schema "http://x.y.z/rootschema.json#foo"
+      context.test "works for fragment", ->
+        schema = validator.find "http://x.y.z/rootschema.json#foo"
         assert.deepEqual schema, test_schema.schema1
 
-      context.test "path change", ->
-        schema = validator.find_schema "http://x.y.z/otherschema.json#bar"
-        assert.deepEqual schema, test_schema.schema2.nested
+      context.test "ignores path change", ->
+        schema = validator.find "http://x.y.z/otherschema.json#bar"
+        assert.deepEqual schema, undefined
 
-      context.test "nested path change", ->
-        schema = validator.find_schema "http://x.y.z/t/inner.json#a"
-        assert.deepEqual schema, test_schema.schema2.alsonested
+      context.test "ignores nested path change", ->
+        schema = validator.find "http://x.y.z/t/inner.json#a"
+        assert.deepEqual schema, undefined
 
     context.test "Inline reference resolution", ->
-      schema = validator.find_schema "#/schema4"
+      schema = validator.find "http://x.y.z/rootschema.json#/schema4"
       assert.deepEqual schema, test_schema.schema1
 
 

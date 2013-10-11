@@ -19,7 +19,6 @@ module.exports =
   uniqueItems: (definition, context) ->
     (data) =>
       console.error "uniqueItems is a no-op because I'm protecting you from the Cartesian product"
-      console.log context.pointer
       true
 
 
