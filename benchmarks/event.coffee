@@ -1,6 +1,9 @@
 JSV = require("JSV").JSV
 JSONSchema= require('jsonschema').Validator
 JSCK = require "../src/draft3"
+# TODO: include z-schema when we have draft 4 support
+#ZSchema = require "z-schema"
+
 
 Benchmark = require "./benchmark.coffee"
 
