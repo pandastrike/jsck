@@ -4,7 +4,7 @@
   "description": "JSON Schema Compiled checK",
   "main": "lib/index.js",
   "files": [
-    "lib",
+    "lib/",
     "README.md"
   ],
   "dependencies": {
