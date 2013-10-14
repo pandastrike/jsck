@@ -1,13 +1,13 @@
 assert = require "assert"
 Testify = require "testify"
 
-Validator = require("../../src/index").draft3
+JSCK = require("../../src/index").draft3
 
 
 Testify.test "JSCK draft 3 dereferencing", (context) ->
 
-  context.test "validate_schema", (context) ->
-    validator = new Validator
+  context.test "Finding by uri", (context) ->
+    jsck = new JSCK
       id: "urn:jsck.test"
       type: "object"
       properties:
@@ -27,12 +27,11 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
               type: "string"
 
     context.test "JSON Pointer", ->
-      result = validator.validate_schema "urn:jsck.test#/properties/user", {name: "automatthew"}
+      result = jsck.schema("urn:jsck.test#/properties/user").validate {name: "automatthew"}
       assert.equal result.valid, true
 
     context.test "id fragment", ->
-      console.log validator.references
-      result = validator.validate_schema "urn:jsck.test#user", {name: "automatthew"}
+      result = jsck.schema("urn:jsck.test#user").validate {name: "automatthew"}
       assert.equal result.valid, true
 
 
@@ -45,11 +44,11 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
           type: "string"
           format: "uri"
 
-    validator = new Validator(test_schema)
+    jsck = new JSCK(test_schema)
     context.test "JSON pointers", (context) ->
 
       context.test "Pointer relative to empty URI", ->
-        schema = validator.find "#/foo"
+        schema = jsck.find "#/foo"
         assert.deepEqual schema, test_schema.schema1
 
 
@@ -71,33 +70,33 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
       schema4:
         $ref: "#foo"
 
-    validator = new Validator(test_schema)
+    jsck = new JSCK(test_schema)
 
     context.test "JSON pointers", (context) ->
 
       context.test "Absolute URI", ->
-        schema = validator.find "http://x.y.z/rootschema.json#/schema1"
+        schema = jsck.find "http://x.y.z/rootschema.json#/schema1"
         assert.deepEqual schema, test_schema.schema1
 
-        schema = validator.find "http://x.y.z/rootschema.json#/schema2/nested"
+        schema = jsck.find "http://x.y.z/rootschema.json#/schema2/nested"
         assert.deepEqual schema, test_schema.schema2.nested
 
     context.test "Setting scope with 'id'", (context) ->
 
       context.test "works for fragment", ->
-        schema = validator.find "http://x.y.z/rootschema.json#foo"
+        schema = jsck.find "http://x.y.z/rootschema.json#foo"
         assert.deepEqual schema, test_schema.schema1
 
       context.test "ignores path change", ->
-        schema = validator.find "http://x.y.z/otherschema.json#bar"
+        schema = jsck.find "http://x.y.z/otherschema.json#bar"
         assert.deepEqual schema, undefined
 
       context.test "ignores nested path change", ->
-        schema = validator.find "http://x.y.z/t/inner.json#a"
+        schema = jsck.find "http://x.y.z/t/inner.json#a"
         assert.deepEqual schema, undefined
 
     context.test "Inline reference resolution", ->
-      schema = validator.find "http://x.y.z/rootschema.json#/schema4"
+      schema = jsck.find "http://x.y.z/rootschema.json#/schema4"
       assert.deepEqual schema, test_schema.schema1
 
 

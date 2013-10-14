@@ -9,7 +9,9 @@ task "build" => %w[ lib ] do
   sh "#{coffee} --compile --bare --output lib/ src/"
 end
 
-task "test" => %w[ test:draft3 ] do
+task "test" => %w[ test:unit test:draft3 ]
+
+task "test:unit" do
   sh "#{coffee} test/unit/references.coffee"
   sh "#{coffee} test/unit/uri_test.coffee"
 end

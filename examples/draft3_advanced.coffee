@@ -1,8 +1,8 @@
-Validator = require("../src/index").draft3
+JSCK = require("../src/index").draft3
 
-# a schema declaring a URI with "id"
+# using a schema that declares a URI with "id"
 
-validator = new Validator
+jsck = new JSCK
   id: "urn:jsck.examples.advanced#"
   definitions:
     user:
@@ -15,7 +15,8 @@ validator = new Validator
         email:
           type: "string"
 
-{valid} = validator.validate_schema "urn:jsck.examples.advanced#",
+schema = jsck.schema("urn:jsck.examples.advanced#")
+{valid} = schema.validate
   login: "automatthew"
   email: "automatthew@mailinator.com"
 
@@ -24,11 +25,8 @@ console.log "Schema with id:", valid
 
 # validating against a subschema using a JSON Pointer
 
-document =
-  login: "automatthew"
-  email: "automatthew@mailinator.com"
-
-{valid} = validator.validate_schema "urn:jsck.examples.advanced#/definitions/user",
+schema = jsck.schema "urn:jsck.examples.advanced#/definitions/user"
+{valid} = schema.validate
   login: "automatthew"
   email: "automatthew@mailinator.com"
 
@@ -40,14 +38,15 @@ console.log "Schema identified by JSON Pointer:", valid
 # You can instantiate JSCK with multiple schemas or add them later
 # 
 # Instantiation:
-# validator = new Validator(schema1, schema2, schema3)
+# validator = new JSCK(schema1, schema2, schema3)
 
-validator.add
+jsck.add
   id: "urn:jsck.examples.user_list#"
   type: "array"
   items: {$ref: "urn:jsck.examples.advanced#/definitions/user"}
 
-{valid} = validator.validate_schema "urn:jsck.examples.user_list#", [
+schema = jsck.schema "urn:jsck.examples.user_list#"
+{valid} = schema.validate [
   { login: "dyoder" }
   { login: "automatthew" }
 ]

@@ -19,9 +19,6 @@ class Context
       pointer: "#{@pointer}/#{token}"
       scope: @scope
 
-  #change_scope: (id) ->
-    #@scope = URI.resolve(@scope, id)
-
 module.exports = class Validator
 
   constructor: (schemas...) ->
@@ -58,14 +55,15 @@ module.exports = class Validator
     @compile(schema, context)
 
 
-
-
   validate: (data) ->
-    @validate_schema("#", data)
+    @schema("#").validate(data)
 
-  validate_schema: (uri, data) ->
+  schema: (uri) ->
     if @tests[uri]
-      valid: @tests[uri](data)
+      validate: (data) =>
+        valid: @tests[uri](data)
+      toJSON: (args...) =>
+        @references[uri]
     else
       throw new Error "No schema found for '#{uri}'"
 

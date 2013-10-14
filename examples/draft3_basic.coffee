@@ -1,8 +1,8 @@
-Validator = require("../src/index").draft3
+JSCK = require("../src/index").draft3
 
 # a schema without an "id" declaration
 
-validator = new Validator
+jsck = new JSCK
   type: "object"
   properties:
     user:
@@ -15,7 +15,7 @@ validator = new Validator
         email:
           type: "string"
 
-{valid} = validator.validate
+{valid} = jsck.validate
   user:
     login: "automatthew"
     email: "automatthew@mailinator.com"
