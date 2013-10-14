@@ -1,8 +1,7 @@
-# TODO: clone the input schema
-
+URI = require "./uri"
 deap = require "deap"
 
-URI = require "./uri"
+attributes = require "./draft3/attributes"
 
 escape = (string) ->
   string
@@ -20,6 +19,22 @@ class Context
       scope: @scope
 
 module.exports = class Validator
+
+  # Mix in methods from the modules where they live.
+  modules = [
+    "type"
+    "numeric"
+    "comparison"
+    "arrays"
+    "objects"
+    "strings"
+  ]
+
+  for module_name in modules
+    m = require "./draft3/#{module_name}"
+    for name, method of m
+      Validator.prototype[name] = method
+
 
   constructor: (schemas...) ->
     @references = {}
@@ -115,7 +130,7 @@ module.exports = class Validator
           when "additionalItems", "additionalProperties", "extends"
             @compile_references definition, context.child(attribute)
           else
-            if !@attributes[attribute] && @test_type "object", definition
+            if !attributes[attribute] && @test_type "object", definition
               @compile_references definition, context.child(attribute)
 
 
@@ -143,7 +158,9 @@ module.exports = class Validator
     if uri = schema.$ref
       uri = URI.resolve(scope, uri)
       if pointer.indexOf(uri) == 0
-        return @handle_recursion(schema, context)
+        # When the URI of a $ref is a substring of the present context's URI,
+        # we're in a recursive reference situation.
+        return @recursive_test(schema, context)
       schema = @find(uri)
       if !schema
         throw new Error "No schema found for $ref '#{uri}'"
@@ -163,7 +180,7 @@ module.exports = class Validator
 
 
     for attribute, definition of schema
-      if spec = @attributes[attribute]
+      if spec = attributes[attribute]
         if !spec.ignore
           new_context = context.child(attribute)
           new_context.modifiers = {}
@@ -178,8 +195,6 @@ module.exports = class Validator
       else
         if @test_type "object", definition
           @compile definition, context.child(attribute)
-        else
-          console.log "Unknown attribute: '#{attribute}' is not an object"
 
     test_function = (data) =>
       for test in tests
@@ -194,76 +209,11 @@ module.exports = class Validator
     test_function
 
 
-  handle_recursion: (schema, {scope, pointer}) ->
+  recursive_test: (schema, {scope, pointer}) ->
     uri = URI.resolve(scope, schema.$ref)
     if !@find(uri)
       throw new Error "No schema found for $ref '#{uri}'"
     (data) =>
       @tests[uri](data)
 
-  attributes:
-    $schema: {ignore: true}
-    id: {ignore: true}
-    $ref: { ignore: true }
-    extends: {ignore: true}
-
-    title: {ignore: true}
-    description: {ignore: true}
-    default: {ignore: true}
-
-    type: {}
-    enum: {}
-    disallow: {}
-
-    properties: {}
-    required: {ignore: true}
-    dependencies: {}
-    patternProperties: {}
-    additionalProperties:
-      modifiers: [
-        "properties"
-        "patternProperties"
-      ]
-
-    items:
-      modifiers: [
-        "additionalItems"
-      ]
-    additionalItems: {ignore: true}
-    maxItems: {}
-    minItems: {}
-    uniqueItems: {}
-
-
-    minimum:
-      modifiers: [
-        "exclusiveMinimum"
-      ]
-    exclusiveMinimum: {ignore: true}
-    maximum:
-      modifiers: [
-        "exclusiveMaximum"
-      ]
-    exclusiveMaximum: {ignore: true}
-    divisibleBy: {}
-
-    maxLength: {}
-    minLength: {}
-    pattern: {}
-    format: {}
-
-
-modules = [
-  "type"
-  "numeric"
-  "comparison"
-  "arrays"
-  "objects"
-  "strings"
-]
-
-for module_name in modules
-  m = require "./draft3/#{module_name}"
-  for name, method of m
-    Validator.prototype[name] = method
 
