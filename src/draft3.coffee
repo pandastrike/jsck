@@ -38,6 +38,7 @@ module.exports = class Validator
 
   constructor: (schemas...) ->
     @references = {}
+    @media_types = {}
     @tests = {}
     @unresolved = {}
 
@@ -63,12 +64,17 @@ module.exports = class Validator
     for ref, {scope, uri} of @unresolved
       if found_schema = @resolve_ref(uri, scope)
         delete @unresolved[ref]
-        @references[ref] = found_schema
+        @register ref, found_schema
     if Object.keys(@unresolved).length > 0
-      console.log "Unresolvable $ref values:", @unresolved
+      refs = JSON.stringify(Object.keys(@unresolved))
+      throw new Error "Unresolvable $ref values: #{refs}"
 
     @compile(schema, context)
 
+  register: (uri, schema) ->
+    @references[uri] = schema
+    if media_type = schema.mediaType
+      @media_types[media_type] = schema
 
   validate: (data) ->
     @schema("#").validate(data)
@@ -82,9 +88,15 @@ module.exports = class Validator
     else
       throw new Error "No schema found for '#{uri}'"
 
-  find: (uri) ->
-    uri = escape(uri)
-    @references[uri]
+  find: (arg) ->
+    if @test_type "string", arg
+      uri = escape(arg)
+      @references[uri]
+    else if media_type = arg.mediaType
+      @media_types[media_type]
+    else
+      throw new Error "Unusable argument: #{JSON.stringify(arg)}"
+
 
   resolve_ref: (uri, scope) ->
     if schema = @find(uri)
@@ -99,12 +111,12 @@ module.exports = class Validator
 
   compile_references: (schema, context) ->
     {scope, pointer} = context
-    @references[pointer] = schema
+    @register pointer, schema
     # This is one of the two places we pay attention to "id".
     # Here, we treat non-JSON-pointer fragments (such as "#user") as aliases.
     if schema.id && schema.id.indexOf("#") == 0
       uri = URI.resolve scope, schema.id
-      @references[uri] = schema
+      @register uri, schema
 
     if @test_type "object", schema
       for attribute, definition of schema
@@ -114,7 +126,8 @@ module.exports = class Validator
             uri = URI.resolve(scope, definition)
 
             # ignore recursive references
-            if pointer.indexOf(uri) != 0
+            if pointer.indexOf(uri + "/") != 0
+              schema.$ref = uri
               if schema = @resolve_ref(uri, scope)
                 @compile_references schema, context
               else
@@ -130,7 +143,7 @@ module.exports = class Validator
           when "additionalItems", "additionalProperties", "extends"
             @compile_references definition, context.child(attribute)
           else
-            if !attributes[attribute] && @test_type "object", definition
+            if !attributes[attribute] && @test_type("object", definition)
               @compile_references definition, context.child(attribute)
 
 

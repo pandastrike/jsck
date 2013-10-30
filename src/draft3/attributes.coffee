@@ -4,8 +4,6 @@ module.exports =
   $ref: { ignore: true }
   extends: {ignore: true}
 
-  title: {ignore: true}
-  description: {ignore: true}
   default: {ignore: true}
 
   type: {}

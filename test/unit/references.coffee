@@ -15,6 +15,7 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
           id: "#user_list"
           type: "array"
           items: {$ref: "#/properties/user"}
+        user_dict: {$ref: "#/properties/user"}
 
         user:
           id: "#user"
@@ -26,6 +27,8 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
             email:
               type: "string"
 
+    console.log JSON.stringify jsck.references["urn:jsck.test#"], null, 2
+
     context.test "JSON Pointer", ->
       result = jsck.schema("urn:jsck.test#/properties/user").validate {name: "automatthew"}
       assert.equal result.valid, true
@@ -35,6 +38,7 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
       assert.equal result.valid, true
 
 
+  return
   context.test "schema without 'id'", (context) ->
 
     test_schema =
