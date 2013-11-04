@@ -37,7 +37,7 @@ module.exports = class Validator
 
 
   constructor: (schemas...) ->
-    @references = {}
+    @uris = {}
     @media_types = {}
     @tests = {}
     @unresolved = {}
@@ -66,15 +66,16 @@ module.exports = class Validator
         delete @unresolved[ref]
         @register ref, found_schema
     if Object.keys(@unresolved).length > 0
-      refs = JSON.stringify(Object.keys(@unresolved))
-      throw new Error "Unresolvable $ref values: #{refs}"
+      pointers = (uri for key, {uri} of @unresolved)
+      throw new Error "Unresolvable $ref values: #{JSON.stringify pointers}"
 
     @compile(schema, context)
 
   register: (uri, schema) ->
-    @references[uri] = schema
+    @uris[uri] = schema
     if media_type = schema.mediaType
-      @media_types[media_type] = schema
+      if media_type != "application/json"
+        @media_types[media_type] = schema
 
   validate: (data) ->
     @schema("#").validate(data)
@@ -83,15 +84,16 @@ module.exports = class Validator
     if @tests[uri]
       validate: (data) =>
         valid: @tests[uri](data)
+        errors: ["Error report not implemented"]
       toJSON: (args...) =>
-        @references[uri]
+        @uris[uri]
     else
       throw new Error "No schema found for '#{uri}'"
 
   find: (arg) ->
     if @test_type "string", arg
       uri = escape(arg)
-      @references[uri]
+      @uris[uri]
     else if media_type = arg.mediaType
       @media_types[media_type]
     else
@@ -116,6 +118,7 @@ module.exports = class Validator
     # Here, we treat non-JSON-pointer fragments (such as "#user") as aliases.
     if schema.id && schema.id.indexOf("#") == 0
       uri = URI.resolve scope, schema.id
+      schema.id = uri
       @register uri, schema
 
     if @test_type "object", schema
