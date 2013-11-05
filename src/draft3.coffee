@@ -39,7 +39,6 @@ module.exports = class Validator
   constructor: (schemas...) ->
     @uris = {}
     @media_types = {}
-    @tests = {}
     @unresolved = {}
 
     for schema in schemas
@@ -73,31 +72,35 @@ module.exports = class Validator
 
   register: (uri, schema) ->
     @uris[uri] = schema
+    # TODO: enforce uniqueness of types
     if media_type = schema.mediaType
       if media_type != "application/json"
         @media_types[media_type] = schema
 
   validate: (data) ->
-    @schema("#").validate(data)
+    @validator("#").validate(data)
 
-  schema: (uri) ->
-    if @tests[uri]
+  validator: (arg) ->
+    if schema = @find arg
       validate: (data) =>
-        valid: @tests[uri](data)
+        valid: schema._test(data)
         errors: ["Error report not implemented"]
       toJSON: (args...) =>
-        @uris[uri]
+        schema
     else
-      throw new Error "No schema found for '#{uri}'"
+      throw new Error "No schema found for '#{JSON.stringify(arg)}'"
 
   find: (arg) ->
     if @test_type "string", arg
       uri = escape(arg)
       @uris[uri]
+    else if uri = arg.uri
+      uri = escape(uri)
+      @uris[uri]
     else if media_type = arg.mediaType
       @media_types[media_type]
     else
-      throw new Error "Unusable argument: #{JSON.stringify(arg)}"
+      null
 
 
   resolve_ref: (uri, scope) ->
@@ -114,7 +117,7 @@ module.exports = class Validator
   compile_references: (schema, context) ->
     {scope, pointer} = context
     @register pointer, schema
-    # This is one of the two places we pay attention to "id".
+    # This is one of the two cases where we pay attention to "id".
     # Here, we treat non-JSON-pointer fragments (such as "#user") as aliases.
     if schema.id && schema.id.indexOf("#") == 0
       uri = URI.resolve scope, schema.id
@@ -218,18 +221,19 @@ module.exports = class Validator
           return false
       true
 
-    if schema.id && schema.id.indexOf("#") == 0
+    if schema.id
       uri = URI.resolve scope, schema.id
-      @tests[uri] = test_function
-    @tests[pointer] = test_function
+      @find(uri)?._test = test_function
+    @find(pointer)?._test = test_function
     test_function
 
 
   recursive_test: (schema, {scope, pointer}) ->
     uri = URI.resolve(scope, schema.$ref)
-    if !@find(uri)
+    if schema = @find uri
+      (data) =>
+        schema._test(data)
+    else
       throw new Error "No schema found for $ref '#{uri}'"
-    (data) =>
-      @tests[uri](data)
 
 

@@ -15,7 +15,7 @@ jsck = new JSCK
         email:
           type: "string"
 
-schema = jsck.schema("urn:jsck.examples.advanced#")
+schema = jsck.validator(uri: "urn:jsck.examples.advanced#")
 {valid} = schema.validate
   login: "automatthew"
   email: "automatthew@mailinator.com"
@@ -25,7 +25,7 @@ console.log "Schema with id:", valid
 
 # validating against a subschema using a JSON Pointer
 
-schema = jsck.schema "urn:jsck.examples.advanced#/definitions/user"
+schema = jsck.validator "urn:jsck.examples.advanced#/definitions/user"
 {valid} = schema.validate
   login: "automatthew"
   email: "automatthew@mailinator.com"
@@ -45,7 +45,7 @@ jsck.add
   type: "array"
   items: {$ref: "urn:jsck.examples.advanced#/definitions/user"}
 
-schema = jsck.schema "urn:jsck.examples.user_list#"
+schema = jsck.validator "urn:jsck.examples.user_list#"
 {valid} = schema.validate [
   { login: "dyoder" }
   { login: "automatthew" }

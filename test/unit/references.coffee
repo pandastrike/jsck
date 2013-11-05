@@ -27,14 +27,14 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
             email:
               type: "string"
 
-    console.log JSON.stringify jsck.references["urn:jsck.test#"], null, 2
+    #console.log JSON.stringify jsck.uris["urn:jsck.test#"], null, 2
 
     context.test "JSON Pointer", ->
-      result = jsck.schema("urn:jsck.test#/properties/user").validate {name: "automatthew"}
+      result = jsck.validator("urn:jsck.test#/properties/user").validate {name: "automatthew"}
       assert.equal result.valid, true
 
     context.test "id fragment", ->
-      result = jsck.schema("urn:jsck.test#user").validate {name: "automatthew"}
+      result = jsck.validator("urn:jsck.test#user").validate {name: "automatthew"}
       assert.equal result.valid, true
 
 
