@@ -8,26 +8,41 @@ module.exports =
       for type in definition
         tests.push @type(type, context)
 
-      (data) =>
-        for test in tests
-          return true if test(data)
-        false
+      (data, runtime) =>
+        for test, i in tests
+          test data, runtime.child(i)
+
     else if @test_type "object", definition
       @compile(definition, context)
     else
-      (data) =>
-        @test_type(definition, data)
+      (data, runtime) =>
+        if !@test_type definition, data
+          runtime.error "type", context
 
   disallow: (definition, context) ->
     if @test_type "array", definition
-      tests = (@type(type, context) for type in definition)
-      (data) =>
+      tests = []
+      for type, i in definition
+        do (i) =>
+          if @test_type "object", type
+            inverse = @compile type, context.child(i)
+            tests.push (data, runtime) =>
+              temp = new runtime.constructor
+                pointer: ""
+                errors: []
+              inverse data, temp
+              if temp.errors.length == 0
+                runtime.error "disallow schema", context.child(i)
+          else
+            tests.push @disallow type, context.child(i)
+
+      (data, runtime) =>
         for test in tests
-          return false if test(data)
-        true
+          test data, runtime
     else
-      (data) =>
-        !@test_type(definition, data)
+      (data, runtime) =>
+        if @test_type definition, data
+          runtime.error "disallow", context
 
   # helpers
 

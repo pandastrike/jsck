@@ -9,6 +9,23 @@ escape = (string) ->
     .replace(/~1/g, "/")
     .replace(/%25/g, "%")
 
+class Runtime
+  constructor: ({@errors, @pointer}) ->
+
+  child: (token) ->
+    new @constructor
+      errors: @errors
+      pointer: "#{@pointer}/#{token}"
+
+  error: (attribute, context) ->
+    @errors.push
+      attribute: attribute
+      document:
+        pointer: @pointer
+      schema:
+        pointer: context.pointer
+
+
 class Context
 
   constructor: ({@pointer, @scope}) ->
@@ -83,8 +100,13 @@ module.exports = class Validator
   validator: (arg) ->
     if schema = @find arg
       validate: (data) =>
-        valid: schema._test(data)
-        errors: ["Error report not implemented"]
+        errors = []
+        runtime = new Runtime {errors, pointer: "#"}
+        schema._test(data, runtime)
+        console.log "Errors:", JSON.stringify(errors, null, 2) if errors.length > 0
+
+        valid = runtime.errors.length == 0
+        {valid, errors}
       toJSON: (args...) =>
         schema
     else
@@ -215,11 +237,9 @@ module.exports = class Validator
         if @test_type "object", definition
           @compile definition, context.child(attribute)
 
-    test_function = (data) =>
+    test_function = (data, runtime) =>
       for test in tests
-        if !test(data)
-          return false
-      true
+        test(data, runtime)
 
     if schema.id
       uri = URI.resolve scope, schema.id
@@ -231,8 +251,8 @@ module.exports = class Validator
   recursive_test: (schema, {scope, pointer}) ->
     uri = URI.resolve(scope, schema.$ref)
     if schema = @find uri
-      (data) =>
-        schema._test(data)
+      (data, runtime) =>
+        schema._test(data, runtime)
     else
       throw new Error "No schema found for $ref '#{uri}'"
 

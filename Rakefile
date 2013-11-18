@@ -9,6 +9,11 @@ task "build" => %w[ lib ] do
   sh "#{coffee} --compile --bare --output lib/ src/"
 end
 
+desc "compile to JS and watch for changes"
+task "build:watch" => %w[ lib ] do
+  sh "#{coffee} --compile --watch --bare --output lib/ src/"
+end
+
 task "test" => %w[ test:unit test:draft3 ]
 
 task "test:unit" do

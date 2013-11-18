@@ -10,37 +10,32 @@ module.exports =
       for property, dependency of definition
 
         if @test_type "string", dependency
-          tests.push (data) =>
-            if data[property]
-              data[dependency]
-            else
-              true
+          tests.push (data, runtime) =>
+            if data[property]? && !data[dependency]?
+              runtime.error "dependencies", context
 
         else if @test_type "array", dependency
-          tests.push (data) =>
-            if data[property]
+          tests.push (data, runtime) =>
+            if data[property]?
               for item in dependency
-                return false if !data[item]
-            true
+                if !data[item]?
+                  runtime.error "dependencies", context
 
         else if @test_type "object", dependency
           fn = @compile dependency, context.child(property)
-          tests.push (data) =>
+          tests.push (data, runtime) =>
             if data[property]
-              fn(data)
+              fn data, runtime
             else
               true
 
         else
           throw new Error "Invalid dependency"
 
-    (data) =>
-      if !@test_type "object", data
-        true
-      else
+    (data, runtime) =>
+      if @test_type "object", data
         for test in tests
-          return false if !test(data)
-        true
+          test data, runtime
 
 
   properties: (definition, context) ->
@@ -55,17 +50,14 @@ module.exports =
       if schema.required == true
         required.push property
 
-    (data) =>
-      if !@test_type "object", data
-        true
-      else
+    (data, runtime) =>
+      if @test_type "object", data
         for property, value of data
           if test = tests[property]
-            if !test(value)
-              return false
+            test value, runtime.child(property)
         for key in required
           if data[key] == undefined
-            return false
+            runtime.error "required", runtime.child(property).child("required")
         true
 
 
@@ -79,12 +71,11 @@ module.exports =
         regex: new RegExp(pattern)
         test: @compile schema, context.child(pattern)
 
-    (data) =>
+    (data, runtime) =>
       for property, value of data
         for pattern, object of tests
           if object.regex.test(property)
-            return false if !object.test(value)
-      true
+            object.test value, runtime.child(property)
 
 
   additionalProperties: (definition, context) ->
@@ -92,7 +83,8 @@ module.exports =
     if @test_type "object", definition
       add_prop_test = @compile(definition, context)
     else if definition == false
-      add_prop_test = -> false
+      add_prop_test = (data, runtime) =>
+        runtime.error "additionalProperties", context
     else if definition == undefined
       add_prop_test = null
     else
@@ -105,24 +97,24 @@ module.exports =
         test: @compile(schema, context.child(pattern))
 
 
-    (data) =>
-      if !@test_type "object", data
-        true
-      else
+    (data, runtime) =>
+      if @test_type "object", data
         for property, value of data
           explicit = false
           patterned = false
           if properties?[property]
             explicit = true
           else
+            # FIXME: a bug in this is somehow causing the minItems
+            # in patternProperties piece of the test suite to repeat
+            # a check.
             if patterns
               for pattern, object of patterns
                 if object.regex.test(property)
                   patterned = true
-                  return false if !object.test(value)
+                  object.test value, runtime.child(property)
             if !explicit && !patterned && add_prop_test
-              return false if !add_prop_test(value)
-        true
+              add_prop_test value, runtime.child(property)
 
 
 

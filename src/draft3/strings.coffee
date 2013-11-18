@@ -2,11 +2,10 @@ module.exports =
 
   pattern: (pattern, context) ->
     regex = new RegExp(pattern)
-    (data) =>
-      if !@test_type "string", data
-        true
-      else
-        regex.test(data)
+    (data, runtime) =>
+      if @test_type "string", data
+        if !regex.test(data)
+          runtime.error "pattern", context
 
   minLength: (value, context) ->
     (data) =>

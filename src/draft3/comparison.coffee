@@ -2,14 +2,14 @@ module.exports =
 
   # handlers
 
-  enum: (values, context) ->
+  enum: (definition, context) ->
     # TODO: add more cases to the draft3 test suite for enum.js,
     # as they're not doing full coverage
     if @test_type "array", values
-      (data) =>
-        for value in values
-          return true if @equal(data, value)
-        false
+      (data, runtime) =>
+        for value in definition
+          return if @equal(data, value)
+        runtime.error "enum", context
     else
       throw new Error "Value of 'enum' MUST be an Array"
 
