@@ -17,13 +17,12 @@ class Runtime
       errors: @errors
       pointer: "#{@pointer}/#{token}"
 
-  error: (attribute, context) ->
+  error: (context) ->
     @errors.push
-      attribute: attribute
-      document:
-        pointer: @pointer
       schema:
         pointer: context.pointer
+      document:
+        pointer: @pointer
 
 
 class Context
@@ -33,6 +32,12 @@ class Context
   child: (token) ->
     new Context
       pointer: "#{@pointer}/#{token}"
+      scope: @scope
+
+  sibling: (token) ->
+    pointer = @pointer.replace(/\/.*$/, "/#{token}")
+    new Context
+      pointer: pointer
       scope: @scope
 
 module.exports = class Validator
@@ -103,7 +108,8 @@ module.exports = class Validator
         errors = []
         runtime = new Runtime {errors, pointer: "#"}
         schema._test(data, runtime)
-        console.log "Errors:", JSON.stringify(errors, null, 2) if errors.length > 0
+        if errors.length > 0
+          console.log "Errors:", JSON.stringify(errors, null, 2)
 
         valid = runtime.errors.length == 0
         {valid, errors}

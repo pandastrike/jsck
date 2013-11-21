@@ -6,13 +6,13 @@ module.exports =
     (data, runtime) =>
       if @test_type "array", data
         if data.length > value
-          runtime.error "maxItems", context
+          runtime.error context
 
   minItems: (value, context) ->
     (data, runtime) =>
       if @test_type "array", data
         if data.length < value
-          runtime.error "minItems", context
+          runtime.error context
 
   items: (definition, context) ->
     if @test_type "array", definition
@@ -29,7 +29,7 @@ module.exports =
       test = @compile(definition, context)
     else if definition == false
       test = (data, runtime) ->
-        runtime.error "additionalItems", context
+        runtime.error context
     else
       throw new Error "The 'additionalItems' attribute must be an object or false"
 
@@ -37,7 +37,8 @@ module.exports =
     {additionalItems} = context.modifiers
 
     if additionalItems?
-      add_item_test = @_additionalItems additionalItems, context
+      add_item_test = @_additionalItems additionalItems,
+        context.sibling "additionalItems"
     else
       add_item_test = null
 

@@ -5,19 +5,19 @@ module.exports =
     (data, runtime) =>
       if @test_type "string", data
         if !regex.test(data)
-          runtime.error "pattern", context
+          runtime.error context
 
   minLength: (value, context) ->
     (data, runtime) =>
       if @test_type "string", data
         if !(data.length >= value)
-          runtime.error "minLength", context
+          runtime.error context
 
   maxLength: (value, context) ->
     (data, runtime) =>
       if @test_type "string", data
         if !(data.length <= value)
-          runtime.error "maxLength", context
+          runtime.error context
 
   format: (format_name, context) ->
     if format_name == "regex"
@@ -26,14 +26,14 @@ module.exports =
           try
             new RegExp(data)
           catch error
-            runtime.error "format", context
+            runtime.error context
 
     else if regex = format_regexes[format_name]
       do (regex) =>
         (data, runtime) =>
           if @test_type "string", data
             if !regex.test(data)
-              runtime.error "format", context
+              runtime.error context
     else
       throw new Error "Invalid format_name for 'format'"
 

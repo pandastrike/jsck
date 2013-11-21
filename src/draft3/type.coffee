@@ -19,21 +19,20 @@ module.exports =
             tests.push (data, runtime) =>
               @test_type type, data
 
-
       (data, runtime) =>
         valid = false
         for test in tests
           if test(data, runtime)
             valid = true
         if valid == false
-          runtime.error "type", context
+          runtime.error context
 
     else if @test_type "object", definition
       @compile(definition, context)
     else
       (data, runtime) =>
         if !@test_type definition, data
-          runtime.error "type", context
+          runtime.error context
 
   disallow: (definition, context) ->
     if @test_type "array", definition
@@ -48,7 +47,7 @@ module.exports =
                 errors: []
               inverse data, temp
               if temp.errors.length == 0
-                runtime.error "disallow schema", context.child(i)
+                runtime.error context.child(i)
           else
             tests.push @disallow type, context.child(i)
 
@@ -58,7 +57,7 @@ module.exports =
     else
       (data, runtime) =>
         if @test_type definition, data
-          runtime.error "disallow", context
+          runtime.error context
 
   # helpers
 

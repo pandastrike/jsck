@@ -4,7 +4,7 @@ module.exports =
     (data, runtime) =>
       if @test_type "number", data
         if !((data / value) % 1 == 0)
-          runtime.error "divisibleBy", context
+          runtime.error context
 
   minimum: (value, context) ->
     {modifiers: {exclusiveMinimum}} = context
@@ -12,12 +12,12 @@ module.exports =
       (data, runtime) =>
         if @test_type "number", data
           if !(data > value)
-            runtime.error "minimum", context
+            runtime.error context
     else
       (data, runtime) =>
         if @test_type "number", data
           if !(data >= value)
-            runtime.error "minimum", context
+            runtime.error context
 
   maximum: (value, context) ->
     {modifiers: {exclusiveMaximum}} = context
@@ -25,10 +25,10 @@ module.exports =
       (data, runtime) =>
         if @test_type "number", data
           if !(data < value)
-            runtime.error "maximum", context
+            runtime.error context
     else
       (data, runtime) =>
         if @test_type "number", data
           if !(data <= value)
-            runtime.error "maximum", context
+            runtime.error context
 

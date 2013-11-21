@@ -12,14 +12,14 @@ module.exports =
         if @test_type "string", dependency
           tests.push (data, runtime) =>
             if data[property]? && !data[dependency]?
-              runtime.error "dependencies", context
+              runtime.error context
 
         else if @test_type "array", dependency
           tests.push (data, runtime) =>
             if data[property]?
               for item in dependency
                 if !data[item]?
-                  runtime.error "dependencies", context
+                  runtime.error context
 
         else if @test_type "object", dependency
           fn = @compile dependency, context.child(property)
@@ -57,7 +57,7 @@ module.exports =
             test value, runtime.child(property)
         for key in required
           if data[key] == undefined
-            runtime.error "required", runtime.child(property).child("required")
+            runtime.error runtime.child(property).child("required")
         true
 
 
@@ -91,7 +91,7 @@ module.exports =
       add_prop_test = @compile(definition, context)
     else if definition == false
       add_prop_test = (data, runtime) =>
-        runtime.error "additionalProperties", context
+        runtime.error context
     else if definition == undefined
       add_prop_test = null
     else
