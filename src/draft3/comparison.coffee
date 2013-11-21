@@ -5,7 +5,7 @@ module.exports =
   enum: (definition, context) ->
     # TODO: add more cases to the draft3 test suite for enum.js,
     # as they're not doing full coverage
-    if @test_type "array", values
+    if @test_type "array", definition
       (data, runtime) =>
         for value in definition
           return if @equal(data, value)

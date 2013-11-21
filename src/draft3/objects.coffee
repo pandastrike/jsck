@@ -62,6 +62,13 @@ module.exports =
 
 
   patternProperties: (definition, context) ->
+    {additionalProperties} = context.modifiers
+    if additionalProperties
+      # The additionalProperties compiler runs the patternProperties
+      # validation. This is necessary because properties are not considered
+      # additional if they match a pattern.
+      return null
+
     if !@test_type "object", definition
       throw new Error "The 'patternProperties' attribute must be an object"
 
@@ -104,17 +111,13 @@ module.exports =
           patterned = false
           if properties?[property]
             explicit = true
-          else
-            # FIXME: a bug in this is somehow causing the minItems
-            # in patternProperties piece of the test suite to repeat
-            # a check.
-            if patterns
-              for pattern, object of patterns
-                if object.regex.test(property)
-                  patterned = true
-                  object.test value, runtime.child(property)
-            if !explicit && !patterned && add_prop_test
-              add_prop_test value, runtime.child(property)
+          if patterns
+            for pattern, object of patterns
+              if object.regex.test(property)
+                patterned = true
+                object.test value, runtime.child(property)
+          if !explicit && !patterned && add_prop_test
+            add_prop_test value, runtime.child(property)
 
 
 

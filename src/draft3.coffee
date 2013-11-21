@@ -230,9 +230,9 @@ module.exports = class Validator
               new_context.modifiers[key] = schema[key]
 
           # Delegate to a handler named after the attribute
-          test = @[attribute](definition, new_context)
-          test.pointer = new_context.pointer
-          tests.push test
+          if test = @[attribute](definition, new_context)
+            test.pointer = new_context.pointer
+            tests.push test
       else
         if @test_type "object", definition
           @compile definition, context.child(attribute)

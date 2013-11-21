@@ -13,7 +13,10 @@ module.exports =
   properties: {}
   required: {ignore: true}
   dependencies: {}
-  patternProperties: {}
+  patternProperties:
+    modifiers: [
+      "additionalProperties"
+    ]
   additionalProperties:
     modifiers: [
       "properties"

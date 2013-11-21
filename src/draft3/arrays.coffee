@@ -55,6 +55,6 @@ module.exports =
             add_item_test item, runtime.child(i)
 
   uniqueItems: (definition, context) ->
-    (data) =>
-      console.error "uniqueItems is a no-op"
+    console.error "uniqueItems is a no-op"
+    null
 

@@ -6,11 +6,27 @@ module.exports =
     if @test_type "array", definition
       tests = []
       for type in definition
-        tests.push @type(type, context)
+        do (type) =>
+          if @test_type "object", type
+            test = @compile type, context
+            tests.push (data, runtime) =>
+              temp = new runtime.constructor
+                pointer: ""
+                errors: []
+              test data, temp
+              temp.errors.length == 0
+          else
+            tests.push (data, runtime) =>
+              @test_type type, data
+
 
       (data, runtime) =>
-        for test, i in tests
-          test data, runtime.child(i)
+        valid = false
+        for test in tests
+          if test(data, runtime)
+            valid = true
+        if valid == false
+          runtime.error "type", context
 
     else if @test_type "object", definition
       @compile(definition, context)

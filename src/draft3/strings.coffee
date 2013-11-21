@@ -8,37 +8,32 @@ module.exports =
           runtime.error "pattern", context
 
   minLength: (value, context) ->
-    (data) =>
-      if !@test_type "string", data
-        true
-      else
-        data.length >= value
+    (data, runtime) =>
+      if @test_type "string", data
+        if !(data.length >= value)
+          runtime.error "minLength", context
 
   maxLength: (value, context) ->
-    (data) =>
-      if !@test_type "string", data
-        true
-      else
-        data.length <= value
+    (data, runtime) =>
+      if @test_type "string", data
+        if !(data.length <= value)
+          runtime.error "maxLength", context
 
   format: (format_name, context) ->
     if format_name == "regex"
-      (data) =>
-        if !@test_type "string", data
-          true
-        else
+      (data, runtime) =>
+        if @test_type "string", data
           try
             new RegExp(data)
-            true
           catch error
-            false
+            runtime.error "format", context
+
     else if regex = format_regexes[format_name]
       do (regex) =>
-        (data) =>
-          if !@test_type "string", data
-            true
-          else
-            regex.test(data)
+        (data, runtime) =>
+          if @test_type "string", data
+            if !regex.test(data)
+              runtime.error "format", context
     else
       throw new Error "Invalid format_name for 'format'"
 
