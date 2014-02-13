@@ -19,10 +19,10 @@ class Runtime
 
   error: (context) ->
     @errors.push
-      schema:
-        pointer: context.pointer
       document:
         pointer: @pointer
+      schema:
+        pointer: context.pointer
 
 
 class Context
@@ -109,6 +109,11 @@ module.exports = class Validator
         runtime = new Runtime {errors, pointer: "#"}
         schema._test(data, runtime)
         if errors.length > 0
+          for error in errors
+            [base..., attribute] = error.schema.pointer.split("/")
+            pointer = base.join("/")
+            error.schema.definition = @resolve_ref(pointer)[attribute]
+
           console.log "Errors:", JSON.stringify(errors, null, 2)
 
         valid = runtime.errors.length == 0

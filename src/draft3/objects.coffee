@@ -57,7 +57,7 @@ module.exports =
             test value, runtime.child(property)
         for key in required
           if data[key] == undefined
-            runtime.error runtime.child(property).child("required")
+            runtime.error context.child(key).child("required")
         true
 
 

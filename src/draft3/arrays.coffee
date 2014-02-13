@@ -16,7 +16,7 @@ module.exports =
 
   items: (definition, context) ->
     if @test_type "array", definition
-      @_tuple_items definition, context
+      test = @_tuple_items definition, context
     else
       test = @compile(definition, context)
       # TODO check for array data?
@@ -32,6 +32,9 @@ module.exports =
         runtime.error context
     else
       throw new Error "The 'additionalItems' attribute must be an object or false"
+    (data, runtime) =>
+      for item, i in data
+        test item, runtime.child(i)
 
   _tuple_items: (definition, context) ->
     {additionalItems} = context.modifiers
@@ -52,8 +55,7 @@ module.exports =
           test data[i], runtime.child(i)
 
         if (data.length > tests.length) && add_item_test
-          for item in data.slice(tests.length)
-            add_item_test item, runtime.child(i)
+          add_item_test data.slice(tests.length), runtime
 
   uniqueItems: (definition, context) ->
     console.error "uniqueItems is a no-op"
