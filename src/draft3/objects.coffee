@@ -101,7 +101,7 @@ module.exports =
     for pattern, schema of patternProperties
       patterns[pattern] =
         regex: new RegExp(pattern)
-        test: @compile(schema, context.child(pattern))
+        test: @compile(schema, context.sibling("patternProperties").child(pattern))
 
 
     (data, runtime) =>
