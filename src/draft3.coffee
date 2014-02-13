@@ -112,7 +112,7 @@ module.exports = class Validator
           for error in errors
             [base..., attribute] = error.schema.pointer.split("/")
             pointer = base.join("/")
-            error.schema.definition = @resolve_ref(pointer)[attribute]
+            error.schema.definition = @resolve_ref(pointer)?[attribute]
 
           console.log "Errors:", JSON.stringify(errors, null, 2)
 

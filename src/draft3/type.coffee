@@ -40,16 +40,16 @@ module.exports =
       for type, i in definition
         do (i) =>
           if @test_type "object", type
-            inverse = @compile type, context.child(i)
+            inverse = @compile type, context
             tests.push (data, runtime) =>
               temp = new runtime.constructor
                 pointer: ""
                 errors: []
               inverse data, temp
               if temp.errors.length == 0
-                runtime.error context.child(i)
+                runtime.error context
           else
-            tests.push @disallow type, context.child(i)
+            tests.push @disallow type, context
 
       (data, runtime) =>
         for test in tests

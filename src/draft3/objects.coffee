@@ -12,17 +12,17 @@ module.exports =
         if @test_type "string", dependency
           tests.push (data, runtime) =>
             if data[property]? && !data[dependency]?
-              runtime.error context
+              runtime.child(property).error context
 
         else if @test_type "array", dependency
           tests.push (data, runtime) =>
             if data[property]?
               for item in dependency
                 if !data[item]?
-                  runtime.error context
+                  runtime.child(property).error context
 
         else if @test_type "object", dependency
-          fn = @compile dependency, context.child(property)
+          fn = @compile dependency, context
           tests.push (data, runtime) =>
             if data[property]
               fn data, runtime
