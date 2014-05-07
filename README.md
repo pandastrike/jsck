@@ -2,15 +2,14 @@
 
 Fast validation against JSON Schema Draft 3
 
+
 ## Installation
 
 ```
 $ npm install jsck
 ```
 
-
 ## About
-
 
 JSCK is a "compiling" schema validator, meaning that it traverses a schema only once (at instantiation)
 and generates the functions needed to validate documents against the schema.
@@ -23,7 +22,6 @@ Supports most of JSON Schema Draft 3. [Documentation][draft3_doc] and [implement
 
 
 ## Usage
-
 
 ```.coffee
 
@@ -50,13 +48,31 @@ validator = new Validator
     email: "automatthew@mailinator.com"
 
 console.log "Anonymous schema:", valid
-
-
 ```
-
 
 ### [Advanced usage examples](examples/draft3_advanced.coffee)
 
+
+## Development Dependencies
+
+```
+npm install
+gem install starter
+```
+
+## Development Setup, Running the Tests
+
+After cloning this repo, don't forget to pull the git submodules with:
+
+    git submodule update --init --recursive
+
+Run all tests with:
+
+    rake test
+
+Run the third test case of the "dissalow" test suite with:
+
+    coffee test/draft3_test.coffee disallow 3
 
 
 ## Coverage
@@ -75,7 +91,6 @@ Currently passing the canonical [test suite][canonical] for draft3 except for th
 
 
 ### Managing resolution scope with the "id" attribute
-
 
 JSCK does not support the full range of scope manipulations suggested by drafts 3 and 4.  It uses "id" declarations only in these cases:
 
@@ -139,4 +154,3 @@ I find it difficult to believe JSV is actually that slow, so it's probably my fa
 [draft3_doc]:http://tools.ietf.org/html/draft-zyp-json-schema-03
 [draft3_impl]:https://github.com/json-schema/json-schema/tree/master/draft-03
 [canonical]:https://github.com/json-schema/JSON-Schema-Test-Suite
-
