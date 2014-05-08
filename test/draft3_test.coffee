@@ -13,12 +13,9 @@ runner = new SuiteRunner "draft3",
     "optional/zeroTerminatedFloats": true
     "optional/format": [
       "validation of date-time strings"
-      "validation of host names"
     ]
 
 runner.test
   constructor: draft3
   attribute: attribute
   test_number: test_number
-
-
