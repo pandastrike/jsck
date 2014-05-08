@@ -73,6 +73,18 @@ Currently passing the canonical [test suite][canonical] for draft3 except for th
   * validation of CSS colors
   * validation of host names
 
+To run all tests, install the [starter](https://github.com/automatthew/starter) gem, then simply run `rake test`.
+
+To run only the test suite named "disallow", use:
+
+    coffee test/draft3_test.coffee disallow
+
+And to run only the third test of that suite, use:
+
+    coffee test/draft3_test.coffee disallow 3
+
+You'll find the "disallow" test suite in the source tree. (Don't forget to initialize the git submodules! That test suite is in a git submodule.)
+
 
 ### Managing resolution scope with the "id" attribute
 
