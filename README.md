@@ -27,11 +27,11 @@ Supports most of JSON Schema Draft 3. [Documentation][draft3_doc] and [implement
 
 ```.coffee
 
-Validator = require("../src/index").draft3
+JSCK = require("../src/index").draft3
 
 # a schema without an "id" declaration
 
-validator = new Validator
+jsck = new JSCK
   type: "object"
   properties:
     user:
@@ -44,7 +44,7 @@ validator = new Validator
         email:
           type: "string"
 
-{valid} = validator.validate
+{valid} = jsck.validate
   user:
     login: "automatthew"
     email: "automatthew@mailinator.com"
@@ -69,7 +69,6 @@ Currently passing the canonical [test suite][canonical] for draft3 except for th
 * `uniqueItems`
 * `optional/zeroTerminatedFloats`
 * `optional/format` (some of the regexes borrowed from [tdegrunt's validator](https://github.com/tdegrunt/jsonschema) aren't working for me)
-  * validation of date-time strings
 
 ### Managing resolution scope with the "id" attribute
 
