@@ -11,8 +11,6 @@ runner = new SuiteRunner "draft3",
     refRemote: true
     uniqueItems: true
     "optional/zeroTerminatedFloats": true
-    "optional/format": [
-    ]
 
 runner.test
   constructor: draft3
