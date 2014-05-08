@@ -14,12 +14,9 @@ runner = new SuiteRunner "draft3",
     "optional/format": [
       "validation of date-time strings"
       "validation of CSS colors"
-      "validation of host names"
     ]
 
 runner.test
   constructor: draft3
   attribute: attribute
   test_number: test_number
-
-
