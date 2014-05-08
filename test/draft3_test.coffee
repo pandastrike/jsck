@@ -13,7 +13,6 @@ runner = new SuiteRunner "draft3",
     "optional/zeroTerminatedFloats": true
     "optional/format": [
       "validation of date-time strings"
-      "validation of CSS colors"
       "validation of host names"
     ]
 
