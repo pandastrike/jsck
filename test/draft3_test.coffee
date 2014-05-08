@@ -12,7 +12,6 @@ runner = new SuiteRunner "draft3",
     uniqueItems: true
     "optional/zeroTerminatedFloats": true
     "optional/format": [
-      "validation of date-time strings"
       "validation of CSS colors"
       "validation of host names"
     ]

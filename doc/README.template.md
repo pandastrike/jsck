@@ -42,7 +42,6 @@ Currently passing the canonical [test suite][canonical] for draft3 except for th
 * `uniqueItems`
 * `optional/zeroTerminatedFloats`
 * `optional/format` (some of the regexes borrowed from [tdegrunt's validator](https://github.com/tdegrunt/jsonschema) aren't working for me)
-  * validation of date-time strings
   * validation of CSS colors
   * validation of host names
 
