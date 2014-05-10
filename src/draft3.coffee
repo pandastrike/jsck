@@ -42,6 +42,8 @@ class Context
 
 module.exports = class Validator
 
+  DRAFT_3_URI = "http://json-schema.org/draft-03/schema#"
+
   # Mix in methods from the modules where they live.
   modules = [
     "type"
@@ -64,8 +66,10 @@ module.exports = class Validator
     @unresolved = {}
 
     for schema in schemas
-      @add(schema)
+      if schema["$schema"]? && schema["$schema"] != DRAFT_3_URI
+        throw "This validator doesn't support this JSON schema."
 
+      @add(schema)
 
   add: (schema) ->
     schema = deap.clone(schema)

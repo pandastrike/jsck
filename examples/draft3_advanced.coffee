@@ -3,6 +3,7 @@ JSCK = require("../src/index").draft3
 # using a schema that declares a URI with "id"
 
 jsck = new JSCK
+  $schema: "http://json-schema.org/draft-03/schema#"
   id: "urn:jsck.examples.advanced#"
   definitions:
     user:
