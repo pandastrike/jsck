@@ -8,6 +8,7 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
 
   context.test "Finding by uri", (context) ->
     jsck = new JSCK
+      $schema: "http://json-schema.org/draft-03/schema#"
       id: "urn:jsck.test"
       type: "object"
       properties:
