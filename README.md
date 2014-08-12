@@ -147,3 +147,8 @@ I find it difficult to believe JSV is actually that slow, so it's probably my fa
 [draft3_doc]:http://tools.ietf.org/html/draft-zyp-json-schema-03
 [draft3_impl]:https://github.com/json-schema/json-schema/tree/master/draft-03
 [canonical]:https://github.com/json-schema/JSON-Schema-Test-Suite
+
+## Rake tasks
+
+Rubyists will find useful Rake tasks in a Rakefile. Ruby isn't required to work with or use JSCK, but it can come in handy.
+

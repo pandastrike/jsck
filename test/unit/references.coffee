@@ -28,8 +28,6 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
             email:
               type: "string"
 
-    #console.log JSON.stringify jsck.uris["urn:jsck.test#"], null, 2
-
     context.test "JSON Pointer", ->
       result = jsck.validator("urn:jsck.test#/properties/user").validate {name: "automatthew"}
       assert.equal result.valid, true
