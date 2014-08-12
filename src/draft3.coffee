@@ -117,7 +117,6 @@ module.exports = class Validator
             [base..., attribute] = error.schema.pointer.split("/")
             pointer = base.join("/")
             error.schema.definition = @resolve_ref(pointer)?[attribute]
-          #console.log "Errors:", JSON.stringify(errors, null, 2)
 
         valid = runtime.errors.length == 0
         {valid, errors}
