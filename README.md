@@ -70,7 +70,7 @@ Currently passing the canonical [test suite][canonical] for draft3 except for th
 * `optional/zeroTerminatedFloats`
 * `optional/format` (some of the regexes borrowed from [tdegrunt's validator](https://github.com/tdegrunt/jsonschema) aren't working for me)
 
-To run all tests, install the [starter](https://github.com/automatthew/starter) gem, then simply run `rake test`.
+To run all tests: `coffee test`.
 
 To run only the test suite named "disallow", use:
 
