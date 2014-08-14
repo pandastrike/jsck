@@ -1,4 +1,5 @@
 require "starter/tasks/npm"
+require "starter/tasks/npm/release"
 require "starter/tasks/git"
 
 coffee = "node_modules/.bin/coffee"
