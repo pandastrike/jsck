@@ -117,7 +117,6 @@ module.exports = class Validator
             [base..., attribute] = error.schema.pointer.split("/")
             pointer = base.join("/")
             error.schema.definition = @resolve_ref(pointer)?[attribute]
-          #console.log "Errors:", JSON.stringify(errors, null, 2)
 
         valid = runtime.errors.length == 0
         {valid, errors}
@@ -153,8 +152,9 @@ module.exports = class Validator
   compile_references: (schema, context) ->
     {scope, pointer} = context
     @register pointer, schema
-    # This is one of the two cases where we pay attention to "id".
-    # Here, we treat non-JSON-pointer fragments (such as "#user") as aliases.
+    # This is one of the two cases where we pay attention to "id". The other is
+    # top-level id declaration. Here, we treat non-JSON-pointer fragments (such
+    # as "#user") as aliases.
     if schema.id && schema.id.indexOf("#") == 0
       uri = URI.resolve scope, schema.id
       schema.id = uri
