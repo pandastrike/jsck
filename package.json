@@ -2,6 +2,9 @@
   "name": "jsck",
   "version": "0.1.4",
   "description": "JSON Schema Compiled checK",
+  "scripts": {
+    "test": "coffee test"
+  },
   "main": "lib/index.js",
   "files": [
     "lib/",
