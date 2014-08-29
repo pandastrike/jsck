@@ -17,7 +17,7 @@ and generates the functions needed to validate documents against the schema.
 By doing so, it avoids the need to re-traverse the schema structure for every document it validates.
 This leads to substantial performance improvements.
 
-For the initial (0.1.x) release, JSCK will only tell you whether a document passes validation, not where it failed or why.
+JSCK reports schema errors, but somewhat cryptically. PRs welcome.
 
 Supports most of JSON Schema Draft 3. [Documentation][draft3_doc] and [implementation][draft3_impl].
 
