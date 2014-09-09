@@ -95,7 +95,7 @@ For more information on the topic of scope manipulation, see this issue: https:/
 
 ## Benchmarks
 
-Results of a simple (probably flawed) [benchmark against other libs](./benchmarks/index.coffee). 8 iterations.  Units are ms.
+Results of a simple [benchmark against other libs](./benchmarks/index.coffee). 8 iterations.  Units are ms.
 
 ```
 
