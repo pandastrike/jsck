@@ -95,34 +95,32 @@ For more information on the topic of scope manipulation, see this issue: https:/
 
 ## Benchmarks
 
-Results of a simple (probably flawed) [benchmark against other libs](./benchmarks/event.coffee). 8 iterations.  Units are ms.
+Results of a simple (probably flawed) [benchmark against other libs](./benchmarks/index.coffee). 8 iterations.  Units are ms.
 
 ```
 
-JSCK: valid document, 400 times { max: 2.596,
-  median: 0.494,
-  min: 0.491,
-  mean: 0.76,
-  stdDev: 0.6940034221817643,
+JSCK: valid document, 128 times { max: 2.576,
+  median: 0.9815,
+  min: 0.951,
+  mean: 1.35025,
+  stdDev: 0.645323901231002,
   sample_size: 8 }
 
-jsonschema: valid document, 400 times { max: 224.818,
-  median: 194.503,
-  min: 183.965,
-  mean: 198.83875,
-  stdDev: 14.102769335754596,
+jsonschema: valid document, 128 times { max: 92.798,
+  median: 76.19,
+  min: 75.6,
+  mean: 80.2935,
+  stdDev: 6.329247526365201,
   sample_size: 8 }
 
-JSV: valid document, 400 times { max: 5778.058,
-  median: 5707.239,
-  min: 5664.46,
-  mean: 5713.368375,
-  stdDev: 38.30406714024464,
+JSV: valid document, 128 times { max: 95.777,
+  median: 90.0435,
+  min: 84.021,
+  mean: 89.93912499999998,
+  stdDev: 5.005647970979884,
   sample_size: 8 }
 
 ```
-
-I find it difficult to believe JSV is actually that slow, so it's probably my fault. Possibly incorrect usage of JSV.
 
 
 ## Plans
