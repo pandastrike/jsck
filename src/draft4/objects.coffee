@@ -120,4 +120,15 @@ module.exports =
             add_prop_test value, runtime.child(property)
 
 
+  minProperties: (definition, context) ->
+    (data, runtime) =>
+      if @test_type "object", data
+        if Object.keys(data).length < definition
+          runtime.error context
+
+  maxProperties: (definition, context) ->
+    (data, runtime) =>
+      if @test_type "object", data
+        if Object.keys(data).length > definition
+          runtime.error context
 
