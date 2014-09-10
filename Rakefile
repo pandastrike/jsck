@@ -26,6 +26,7 @@ task "test:draft3" => %w[ update ] do
   sh "#{coffee} test/draft3_test.coffee"
 end
 
+desc "Update submodules and other needful dependencies"
 task "update" do
   sh "git submodule init"
   sh "git submodule update"
