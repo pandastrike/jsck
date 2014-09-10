@@ -8,6 +8,8 @@ module.exports =
   type: {}
   enum: {}
 
+  not: {}
+
   properties: {}
   required: {}
   dependencies: {}
@@ -27,7 +29,6 @@ module.exports =
     modifiers: [
       "additionalItems"
     ]
-  additionalItems: {ignore: true}
   maxItems: {}
   minItems: {}
   uniqueItems: {}
@@ -37,12 +38,10 @@ module.exports =
     modifiers: [
       "exclusiveMinimum"
     ]
-  exclusiveMinimum: {ignore: true}
   maximum:
     modifiers: [
       "exclusiveMaximum"
     ]
-  exclusiveMaximum: {ignore: true}
   multipleOf: {}
 
   maxLength: {}

@@ -52,6 +52,7 @@ module.exports = class Validator
     "arrays"
     "objects"
     "strings"
+    "logical"
   ]
 
   for module_name in modules

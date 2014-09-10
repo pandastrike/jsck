@@ -7,6 +7,8 @@ module.exports =
       if @test_type "object", data
         for property in definition
           unless data[property]?
+            # FIXME we probably need to have a new context for
+            # proper error reporting.
             runtime.error context
 
   dependencies: (definition, context) ->
@@ -16,6 +18,9 @@ module.exports =
       tests = []
       for property, dependency of definition
 
+        # TODO: The test suite doesn't work for illegal definitions.
+        # Add our own test for valid defs.
+        # https://github.com/json-schema/json-schema/wiki/ChangeLog#dependencies
         if @test_type "string", dependency
           tests.push (data, runtime) =>
             if data[property]? && !data[dependency]?
