@@ -11,6 +11,7 @@ module.exports =
   not: {}
   anyOf: {}
   allOf: {}
+  oneOf: {}
 
   properties: {}
   required: {}

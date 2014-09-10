@@ -21,7 +21,6 @@ module.exports =
         runtime.error(context)
 
 
-
   allOf: (definition, context) ->
     unless @test_type "array", definition
       throw new Error "The 'allOf' attribute must be an array"
@@ -34,6 +33,29 @@ module.exports =
     (data, runtime) =>
       for test in tests
         test data, runtime
+
+  oneOf: (definition, context) ->
+    unless @test_type "array", definition
+      throw new Error "The 'oneOf' attribute must be an array"
+
+    tests = []
+    for schema, i in definition
+      new_context = context.child(i)
+      tests.push @compile(schema, new_context)
+
+    (data, runtime) =>
+      valids = 0
+      for test in tests
+        temp = new runtime.constructor
+          pointer: ""
+          errors: []
+        test(data, temp)
+        if temp.errors.length == 0
+          valids++
+      if valids != 1
+        runtime.error(context)
+
+
 
   not: (definition, context) ->
     unless @test_type "object", definition
@@ -48,29 +70,3 @@ module.exports =
       if temp.errors.length == 0
         runtime.error context
 
-  # removed from the specification, but preserved here in case I
-  # need to cannibalize it
-  disallow: (definition, context) ->
-    if @test_type "array", definition
-      tests = []
-      for type, i in definition
-        do (i) =>
-          if @test_type "object", type
-            inverse = @compile type, context
-            tests.push (data, runtime) =>
-              temp = new runtime.constructor
-                pointer: ""
-                errors: []
-              inverse data, temp
-              if temp.errors.length == 0
-                runtime.error context
-          else
-            tests.push @disallow type, context
-
-      (data, runtime) =>
-        for test in tests
-          test data, runtime
-    else
-      (data, runtime) =>
-        if @test_type definition, data
-          runtime.error context
