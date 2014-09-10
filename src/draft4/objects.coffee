@@ -3,13 +3,16 @@ module.exports =
   # handlers
 
   required: (definition, context) ->
+    tests = []
+    for property, i in definition
+      new_context = context.child(i)
+      tests.push (data, runtime) =>
+        unless data.hasOwnProperty(property)
+          runtime.error new_context
+
     (data, runtime) =>
-      if @test_type "object", data
-        for property in definition
-          unless data[property]?
-            # FIXME we probably need to have a new context for
-            # proper error reporting.
-            runtime.error context
+      for test in tests
+        test data, runtime
 
   dependencies: (definition, context) ->
     if !@test_type "object", definition
