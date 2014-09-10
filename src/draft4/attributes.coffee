@@ -9,6 +9,7 @@ module.exports =
   enum: {}
 
   not: {}
+  anyOf: {}
   allOf: {}
 
   properties: {}
