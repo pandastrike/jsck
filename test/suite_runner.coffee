@@ -48,10 +48,10 @@ module.exports = class SuiteRunner
   run_attribute: ({constructor, context, attribute, attribute_suite, test_number}) ->
     context.test attribute, (context) =>
       if test_number
-        if suite = attribute_suite[parseInt(test_number) - 1]
+        if suite = attribute_suite[parseInt(test_number)]
           @run_subsuite({constructor, context, suite})
         else
-          console.log "Usage error: #{attribute} only has #{attribute_suite.length + 1} tests"
+          console.log "Usage error: #{attribute} only has #{attribute_suite.length} tests"
           process.exit()
       else
         for suite, i in attribute_suite
