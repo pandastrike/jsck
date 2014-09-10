@@ -2,13 +2,11 @@ module.exports =
   $schema: {ignore: true}
   id: {ignore: true}
   $ref: { ignore: true }
-  extends: {ignore: true}
 
   default: {ignore: true}
 
   type: {}
   enum: {}
-  disallow: {}
 
   properties: {}
   required: {}
@@ -45,7 +43,7 @@ module.exports =
       "exclusiveMaximum"
     ]
   exclusiveMaximum: {ignore: true}
-  divisibleBy: {}
+  multipleOf: {}
 
   maxLength: {}
   minLength: {}
