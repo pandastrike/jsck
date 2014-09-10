@@ -11,7 +11,7 @@ module.exports =
   disallow: {}
 
   properties: {}
-  required: {ignore: true}
+  required: {}
   dependencies: {}
   minProperties: {}
   maxProperties: {}
