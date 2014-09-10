@@ -8,6 +8,7 @@ runner = new SuiteRunner "draft4",
     ref: [
       "remote ref, containing refs itself"
     ]
+    definitions: true
     refRemote: true
     uniqueItems: true
     "optional/zeroTerminatedFloats": true
