@@ -1,58 +1,23 @@
 URI = require "./uri"
 deap = require "deap"
 
+{escape, Runtime, Context} = require "./util"
+
 attributes = require "./draft4/attributes"
-
-escape = (string) ->
-  string
-    .replace(/~0/g, "~")
-    .replace(/~1/g, "/")
-    .replace(/%25/g, "%")
-
-class Runtime
-  constructor: ({@errors, @pointer}) ->
-
-  child: (token) ->
-    new @constructor
-      errors: @errors
-      pointer: "#{@pointer}/#{token}"
-
-  error: (context) ->
-    @errors.push
-      document:
-        pointer: @pointer
-      schema:
-        pointer: context.pointer
-
-
-class Context
-
-  constructor: ({@pointer, @scope}) ->
-
-  child: (token) ->
-    new Context
-      pointer: "#{@pointer}/#{token}"
-      scope: @scope
-
-  sibling: (token) ->
-    pointer = @pointer.replace(/\/.*$/, "/#{token}")
-    new Context
-      pointer: pointer
-      scope: @scope
 
 module.exports = class Validator
 
-  DRAFT_3_URI = "http://json-schema.org/draft-03/schema#"
+  DRAFT_4_URI = "http://json-schema.org/draft-04/schema#"
 
   # Mix in methods from the modules where they live.
   modules = [
     "type"
+    "logical"
     "numeric"
     "comparison"
     "arrays"
     "objects"
     "strings"
-    "logical"
   ]
 
   for module_name in modules
@@ -67,7 +32,7 @@ module.exports = class Validator
     @unresolved = {}
 
     for schema in schemas
-      if schema["$schema"]? && schema["$schema"] != DRAFT_3_URI
+      if schema["$schema"]? && schema["$schema"] != DRAFT_4_URI
         throw "This validator doesn't support this JSON schema."
 
       @add(schema)
@@ -183,7 +148,7 @@ module.exports = class Validator
             @dictionary_refs definition, new_context
           when "items"
             @items_refs definition, new_context
-          when "additionalItems", "additionalProperties", "extends"
+          when "additionalItems", "additionalProperties"
             @compile_references definition, context.child(attribute)
           else
             if !attributes[attribute] && @test_type("object", definition)
@@ -220,20 +185,6 @@ module.exports = class Validator
       schema = @find(uri)
       if !schema
         throw new Error "No schema found for $ref '#{uri}'"
-
-    if extended = schema.extends
-      if ref = extended.$ref
-        uri = URI.resolve(scope, ref)
-        extended = @find(uri)
-        if !extended
-          throw new Error "No schema found for $ref '#{ref}'"
-
-      delete schema.extends
-      if @test_type "array", extended
-        deap.merge(schema, extended...)
-      else
-        deap.merge(schema, extended)
-
 
     for attribute, definition of schema
       if spec = attributes[attribute]

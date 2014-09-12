@@ -24,7 +24,8 @@ module.exports =
   allOf: (definition, context) ->
     unless @test_type "array", definition
       throw new Error "The 'allOf' attribute must be an array"
-    # TODO: check for proper error reporting
+    # TODO: check for proper error reporting.  Do we need to create new
+    # runtimes, contexts, etc.?
     tests = []
     for schema, i in definition
       new_context = context.child(i)
@@ -43,6 +44,7 @@ module.exports =
       new_context = context.child(i)
       tests.push @compile(schema, new_context)
 
+    # TODO optimize?
     (data, runtime) =>
       valids = 0
       for test in tests

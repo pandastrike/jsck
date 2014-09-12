@@ -1,18 +1,13 @@
 module.exports =
-  $schema: {ignore: true}
-  id: {ignore: true}
-  $ref: { ignore: true }
-  extends: {ignore: true}
-
-  default: {ignore: true}
 
   type: {}
   enum: {}
   disallow: {}
 
   properties: {}
-  required: {ignore: true}
   dependencies: {}
+  extends: {}
+
   patternProperties:
     modifiers: [
       "additionalProperties"
@@ -27,7 +22,6 @@ module.exports =
     modifiers: [
       "additionalItems"
     ]
-  additionalItems: {ignore: true}
   maxItems: {}
   minItems: {}
   uniqueItems: {}
@@ -37,12 +31,10 @@ module.exports =
     modifiers: [
       "exclusiveMinimum"
     ]
-  exclusiveMinimum: {ignore: true}
   maximum:
     modifiers: [
       "exclusiveMaximum"
     ]
-  exclusiveMaximum: {ignore: true}
   divisibleBy: {}
 
   maxLength: {}
