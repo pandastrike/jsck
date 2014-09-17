@@ -1,11 +1,25 @@
 # JSON Schema Compiled ChecK
 
-Fast validation against JSON Schema Draft 3
+The fastest JSON Schema validator for Node.js.
+
+Supports drafts 3 and 4, with a few caveats (see below).
+
 
 ## Installation
 
+To use it in your project:
+
 ```
-$ npm install jsck
+npm install jsck
+```
+
+To contribute, hack on it, or run the tests:
+
+```
+git clone git@github.com:pandastrike/jsck.git && \
+cd jsck && \
+git submodule init && \
+npm install
 ```
 
 
@@ -19,11 +33,12 @@ This leads to substantial performance improvements.
 
 JSCK reports schema errors, but somewhat cryptically. PRs welcome.
 
-Supports most of JSON Schema Draft 3. [Documentation][draft3_doc] and [implementation][draft3_impl].
+Supports most of JSON Schema Drafts 3 and/or 4.
 
 
 ## Usage
 
+Here's a simple example:
 
 ```.coffee
 
@@ -50,8 +65,12 @@ jsck = new JSCK
     email: "automatthew@mailinator.com"
 
 console.log "Anonymous schema:", valid
+```
 
+This example uses Draft 3. To use Draft 4:
 
+```.coffee
+JSCK = require("../src/index").draft4
 ```
 
 
@@ -60,6 +79,15 @@ console.log "Anonymous schema:", valid
 
 
 ## Coverage
+
+### Draft 4
+
+JSCK passes all tests in the [canonical JSON Schema Test Suite
+project](https://github.com/json-schema/JSON-Schema-Test-Suite), except for the
+use of `maxLength` and `minLength` with Unicode.
+
+
+### Draft 3
 
 Currently passing the canonical [test suite][canonical] for draft3 except for these items:
 
