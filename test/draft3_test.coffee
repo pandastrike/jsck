@@ -8,6 +8,12 @@ runner = new SuiteRunner "draft3",
     ref: [
       "remote ref, containing refs itself"
     ]
+    minLength: [
+      "one supplementary Unicode code point is not long enough"
+    ]
+    maxLength: [
+      "two supplementary Unicode code points is long enough"
+    ]
     refRemote: true
     uniqueItems: true
     "optional/zeroTerminatedFloats": true

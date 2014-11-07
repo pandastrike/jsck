@@ -56,14 +56,15 @@ module.exports = class SuiteRunner
       else
         for suite, i in attribute_suite
           unless @ignore?[attribute]?.some((item) => item == suite.description)
-            @run_subsuite({constructor, context, suite})
+            @run_subsuite({attribute, constructor, context, suite})
 
-  run_subsuite: ({constructor, context, suite}) ->
+  run_subsuite: ({attribute, constructor, context, suite}) ->
     context.test suite.description, (context) =>
       validator = new constructor(suite.schema)
 
       for document in suite.tests
-        context.test document.description, =>
-          result = validator.validate(document.data)
-          assert.equal result.valid, document.valid
+        unless @ignore?[attribute]?.some((item) => item == document.description)
+          context.test document.description, =>
+            result = validator.validate(document.data)
+            assert.equal result.valid, document.valid
 
