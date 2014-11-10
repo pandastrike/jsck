@@ -17,12 +17,14 @@ module.exports =
   items: (definition, context) ->
     if @test_type "array", definition
       test = @_tuple_items definition, context
-    else
+    else if @test_type "object", definition
       test = @compile(definition, context)
       # TODO check for array data?
       (data, runtime) =>
         for item, i in data
           test item, runtime.child(i)
+    else
+      throw new Error "The 'items' attribute must be an object or an array"
 
   _additionalItems: (definition, context) ->
     if @test_type "object", definition
@@ -47,6 +49,9 @@ module.exports =
 
     tests = []
     for schema, i in definition
+      unless @test_type "object", schema
+        throw new Error "The 'items' attribute must be an object or an array"
+
       tests.push @compile schema, context.child(i.toString())
 
     (data, runtime) =>

@@ -1,3 +1,5 @@
+fs = require "fs"
+glob = require "glob"
 assert = require "assert"
 Testify = require "testify"
 
@@ -6,7 +8,15 @@ Testify = require "testify"
 throws = (error, block) ->
   assert.throws(block, error)
 
+files = glob.sync "test/draft4/invalid/*.coffee"
+for file in files
+  path = file.slice(4)
 
+  console.log file
+
+      #@suites[key] = require "./#{path}"
+
+return
 Testify.test "Schema validity", (context) ->
 
   context.test "type", (context) ->
