@@ -41,6 +41,9 @@ module.exports =
       !(data instanceof Array) &&
       !(data instanceof Date)
 
+  is_primitive: (name) ->
+    name in ["integer", "number", "string", "object", "array", "boolean", "null"]
+
   test_type: (type_name, data) ->
     switch type_name
       when "integer"

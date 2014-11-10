@@ -2,6 +2,7 @@ creator = require("./validator")
 uri = "http://json-schema.org/draft-04/schema#"
 
 modules = [
+  "type"
   "logical"
   "numeric"
   "objects"
