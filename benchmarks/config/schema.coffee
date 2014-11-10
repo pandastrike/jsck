@@ -2,15 +2,15 @@ module.exports =
   description: "A moderately complex schema with some nesting and value constraints"
   type: "object"
   additionalProperties: false
+  required: ["api_server", "transport", "storage", "chain"]
   properties:
-    required: ["api_server", "transport", "storage", "chain"]
 
     api_server:
       description: "Settings for the HTTP API server"
       type: "object"
       additionalProperties: false
+      required: ["url", "host", "port"]
       properties:
-        required: ["url", "host", "port"]
         url:
           type: "string"
           format: "uri"
@@ -23,8 +23,8 @@ module.exports =
     transport:
       description: "Settings for the Redis tranport"
       additionalProperties: false
+      required: ["server"]
       properties:
-        required: ["server"]
         server:
           type: "string"
         options:
@@ -37,8 +37,8 @@ module.exports =
 
     storage:
       description: "Settings for the PostgreSQL storage"
+      required: ["server", "database", "user"]
       properties:
-        required: ["server", "database", "user"]
         server:
           type: "string"
         database:
@@ -50,8 +50,8 @@ module.exports =
 
     chain:
       description: "Settings for the Chain.com client"
+      required: ["api_key_id", "api_key_secret"]
       properties:
-        required: ["api_key_id", "api_key_secret"]
         api_key_id:
           type: "string"
         api_key_secret:
