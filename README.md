@@ -103,6 +103,9 @@ Currently passing the canonical [test suite][canonical] for draft3 except for th
 * `uniqueItems`
 * `optional/zeroTerminatedFloats`
 
+
+### Tests
+
 To run all tests for all versions:
 
     coffee test
