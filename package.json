@@ -20,7 +20,7 @@
     "jsonschema": "~0.4.0",
     "microtime": "^1.0.1",
     "simple-http-server": "~0.1.8",
-    "testify": "~0.2.10"
+    "testify": "~0.2.11"
   },
   "repository": "git@github.com:automatthew/jsck.git",
   "author": "Matthew King <automatthew@gmail.com>",
