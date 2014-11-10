@@ -1,12 +1,8 @@
-fs = require "fs"
 glob = require "glob"
 assert = require "assert"
 Testify = require "testify"
 
 {draft4} = require("../../src/index")
-
-throws = (error, block) ->
-  assert.throws(block, error)
 
 helpers =
   json_types:
@@ -21,7 +17,7 @@ helpers =
       for name, value of @values when !(name in names)
         value
 
-Testify.test "Invalid schemas", (context) ->
+Testify.test "Rejecting invalid schemas", (context) ->
 
   files = glob.sync "#{__dirname}/invalid/*.coffee"
   l = "#{__dirname}/invalid/".length
