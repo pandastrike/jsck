@@ -19,7 +19,8 @@ module.exports = class SuiteRunner
 
       continue if @ignore?[key] == true
       string = fs.readFileSync(file, "utf8")
-      @suites[key] = JSON.parse string
+      path = file.slice(4)
+      @suites[key] = require "./#{path}"
 
   test: ({constructor, attribute, test_number}) ->
 
