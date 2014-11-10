@@ -1,5 +1,7 @@
-{draft3} = require("../src/index")
-SuiteRunner = require "./suite_runner"
+require "./unit"
+
+{draft3} = require("../../src/index")
+SuiteRunner = require "../suite_runner"
 
 [_node, _script, attribute, test_number] = process.argv
 

@@ -1,7 +1,7 @@
 assert = require "assert"
 Testify = require "testify"
 
-JSCK = require("../../src/index").draft3
+JSCK = require("../../../src/index").draft3
 
 
 Testify.test "JSCK draft 3 dereferencing", (context) ->
@@ -37,7 +37,6 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
       assert.equal result.valid, true
 
 
-  return
   context.test "schema without 'id'", (context) ->
 
     test_schema =
@@ -55,6 +54,10 @@ Testify.test "JSCK draft 3 dereferencing", (context) ->
         assert.deepEqual schema, test_schema.schema1
 
 
+
+  return
+  # FIXME: find out whether these tests fail because of app problems
+  # or test problems.
 
   context.test "find", (context) ->
     test_schema =

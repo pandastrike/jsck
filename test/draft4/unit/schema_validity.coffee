@@ -1,7 +1,7 @@
 assert = require "assert"
 Testify = require "testify"
 
-{draft4} = require("../../src/index")
+{draft4} = require("../../../src/index")
 
 throws = (error, block) ->
   assert.throws(block, error)

@@ -1,7 +1,7 @@
 assert = require "assert"
 Testify = require "testify"
 
-URI = require "../../src/uri"
+URI = require "../../../src/uri"
 
 Testify.test "URI helper methods", (context) ->
 

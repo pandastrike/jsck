@@ -1,3 +1,5 @@
+require "./unit"
+
 {draft4} = require("../../src/index")
 SuiteRunner = require "../suite_runner"
 

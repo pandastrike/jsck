@@ -1,14 +1,14 @@
 assert = require "assert"
 Testify = require "testify"
 
-JSCK = require("../../src/index").draft3
+JSCK = require("../../../src/index").draft4
 
 
-Testify.test "JSCK draft 3 dereferencing", (context) ->
+Testify.test "JSCK draft 4 dereferencing", (context) ->
 
   context.test "Finding by uri", (context) ->
     jsck = new JSCK
-      $schema: "http://json-schema.org/draft-03/schema#"
+      $schema: "http://json-schema.org/draft-04/schema#"
       id: "urn:jsck.test"
       type: "object"
       properties:
