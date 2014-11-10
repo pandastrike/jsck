@@ -32,18 +32,18 @@ module.exports = class SuiteRunner
           @run_attribute({constructor, context, attribute, attribute_suite, test_number})
         if @ignore?[attribute]
           process.on "exit", =>
-            console.log "Ignored these tests:", @ignore[attribute]
+            console.log "Ignored these tests for #{@version}:", @ignore[attribute]
       else
         for attribute, attribute_suite of @suites
           @run_attribute({constructor, context, attribute, attribute_suite, test_number})
         if @ignore
           process.on "exit", =>
-            console.log "Ignored these tests:"
+            console.log "Ignored these tests for #{@version}:"
             for attribute, val of @ignore
               if val == true
-                console.log attribute
+                console.log "\t", attribute
               else
-                console.log "#{attribute}:", val
+                console.log "\t", "#{attribute}:", val
 
   run_attribute: ({constructor, context, attribute, attribute_suite, test_number}) ->
     context.test attribute, (context) =>
