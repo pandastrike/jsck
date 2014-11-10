@@ -5,7 +5,7 @@ util = require "util"
 Benchmark = require "./benchmark.coffee"
 
 # Validators
-JSCK = require "../src/draft3"
+JSCK = require "../src/draft4"
 JSONSchema= require('jsonschema').Validator
 JSV = require("JSV").JSV
 
