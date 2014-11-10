@@ -22,8 +22,8 @@ Testify.test "JSCK draft 4 dereferencing", (context) ->
           id: "#user"
           type: "object"
           properties:
+            required: ["name"]
             name:
-              required: true
               type: "string"
             email:
               type: "string"
