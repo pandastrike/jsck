@@ -1,42 +1,54 @@
-JSCK = require "../src/draft3"
+# stdlib
+util = require "util"
 
+# ours
+Benchmark = require "./benchmark.coffee"
+
+# Validators
+JSCK = require "../src/draft3"
 JSONSchema= require('jsonschema').Validator
 JSV = require("JSV").JSV
 
-Benchmark = require "./benchmark.coffee"
+samples = 64
 
 module.exports =
 
-  benchmark: ({name, repeats, iterations}) ->
+  benchmark: ({name, schema, valid_doc, repeats}) ->
+    console.log """
 
-    schema = require "./#{name}/schema"
-    doc = require "./#{name}/valid_doc"
+      Benchmarks for schema '#{name}'.  #{schema.description || ''}
+      Sample size: #{samples}
+      Validations per sample: #{repeats}
 
-    jsck = new Benchmark "JSCK: valid document, #{repeats} times", (bm) ->
+    """
+
+    jsck = new Benchmark "JSCK: valid document", (bm) ->
       bm.setup -> new JSCK(schema)
       bm.measure (validator) ->
         for i in [1..repeats]
-          valid = validator.validate(doc)
+          result = validator.validate(valid_doc)
 
-    jsonschema = new Benchmark "jsonschema: valid document, #{repeats} times", (bm) ->
+    jsonschema = new Benchmark "jsonschema: valid document", (bm) ->
       bm.setup -> new JSONSchema()
       bm.measure (validator) ->
         for i in [1..repeats]
-          errors = validator.validate(doc, schema).errors
+          result = validator.validate(valid_doc, schema).errors
 
-    jsv_bm = new Benchmark "JSV: valid document, #{repeats} times", (bm) ->
+    jsv_bm = new Benchmark "JSV: valid document", (bm) ->
       bm.setup ->
         jsv = JSV.createEnvironment("json-schema-draft-03")
         jsv.createSchema(schema)
       bm.measure (validator) ->
         for i in [1..repeats]
-          errors = validator.validate(doc).errors
+          result = validator.validate(valid_doc).errors
 
-    results = Benchmark.compare [jsck, jsonschema, jsv_bm],
-      {iterations}
+    results = Benchmark.compare [jsck, jsonschema, jsv_bm], {samples}
 
     console.log()
     for name, result of results
-      console.log name, result.summarize()
+      {median, max, min, sample_size} = result.summarize()
+      console.log "  #{name}"
+      console.log util.format "  median: %d ms  max: %d ms  min: %d ms",
+        median, max, min
       console.log()
 

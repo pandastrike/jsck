@@ -1,13 +1,10 @@
 {benchmark} = require "../validators"
 benchmark {
-  name: "Event"
-  repeats: 256
+  name: "Configuration"
+  repeats: 128
   schema: require "./schema"
   valid_doc: require "./valid_doc"
 }
-
-
-
 
 
 

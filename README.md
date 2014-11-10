@@ -123,30 +123,24 @@ For more information on the topic of scope manipulation, see this issue: https:/
 
 ## Benchmarks
 
-Results of a simple [benchmark against other libs](./benchmarks/index.coffee). 8 iterations.  Units are ms.
+Results of a benchmark of a [somewhat simple schema](benchmarks/config/schema.coffee) against other JSON Schema validators:
 
 ```
+$ coffee benchmarks/config
 
-JSCK: valid document, 128 times { max: 2.576,
-  median: 0.9815,
-  min: 0.951,
-  mean: 1.35025,
-  stdDev: 0.645323901231002,
-  sample_size: 8 }
+Benchmarks for schema 'Configuration'.  A moderately complex schema with some nesting and value constraints
+Sample size: 64
+Validations per sample: 128
 
-jsonschema: valid document, 128 times { max: 92.798,
-  median: 76.19,
-  min: 75.6,
-  mean: 80.2935,
-  stdDev: 6.329247526365201,
-  sample_size: 8 }
+  JSCK: valid document
+  median: 1.019 ms  max: 2.935 ms  min: 0.985 ms
 
-JSV: valid document, 128 times { max: 95.777,
-  median: 90.0435,
-  min: 84.021,
-  mean: 89.93912499999998,
-  stdDev: 5.005647970979884,
-  sample_size: 8 }
+  jsonschema: valid document
+  median: 80.402 ms  max: 100.552 ms  min: 78.129 ms
+
+  JSV: valid document
+  median: 86.13900000000001 ms  max: 96.913 ms  min: 84.626 ms
+
 
 ```
 
