@@ -3,32 +3,29 @@ module.exports =
   type: "object"
   additionalProperties: false
   properties:
+    required: ["api_server", "transport", "storage", "chain"]
 
     api_server:
       description: "Settings for the HTTP API server"
-      required: true
       type: "object"
       additionalProperties: false
       properties:
+        required: ["url", "host", "port"]
         url:
-          required: true
           type: "string"
           format: "uri"
         host:
-          required: true
           type: "string"
         port:
-          required: true
           type: "integer"
           minimum: 1000
 
     transport:
       description: "Settings for the Redis tranport"
-      required: true
       additionalProperties: false
       properties:
+        required: ["server"]
         server:
-          required: true
           type: "string"
         options:
           type: "object"
@@ -40,28 +37,23 @@ module.exports =
 
     storage:
       description: "Settings for the PostgreSQL storage"
-      required: true
       properties:
+        required: ["server", "database", "user"]
         server:
-          required: true
           type: "string"
         database:
-          required: true
           type: "string"
         user:
-          required: true
           type: "string"
         options:
           type: "object"
 
     chain:
       description: "Settings for the Chain.com client"
-      required: true
       properties:
+        required: ["api_key_id", "api_key_secret"]
         api_key_id:
-          required: true
           type: "string"
         api_key_secret:
-          required: true
           type: "string"
 

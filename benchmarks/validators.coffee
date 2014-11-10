@@ -34,15 +34,16 @@ module.exports =
         for i in [1..repeats]
           result = validator.validate(valid_doc, schema).errors
 
-    jsv_bm = new Benchmark "JSV: valid document", (bm) ->
-      bm.setup ->
-        jsv = JSV.createEnvironment("json-schema-draft-03")
-        jsv.createSchema(schema)
-      bm.measure (validator) ->
-        for i in [1..repeats]
-          result = validator.validate(valid_doc).errors
+    ## Only valid for draft3 ATM.
+    #jsv_bm = new Benchmark "JSV: valid document", (bm) ->
+      #bm.setup ->
+        #jsv = JSV.createEnvironment("json-schema-draft-03")
+        #jsv.createSchema(schema)
+      #bm.measure (validator) ->
+        #for i in [1..repeats]
+          #result = validator.validate(valid_doc).errors
 
-    results = Benchmark.compare [jsck, jsonschema, jsv_bm], {samples}
+    results = Benchmark.compare [jsck, jsonschema], {samples}
 
     console.log()
     for name, result of results
