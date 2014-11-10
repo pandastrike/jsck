@@ -3,8 +3,16 @@ module.exports =
   # handlers
 
   required: (definition, context) ->
+    unless @test_type "array", definition
+      throw new Error "The 'required' attribute must be an array"
+
+    if definition.length == 0
+      throw new Error "The 'required' array must have at least one element"
+
     tests = []
     for property, i in definition
+      unless @test_type "string", property
+        throw new Error "The 'required' array may only contain strings"
       new_context = context.child(i)
       tests.push (data, runtime) =>
         unless data.hasOwnProperty(property)

@@ -117,6 +117,9 @@ module.exports = (uri, mixins) ->
 
 
     compile_references: (schema, context) ->
+      if schema == null
+        culprit = context.pointer
+        throw new Error "null is not a valid schema.  Culprit: '#{culprit}'"
       {scope, pointer} = context
       @register pointer, schema
       # This is one of the two cases where we pay attention to "id". The other is

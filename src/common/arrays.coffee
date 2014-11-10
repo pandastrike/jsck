@@ -32,6 +32,8 @@ module.exports =
     else if definition == false
       test = (data, runtime) ->
         runtime.error context
+    else if definition == true
+      # valid
     else
       throw new Error "The 'additionalItems' attribute must be an object or false"
     (data, runtime) =>

@@ -1,9 +1,10 @@
-module.exports =
+module.exports = ({json_types}) ->
+
   [
 
     {
       description: "value MUST be either a string or an array"
-      schemas: for value in [ {}, 0, null  ]
+      schemas: for value in json_types.except("string", "array")
         {type: value}
     }
 
@@ -16,7 +17,7 @@ module.exports =
 
     {
       description: "arrays may only contain strings"
-      schemas: for value in [ {}, 0, null, [] ]
+      schemas: for value in json_types.except("string")
         {type: value}
     }
 
