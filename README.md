@@ -83,8 +83,14 @@ JSCK = require("../src/index").draft4
 ### Draft 4
 
 JSCK passes all tests in the [canonical JSON Schema Test Suite
-project](https://github.com/json-schema/JSON-Schema-Test-Suite), except for the
-use of `maxLength` and `minLength` with Unicode.
+project](https://github.com/json-schema/JSON-Schema-Test-Suite), except for these items:
+
+* use of `maxLength` and `minLength` with some Unicode characters.
+* `refRemote` (Trying to keep this lib synchronous for v0.1.x)
+* `ref`
+  * remote ref, containing refs itself
+* `uniqueItems`
+* `optional/zeroTerminatedFloats`
 
 
 ### Draft 3
@@ -96,19 +102,25 @@ Currently passing the canonical [test suite][canonical] for draft3 except for th
   * remote ref, containing refs itself
 * `uniqueItems`
 * `optional/zeroTerminatedFloats`
-* `optional/format` (some of the regexes borrowed from [tdegrunt's validator](https://github.com/tdegrunt/jsonschema) aren't working for me)
 
-To run all tests: `npm test`.
+To run all tests for all versions:
 
-To run only the test suite named "disallow", use:
+    coffee test
 
-    coffee test/draft3_test.coffee disallow
+Official test suite only a specific version:
 
-And to run only the third test of that suite, use:
+    coffee test/draft4
 
-    coffee test/draft3_test.coffee disallow 3
+To run only the tests for the "type" attribute, use:
 
-You'll find the "disallow" test suite in the source tree. (Don't forget to initialize the git submodules! That test suite is in a git submodule.)
+    coffee test/draft4 type
+
+And to run only the third test for that attribute, use:
+
+    coffee test/draft4 type 3
+
+You'll find the official test suites in `test/JSON-Schema-Test-Suite`. (Don't forget to initialize the git submodules! That test suite is in a git submodule.)
+
 
 ### Managing resolution scope with the "id" attribute
 
@@ -147,22 +159,15 @@ Validations per sample: 128
 
 ## Plans
 
-### 0.1.0
-
-* Boolean validation.
-* Correct coverage of most of Draft 3
-* benchmarking schemas of varying levels of complexity
-
 ### 0.2.0
 
-* validation error reports
-* complete support for "format"
+* improved validation error reports (reports are currently somewhat cryptic)
 * adding more comprehensive tests to the official test suite
-* support remote references
+* Support Draft 4
 
 ### 0.3
+* support remote references
 
-* Support Draft 4
 
 [draft3_doc]:http://tools.ietf.org/html/draft-zyp-json-schema-03
 [draft3_impl]:https://github.com/json-schema/json-schema/tree/master/draft-03
