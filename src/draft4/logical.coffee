@@ -3,9 +3,14 @@ module.exports =
 
   anyOf: (definition, context) ->
     unless @test_type "array", definition
-      throw new Error "The 'allOf' attribute must be an array"
+      throw new Error "The 'anyOf' attribute must be an array"
+    if definition.length == 0
+      throw new Error "The 'anyOf' array may not be empty"
+
     tests = []
     for schema, i in definition
+      unless @test_type "object", schema
+        throw new Error "The 'anyOf' array values must be objects"
       new_context = context.child(i)
       tests.push @compile(schema, new_context)
 
@@ -24,10 +29,16 @@ module.exports =
   allOf: (definition, context) ->
     unless @test_type "array", definition
       throw new Error "The 'allOf' attribute must be an array"
+    if definition.length == 0
+      throw new Error "The 'allOf' array may not be empty"
+
     # TODO: check for proper error reporting.  Do we need to create new
     # runtimes, contexts, etc.?
     tests = []
     for schema, i in definition
+      unless @test_type "object", schema
+        throw new Error "The 'allOf' array values must be objects"
+
       new_context = context.child(i)
       tests.push @compile(schema, new_context)
 
@@ -39,8 +50,14 @@ module.exports =
     unless @test_type "array", definition
       throw new Error "The 'oneOf' attribute must be an array"
 
+    if definition.length == 0
+      throw new Error "The 'oneOf' array may not be empty"
+
     tests = []
     for schema, i in definition
+      unless @test_type "object", schema
+        throw new Error "The 'oneOf' array values must be objects"
+
       new_context = context.child(i)
       tests.push @compile(schema, new_context)
 
