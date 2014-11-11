@@ -7,7 +7,8 @@ Testify = require "testify"
 helpers =
   json_types:
     values:
-      number: 2
+      integer: 2
+      number: 2.1
       string: "foo"
       object: {}
       array: [ ]
