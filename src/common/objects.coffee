@@ -2,10 +2,8 @@ module.exports =
 
   # handlers
 
-  # FIXME: probably not correct behavior for draft4
-  # https://github.com/json-schema/json-schema/wiki/ChangeLog#dependencies
   dependencies: (definition, context) ->
-    if !@test_type "object", definition
+    unless @test_type "object", definition
       throw new Error "Value of 'dependencies' must be an object"
     else
       tests = []
@@ -51,8 +49,14 @@ module.exports =
     if !@test_type "object", definition
       throw new Error "The 'patternProperties' attribute must be an object"
 
+    if Object.keys(definition).length == 0
+      throw new Error "The 'patternProperties' object should not be empty"
+
     tests = {}
     for pattern, schema of definition
+      unless @test_type "object", schema
+        throw new Error "Values of 'patternProperties' must be an objects"
+
       tests[pattern] =
         regex: new RegExp(pattern)
         test: @compile schema, context.child(pattern)

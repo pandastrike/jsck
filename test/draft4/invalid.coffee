@@ -9,7 +9,7 @@ helpers =
     values:
       number: 2
       string: "foo"
-      object: {foo: "bar"}
+      object: {}
       array: [ ]
       boolean: false
       null: null
@@ -19,7 +19,7 @@ helpers =
 
 Testify.test "Rejecting invalid schemas", (context) ->
 
-  files = glob.sync "#{__dirname}/invalid/*.coffee"
+  files = glob.sync("#{__dirname}/invalid/*.coffee").sort()
   l = "#{__dirname}/invalid/".length
 
   for file in files

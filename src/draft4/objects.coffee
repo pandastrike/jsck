@@ -23,10 +23,12 @@ module.exports =
         test data, runtime
 
   properties: (definition, context) ->
-    if !@test_type "object", definition
+    unless @test_type "object", definition
       throw new Error "The 'properties' attribute must be an object"
     tests = {}
     for property, schema of definition
+      unless @test_type "object", schema
+        throw new Error "The 'properties' attribute must be an object"
       new_context = context.child(property)
       test = @compile(schema, new_context)
       tests[property] = test
@@ -51,4 +53,41 @@ module.exports =
       if @test_type "object", data
         if Object.keys(data).length > definition
           runtime.error context
+
+  dependencies: (definition, context) ->
+    unless @test_type "object", definition
+      throw new Error "Value of 'dependencies' must be an object"
+    else
+      tests = []
+      for property, dependency of definition
+
+        if @test_type "array", dependency
+          if dependency.length == 0
+            throw new Error "Arrays in 'dependencies' may not be empty"
+
+          for name in dependency
+            unless @test_type "string", dependency
+              throw new Error "Vales of 'dependencies' arrays must be strings"
+          tests.push (data, runtime) =>
+            if data[property]?
+              for item in dependency
+                if !data[item]?
+                  runtime.child(property).error context
+
+        else if @test_type "object", dependency
+          fn = @compile dependency, context
+          tests.push (data, runtime) =>
+            if data[property]
+              fn data, runtime
+            else
+              true
+
+        else
+          throw new Error "Invalid dependency"
+
+    (data, runtime) =>
+      if @test_type "object", data
+        for test in tests
+          test data, runtime
+
 
