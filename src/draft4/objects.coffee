@@ -66,7 +66,7 @@ module.exports =
             throw new Error "Arrays in 'dependencies' may not be empty"
 
           for name in dependency
-            unless @test_type "string", dependency
+            unless @test_type "string", name
               throw new Error "Vales of 'dependencies' arrays must be strings"
           tests.push (data, runtime) =>
             if data[property]?

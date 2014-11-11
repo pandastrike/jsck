@@ -1,7 +1,7 @@
 module.exports =
 
   pattern: (pattern, context) ->
-    unless @test_type "string", value
+    unless @test_type "string", pattern
       throw new Error "Value of 'pattern' must be a string"
 
     regex = new RegExp(pattern)
