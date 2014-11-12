@@ -161,14 +161,20 @@ module.exports = (uri, mixins) ->
               if @test_type "array", definition
                 @type_refs definition, new_context
             when "properties", "patternProperties"
+              # TODO: determine whether (and why) this isn't handled in the
+              # basic else case.
               @dictionary_refs definition, new_context
             when "items"
               @items_refs definition, new_context
             when "additionalItems", "additionalProperties"
               @compile_references definition, context.child(attribute)
             else
+              #FIXME:  this ignores all the new draft4 logical attrs like "anyOf".
+              # Write test cases in official suite to prove before fixing.
               if !Validator.attributes[attribute] && @test_type("object", definition)
                 @compile_references definition, context.child(attribute)
+              else
+                console.log attribute
 
 
     type_refs: (union, context) ->
