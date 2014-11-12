@@ -4,6 +4,7 @@ deap = require "deap"
 {escape, Runtime, Context} = require "./util"
 
 module.exports = (uri, mixins) ->
+
   class Validator
 
     SCHEMA_URI = uri
@@ -45,9 +46,14 @@ module.exports = (uri, mixins) ->
         # Make sure the schema id always ends with "#"
         schema.id = schema.id.replace /#?$/, "#"
 
+      # The context keeps track of where we are in the schema while
+      # we traverse it for compilation.
       context = new Context
         pointer: schema.id || "#"
         scope: schema.id || "#"
+
+      # Make an initial pass over the schema looking for $ref fields,
+      # resolving their targets for use in actual compilation.
       @compile_references schema, context
 
       # We try one more time to resolve $ref values, because
@@ -86,6 +92,7 @@ module.exports = (uri, mixins) ->
               error.schema.definition = @resolve_ref(pointer)?[attribute]
 
           valid = runtime.errors.length == 0
+          #console.log runtime.errors unless valid
           {valid, errors}
         toJSON: (args...) =>
           schema
@@ -135,14 +142,19 @@ module.exports = (uri, mixins) ->
           new_context = context.child(attribute)
           switch attribute
             when "$ref"
+              # turn relative refs into absolute URIs
               uri = URI.resolve(scope, definition)
 
-              # ignore recursive references
+              # When the URI of a $ref is a substring of the present context's URI,
+              # we're in a recursive reference situation.
+              # Ignore recursive references during this stage.
               if pointer.indexOf(uri + "/") != 0
                 schema.$ref = uri
                 if schema = @resolve_ref(uri, scope)
                   @compile_references schema, context
                 else
+                  # Store the unresolvable reference so we can try to resolve
+                  # it again after having traversed the all schemas.
                   @unresolved[pointer] = {scope: context.scope, uri: uri}
 
             when "type"
@@ -180,6 +192,8 @@ module.exports = (uri, mixins) ->
       {scope, pointer} = context
       tests = []
 
+      # When the schema contains the $ref attribute, locate the referenced
+      # schema and use in place of the present schema.
       if uri = schema.$ref
         uri = URI.resolve(scope, uri)
         if pointer.indexOf(uri) == 0
@@ -191,30 +205,50 @@ module.exports = (uri, mixins) ->
           throw new Error "No schema found for $ref '#{uri}'"
 
       for attribute, definition of schema
+        # Create a child context to track our progress into a new attribute.
+        new_context = context.child(attribute)
+        # Schemas may contain arbitrary fields.  We only act on those that
+        # have meaning in JSON Schema.
         if spec = Validator.attributes[attribute]
-          if !spec.ignore
-            new_context = context.child(attribute)
-            new_context.modifiers = {}
-            if spec.modifiers
-              for key in spec.modifiers
-                new_context.modifiers[key] = schema[key]
 
-            # Delegate to a handler named after the attribute
-            if test = @[attribute](definition, new_context)
-              test.pointer = new_context.pointer
-              tests.push test
+          # Some validation attributes can be modified by other attributes
+          # at the same level.  E.g. minimum is modified by exclusiveMinimum.
+          # Here we check the schema for such auxiliary attributes and stow
+          # them in the context, so the primary attribute handler can act
+          # on them.
+          new_context.modifiers = {}
+          if spec.modifiers
+            for key in spec.modifiers
+              new_context.modifiers[key] = schema[key]
+
+          # Call the attribute's handler.
+          # The return value will be a function that validates a document.
+          # In rare cases, the attribute handler does not return a test
+          # function, because some related attribute performs the test.
+          if test = @[attribute](definition, new_context)
+            # TODO: Commented this out because I believe it's obsolete.
+            # Delete when sure.
+            #test.pointer = new_context.pointer
+
+            tests.push test
+
         else
+          # Unknown attribute, thus treat it as a container of schemas.
           if @test_type "object", definition
-            @compile definition, context.child(attribute)
+            @compile definition, new_context
 
       test_function = (data, runtime) =>
         for test in tests
           test(data, runtime)
 
+      # Record the schema's test function for use by such things as
+      # @recursive_test.  
+      @find(pointer)?._test = test_function
+      # Also record the function for schemas with "alias" ids.
       if schema.id
         uri = URI.resolve scope, schema.id
         @find(uri)?._test = test_function
-      @find(pointer)?._test = test_function
+
       test_function
 
 

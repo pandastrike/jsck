@@ -25,10 +25,12 @@ module.exports =
   properties: (definition, context) ->
     unless @test_type "object", definition
       throw new Error "The 'properties' attribute must be an object"
+
     tests = {}
     for property, schema of definition
       unless @test_type "object", schema
         throw new Error "The 'properties' attribute must be an object"
+
       new_context = context.child(property)
       test = @compile(schema, new_context)
       tests[property] = test
