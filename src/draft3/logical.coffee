@@ -6,7 +6,7 @@ module.exports =
       schemas = [schemas]
 
     for schema, i in schemas
-      if ref = schema.$ref
+      if (ref = schema.$ref)?
         uri = URI.resolve(context.scope, ref)
         parent = @find(uri)
         if !parent

@@ -40,6 +40,7 @@ module.exports = (uri, mixins) ->
         @add(schema)
 
     add: (schema) ->
+      # Clone the schema to prevent any user changes from affecting JSCK.
       schema = deap.clone(schema)
 
       if schema.id
@@ -53,14 +54,13 @@ module.exports = (uri, mixins) ->
         scope: schema.id || "#"
 
       # Make an initial pass over the schema looking for $ref fields,
-      # resolving their targets for use in actual compilation.
-      @compile_references schema, context
+      # recording their targets for use in actual compilation.
+      @compile_references context, schema
 
-      # We try one more time to resolve $ref values, because
-      # a schema may have been defined after we initially
-      # tried to resolve the $ref.
+      # We try a second time to resolve $ref values, because a schema may have
+      # been defined after we initially tried to resolve a $ref.
       for ref, {scope, uri} of @unresolved
-        if found_schema = @resolve_ref(uri, scope)
+        if (found_schema = @resolve_uri(uri, scope))?
           delete @unresolved[ref]
           @register ref, found_schema
       if Object.keys(@unresolved).length > 0
@@ -72,7 +72,7 @@ module.exports = (uri, mixins) ->
     register: (uri, schema) ->
       @uris[uri] = schema
       # TODO: enforce uniqueness of types
-      if media_type = schema.mediaType
+      if (media_type = schema.mediaType)?
         if media_type != "application/json"
           @media_types[media_type] = schema
 
@@ -80,7 +80,7 @@ module.exports = (uri, mixins) ->
       @validator("#").validate(data)
 
     validator: (arg) ->
-      if schema = @find arg
+      if (schema = @find arg)?
         validate: (data) =>
           errors = []
           runtime = new Runtime {errors, pointer: "#"}
@@ -89,41 +89,43 @@ module.exports = (uri, mixins) ->
             for error in errors
               [base..., attribute] = error.schema.pointer.split("/")
               pointer = base.join("/")
-              error.schema.definition = @resolve_ref(pointer)?[attribute]
+              error.schema.definition = @resolve_uri(pointer)?[attribute]
 
           valid = runtime.errors.length == 0
-          #console.log runtime.errors unless valid
           {valid, errors}
         toJSON: (args...) =>
           schema
       else
         throw new Error "No schema found for '#{JSON.stringify(arg)}'"
 
+    # Find a registered schema.
+    #
+    # Takes either a URI string or an options object.
+    # Valid options:
+    # * uri
+    # * mediaType
     find: (arg) ->
       if @test_type "string", arg
         uri = escape(arg)
         @uris[uri]
-      else if uri = arg.uri
+      else if (uri = arg.uri)?
         uri = escape(uri)
         @uris[uri]
-      else if media_type = arg.mediaType
+      else if (media_type = arg.mediaType)?
         @media_types[media_type]
       else
         null
 
 
-    resolve_ref: (uri, scope) ->
-      if schema = @find(uri)
+    resolve_uri: (uri, scope) ->
+      if (schema = @find(uri))?
         if schema.$ref
-          uri = URI.resolve(scope, schema.$ref)
-          @resolve_ref(uri)
+          @resolve_uri URI.resolve(scope, schema.$ref)
         else
-          return schema
-      else
-        null
+          schema
 
 
-    compile_references: (schema, context) ->
+    compile_references: (context, schema) ->
       if schema == null
         culprit = context.pointer
         throw new Error "null is not a valid schema.  Culprit: '#{culprit}'"
@@ -131,34 +133,36 @@ module.exports = (uri, mixins) ->
       {scope, pointer} = context
       @register pointer, schema
 
-      # This is one of the two cases where we pay attention to "id". The other is
-      # top-level id declaration.
+      # This is one of the two cases where we pay attention to an "id"
+      # attribute. The other is top-level id declaration, serving to identify
+      # the entire schema.
+      #
       # Here, we treat bare fragment identifiers (e.g. "#user") as aliases.
       if schema.id && schema.id.indexOf("#") == 0
         uri = URI.resolve scope, schema.id
         schema.id = uri
         @register uri, schema
 
-      if @test_type "object", schema
+      if !@test_type "object", schema
+        console.warn "Schema is not an object", schema
+      else
         for attribute, definition of schema
           if "$ref" == attribute
             @resolve_reference(context, schema, definition)
           else
-            new_context = context.child(attribute)
+            @_compile_references context.child(attribute), definition
 
-            if @test_type "array", definition
+    _compile_references: (context, schema) ->
+      if @test_type "array", schema
+        for definition, i in schema
+          if @test_type "object", definition
+            @compile_references context.child(i), definition
 
-              for def, i in definition
-                if @test_type "object", def
-                  @compile_references def, new_context.child(i)
-
-            else if  @test_type("object", definition)
-              @compile_references definition, new_context
-
-            else
-              # No action required.
+      else if @test_type("object", schema)
+        @compile_references context, schema
       else
-        console.warn "Schema is not an object", schema
+        # No action required.
+
 
     resolve_reference: (context, schema, definition) ->
       {scope, pointer} = context
@@ -170,8 +174,8 @@ module.exports = (uri, mixins) ->
       # Ignore recursive references during this stage.
       if pointer.indexOf(uri + "/") != 0
         schema.$ref = uri
-        if schema = @resolve_ref(uri, scope)
-          @compile_references schema, context
+        if (schema = @resolve_uri(uri, scope))?
+          @compile_references context, schema
         else
           # Store the unresolvable reference so we can try to resolve
           # it again after having traversed the all schemas.
@@ -184,7 +188,7 @@ module.exports = (uri, mixins) ->
 
       # When the schema contains the $ref attribute, locate the referenced
       # schema and use in place of the present schema.
-      if uri = schema.$ref
+      if (uri = schema.$ref)?
         uri = URI.resolve(scope, uri)
         if pointer.indexOf(uri) == 0
           # When the URI of a $ref is a substring of the present context's URI,
@@ -199,7 +203,7 @@ module.exports = (uri, mixins) ->
         new_context = context.child(attribute)
         # Schemas may contain arbitrary fields.  We only act on those that
         # have meaning in JSON Schema.
-        if spec = Validator.attributes[attribute]
+        if (spec = Validator.attributes[attribute])?
 
           # Some validation attributes can be modified by other attributes
           # at the same level.  E.g. minimum is modified by exclusiveMinimum.
@@ -215,7 +219,7 @@ module.exports = (uri, mixins) ->
           # The return value will be a function that validates a document.
           # In rare cases, the attribute handler does not return a test
           # function, because some related attribute performs the test.
-          if test = @[attribute](definition, new_context)
+          if (test = @[attribute](definition, new_context))?
             # TODO: Commented this out because I believe it's obsolete.
             # Delete when sure.
             #test.pointer = new_context.pointer
@@ -244,7 +248,7 @@ module.exports = (uri, mixins) ->
 
     recursive_test: (schema, {scope, pointer}) ->
       uri = URI.resolve(scope, schema.$ref)
-      if schema = @find uri
+      if (schema = @find uri)?
         (data, runtime) =>
           schema._test(data, runtime)
       else

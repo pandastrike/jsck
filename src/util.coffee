@@ -6,6 +6,8 @@ module.exports =
       .replace(/~1/g, "/")
       .replace(/%25/g, "%")
 
+  # Used during document validation.  Maintains a list of errors and the
+  # JSON pointer for the section of the document.
   Runtime: class Runtime
     constructor: ({@errors, @pointer}) ->
 
@@ -22,6 +24,8 @@ module.exports =
           pointer: context.pointer
 
 
+  # Maintains the URI scope and JSON pointer during traversal
+  # of a schema.
   Context: class Context
 
     constructor: ({@pointer, @scope}) ->

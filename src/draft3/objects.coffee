@@ -15,7 +15,7 @@ module.exports =
     (data, runtime) =>
       if @test_type "object", data
         for property, value of data
-          if test = tests[property]
+          if (test = tests[property])?
             test value, runtime.child(property)
         for key in required
           if data[key] == undefined
