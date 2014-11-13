@@ -12,7 +12,7 @@ module.exports =
     child: (token) ->
       new @constructor
         errors: @errors
-        pointer: "#{@pointer}/#{token}"
+        pointer: "#{@pointer}/#{token.toString()}"
 
     error: (context) ->
       @errors.push
@@ -28,11 +28,11 @@ module.exports =
 
     child: (token) ->
       new Context
-        pointer: "#{@pointer}/#{token}"
+        pointer: "#{@pointer}/#{token.toString()}"
         scope: @scope
 
     sibling: (token) ->
-      pointer = @pointer.replace(/\/.*$/, "/#{token}")
+      pointer = @pointer.replace(/\/.*$/, "/#{token.toString()}")
       new Context
         pointer: pointer
         scope: @scope
