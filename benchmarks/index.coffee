@@ -6,10 +6,3 @@ for name in [
 ]
   require "./#{name}"
 
-
-
-
-
-
-
-

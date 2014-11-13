@@ -1,5 +1,6 @@
-{benchmark} = require "../validators"
+{benchmark} = require "../../validators"
 benchmark {
+  draft: 3
   name: "Configuration"
   repeats: 128
   schema: require "./schema"

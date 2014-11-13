@@ -5,7 +5,11 @@ util = require "util"
 Benchmark = require "./benchmark.coffee"
 
 # Validators
-JSCK = require "../src/draft4"
+JSCK = (draft) ->
+  switch draft
+    when 3 then require "../src/draft3"
+    when 4 then require "../src/draft4"
+  
 JSONSchema= require('jsonschema').Validator
 JSV = require("JSV").JSV
 
@@ -13,7 +17,11 @@ samples = 64
 
 module.exports =
 
-  benchmark: ({name, schema, valid_doc, repeats}) ->
+  benchmark: ({draft, name, schema, valid_doc, repeats}) ->
+
+    console.log JSCK
+    console.log draft
+
     console.log """
 
       Benchmarks for schema '#{name}'.  #{schema.description || ''}
@@ -23,7 +31,7 @@ module.exports =
     """
 
     jsck = new Benchmark "JSCK: valid document", (bm) ->
-      bm.setup -> new JSCK(schema)
+      bm.setup -> new (JSCK draft)(schema)
       bm.measure (validator) ->
         for i in [1..repeats]
           result = validator.validate(valid_doc)
