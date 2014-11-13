@@ -12,6 +12,8 @@ JSCK = (draft) ->
   
 JSONSchema= require('jsonschema').Validator
 JSV = require("JSV").JSV
+JaySchema = require("jayschema")
+tv4 = require("tv4").tv4
 
 samples = 64
 
@@ -39,6 +41,18 @@ module.exports =
         for i in [1..repeats]
           result = validator.validate(valid_doc, schema).errors
 
+    jayschema = new Benchmark "jayschema: valid document", (bm) ->
+      bm.setup -> new JaySchema()
+      bm.measure (validator) ->
+        for i in [1..repeats]
+          result = validator.validate(valid_doc, schema)
+
+    tv4Benchmark = new Benchmark "tv4: valid document", (bm) ->
+      bm.setup -> tv4
+      bm.measure (validator) ->
+        for i in [1..repeats]
+          result = validator.validate(valid_doc, schema).error
+
     if 3 == draft # JSV currently lacks draft 4 support
 
       jsv_bm = new Benchmark "JSV: valid document", (bm) ->
@@ -49,11 +63,11 @@ module.exports =
           for i in [1..repeats]
             result = validator.validate(valid_doc).errors
 
-    switch draft
-      when 3
-        results = Benchmark.compare [jsck, jsonschema, jsv_bm], {samples}
-      when 4
-        results = Benchmark.compare [jsck, jsonschema], {samples}
+    libraries = [jsck, jsonschema, tv4Benchmark, jayschema]
+
+    libraries.push jsv_bm if 3 == draft
+
+    results = Benchmark.compare libraries, {samples}
 
     console.log()
     for name, result of results

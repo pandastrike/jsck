@@ -7,5 +7,3 @@ benchmark {
   valid_doc: require "./valid_doc"
 }
 
-
-

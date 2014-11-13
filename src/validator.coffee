@@ -127,11 +127,13 @@ module.exports = (uri, mixins) ->
       if schema == null
         culprit = context.pointer
         throw new Error "null is not a valid schema.  Culprit: '#{culprit}'"
+
       {scope, pointer} = context
       @register pointer, schema
+
       # This is one of the two cases where we pay attention to "id". The other is
-      # top-level id declaration. Here, we treat non-JSON-pointer fragments (such
-      # as "#user") as aliases.
+      # top-level id declaration.
+      # Here, we treat bare fragment identifiers (e.g. "#user") as aliases.
       if schema.id && schema.id.indexOf("#") == 0
         uri = URI.resolve scope, schema.id
         schema.id = uri
@@ -139,53 +141,41 @@ module.exports = (uri, mixins) ->
 
       if @test_type "object", schema
         for attribute, definition of schema
-          new_context = context.child(attribute)
-          switch attribute
-            when "$ref"
-              # turn relative refs into absolute URIs
-              uri = URI.resolve(scope, definition)
+          if "$ref" == attribute
+            @resolve_reference(context, schema, definition)
+          else
+            new_context = context.child(attribute)
 
-              # When the URI of a $ref is a substring of the present context's URI,
-              # we're in a recursive reference situation.
-              # Ignore recursive references during this stage.
-              if pointer.indexOf(uri + "/") != 0
-                schema.$ref = uri
-                if schema = @resolve_ref(uri, scope)
-                  @compile_references schema, context
-                else
-                  # Store the unresolvable reference so we can try to resolve
-                  # it again after having traversed the all schemas.
-                  @unresolved[pointer] = {scope: context.scope, uri: uri}
+            if @test_type "array", definition
 
-            when "type"
-              if @test_type "array", definition
-                @type_refs definition, new_context
-            when "properties", "patternProperties"
-              @dictionary_refs definition, new_context
-            when "items"
-              @items_refs definition, new_context
-            when "additionalItems", "additionalProperties"
-              @compile_references definition, context.child(attribute)
+              for def, i in definition
+                if @test_type "object", def
+                  @compile_references def, new_context.child(i)
+
+            else if  @test_type("object", definition)
+              @compile_references definition, new_context
+
             else
-              if !Validator.attributes[attribute] && @test_type("object", definition)
-                @compile_references definition, context.child(attribute)
-
-
-    type_refs: (union, context) ->
-      for schema, i in union
-        if @test_type "object", schema
-          @compile_references schema, context.child(i.toString())
-
-    dictionary_refs: (properties, context) ->
-      for key, schema of properties
-        @compile_references schema, context.child(key)
-    
-    items_refs: (definition, context) ->
-      if @test_type "array", definition
-        for def, i in definition
-          @compile_references def, context.child(i.toString())
+              # No action required.
       else
-        @compile_references definition, context
+        console.warn "Schema is not an object", schema
+
+    resolve_reference: (context, schema, definition) ->
+      {scope, pointer} = context
+      # turn relative refs into absolute URIs
+      uri = URI.resolve(scope, definition)
+
+      # When the URI of a $ref is a substring of the present context's URI,
+      # we're in a recursive reference situation.
+      # Ignore recursive references during this stage.
+      if pointer.indexOf(uri + "/") != 0
+        schema.$ref = uri
+        if schema = @resolve_ref(uri, scope)
+          @compile_references schema, context
+        else
+          # Store the unresolvable reference so we can try to resolve
+          # it again after having traversed the all schemas.
+          @unresolved[pointer] = {scope, uri}
 
 
     compile: (schema, context) ->

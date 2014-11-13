@@ -54,7 +54,7 @@ module.exports =
       unless @test_type "object", schema
         throw new Error "The 'items' attribute must be an object or an array"
 
-      tests.push @compile schema, context.child(i.toString())
+      tests.push @compile schema, context.child(i)
 
     (data, runtime) =>
       if @test_type "array", data
