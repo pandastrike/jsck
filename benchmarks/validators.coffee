@@ -8,6 +8,7 @@ Benchmark = require "./benchmark.coffee"
 JSCK = require "../src/draft4"
 JSONSchema= require('jsonschema').Validator
 JSV = require("JSV").JSV
+JaySchema = require("jayschema")
 
 samples = 64
 
@@ -34,6 +35,12 @@ module.exports =
         for i in [1..repeats]
           result = validator.validate(valid_doc, schema).errors
 
+    jayschema = new Benchmark "jayschema: valid document", (bm) ->
+      bm.setup -> new JaySchema()
+      bm.measure (validator) ->
+        for i in [1..repeats]
+          result = validator.validate(valid_doc, schema)
+
     ## Only valid for draft3 ATM.
     #jsv_bm = new Benchmark "JSV: valid document", (bm) ->
       #bm.setup ->
@@ -43,7 +50,7 @@ module.exports =
         #for i in [1..repeats]
           #result = validator.validate(valid_doc).errors
 
-    results = Benchmark.compare [jsck, jsonschema], {samples}
+    results = Benchmark.compare [jsck, jsonschema, jayschema], {samples}
 
     console.log()
     for name, result of results
