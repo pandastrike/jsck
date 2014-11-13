@@ -19,9 +19,6 @@ module.exports =
 
   benchmark: ({draft, name, schema, valid_doc, repeats}) ->
 
-    console.log JSCK
-    console.log draft
-
     console.log """
 
       Benchmarks for schema '#{name}'.  #{schema.description || ''}
