@@ -63,7 +63,12 @@ module.exports =
           for i in [1..repeats]
             result = validator.validate(valid_doc).errors
 
-    libraries = [jsck, jsonschema, tv4Benchmark, jayschema]
+    libraries = [
+      jsck
+      tv4Benchmark
+      jsonschema
+      jayschema
+    ]
 
     libraries.push jsv_bm if 3 == draft
 
