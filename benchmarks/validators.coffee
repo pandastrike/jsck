@@ -58,9 +58,9 @@ module.exports =
 
     results = Benchmark.compare [
       jsck
+      tv4Benchmark
       jsonschema
       jayschema
-      tv4Benchmark
     ], {samples}
 
     console.log()
