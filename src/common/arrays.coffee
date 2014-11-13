@@ -23,6 +23,7 @@ module.exports =
       (data, runtime) =>
         for item, i in data
           test item, runtime.child(i)
+        null
     else
       throw new Error "The 'items' attribute must be an object or an array"
 
@@ -39,6 +40,7 @@ module.exports =
     (data, runtime) =>
       for item, i in data
         test item, runtime.child(i)
+      null
 
   _tuple_items: (definition, context) ->
     {additionalItems} = context.modifiers

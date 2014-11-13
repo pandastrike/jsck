@@ -9,18 +9,15 @@ module.exports =
     if definition.length == 0
       throw new Error "The 'required' array must have at least one element"
 
-    tests = []
     for property, i in definition
       unless @test_type "string", property
         throw new Error "The 'required' array may only contain strings"
-      new_context = context.child(i)
-      tests.push (data, runtime) =>
-        unless data.hasOwnProperty(property)
-          runtime.error new_context
 
     (data, runtime) =>
-      for test in tests
-        test data, runtime
+      for property, i in definition
+        if data[property] == undefined
+          runtime.error context.child(i)
+      null
 
   properties: (definition, context) ->
     unless @test_type "object", definition
@@ -36,11 +33,11 @@ module.exports =
       tests[property] = test
 
     (data, runtime) =>
-      if @test_type "object", data
+      if (typeof data) == "object" && !(data instanceof Array)
         for property, value of data
           if test = tests[property]
             test value, runtime.child(property)
-        true
+        null
 
 
 
@@ -91,5 +88,6 @@ module.exports =
       if @test_type "object", data
         for test in tests
           test data, runtime
+      null
 
 

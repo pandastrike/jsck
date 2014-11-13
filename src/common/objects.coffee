@@ -69,6 +69,8 @@ module.exports =
 
 
   additionalProperties: (definition, context) ->
+    # TODO: refactor this method for clarity.  It's likely that this will
+    # also improve performance.
     {properties, patternProperties} = context.modifiers
     if @test_type "object", definition
       add_prop_test = @compile(definition, context)
@@ -86,7 +88,6 @@ module.exports =
         regex: new RegExp(pattern)
         test: @compile(schema, context.sibling("patternProperties").child(pattern))
 
-
     (data, runtime) =>
       if @test_type "object", data
         for property, value of data
@@ -101,6 +102,7 @@ module.exports =
                 object.test value, runtime.child(property)
           if !explicit && !patterned && add_prop_test
             add_prop_test value, runtime.child(property)
+        null
 
 
 

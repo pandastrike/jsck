@@ -230,6 +230,7 @@ module.exports = (uri, mixins) ->
       test_function = (data, runtime) =>
         for test in tests
           test(data, runtime)
+        null
 
       # Record the schema's test function for use by such things as
       # @recursive_test.  
