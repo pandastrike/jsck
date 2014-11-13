@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "JSV": "~4.0.2",
+    "tv4": "~1.1.4",
     "coffee-script": "~1.7",
     "glob": "~3.2.6",
     "jsonschema": "~1.0.0",
@@ -26,3 +27,4 @@
   "author": "Matthew King <automatthew@gmail.com>",
   "license": "MIT"
 }
+
