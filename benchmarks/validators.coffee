@@ -16,6 +16,16 @@ JaySchema = require("jayschema")
 tv4 = require("tv4").tv4
 jsonGateCreateSchema = require("json-gate").createSchema
 
+# z-schema setup's pretty involved
+z = require("z-schema")
+request = require("request")
+
+zValidator = new z()
+remoteSchema = "http://json-schema.org/draft-04/schema"
+
+request(remoteSchema, (error, response, body) ->
+  zValidator.setRemoteReference(remoteSchema, JSON.parse(body)))
+
 samples = 64
 
 module.exports =
@@ -42,9 +52,17 @@ module.exports =
         for i in [1..repeats]
           result = validator.validate(valid_doc, schema).errors
 
-    if 4 == draft
+    if 4 == draft # jayschema and z-schema have trouble with draft 3
+
       jayschema = new Benchmark "jayschema: valid document", (bm) ->
         bm.setup -> new JaySchema()
+        bm.measure (validator) ->
+          for i in [1..repeats]
+            result = validator.validate(valid_doc, schema)
+
+      # note: z-schema will not recognize the valid doc as a valid doc
+      zSchema = new Benchmark "z-schema: valid document", (bm) ->
+        bm.setup -> zValidator
         bm.measure (validator) ->
           for i in [1..repeats]
             result = validator.validate(valid_doc, schema)
@@ -84,6 +102,7 @@ module.exports =
         libraries.push jsonGate_bm
       when 4
         libraries.push jayschema
+        libraries.push zSchema
 
     results = Benchmark.compare libraries, {samples}
 

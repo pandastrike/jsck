@@ -18,6 +18,8 @@
     "jayschema": "~0.3.1",
     "tv4": "~1.1.4",
     "json-gate": "~0.8.21",
+    "z-schema": "~3.1.2",
+    "request": "~2.48.0",
     "coffee-script": "~1.7",
     "glob": "~3.2.6",
     "jsonschema": "~1.0.0",
