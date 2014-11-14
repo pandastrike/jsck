@@ -88,6 +88,6 @@ module.exports =
       if @test_type "object", data
         for test in tests
           test data, runtime
-      null
+        null
 
 
