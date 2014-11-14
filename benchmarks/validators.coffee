@@ -78,12 +78,12 @@ module.exports =
       jsonschema
     ]
 
-    if 3 == draft
-      libraries.push jsv_bm
-      libraries.push jsonGate_bm
-
-    if 4 == draft
-      libraries.push jayschema
+    switch draft
+      when 3
+        libraries.push jsv_bm
+        libraries.push jsonGate_bm
+      when 4
+        libraries.push jayschema
 
     results = Benchmark.compare libraries, {samples}
 
