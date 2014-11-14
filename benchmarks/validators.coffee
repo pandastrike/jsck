@@ -14,6 +14,7 @@ JSONSchema= require('jsonschema').Validator
 JSV = require("JSV").JSV
 JaySchema = require("jayschema")
 tv4 = require("tv4").tv4
+jsonGateCreateSchema = require("json-gate").createSchema
 
 samples = 64
 
@@ -41,11 +42,12 @@ module.exports =
         for i in [1..repeats]
           result = validator.validate(valid_doc, schema).errors
 
-    jayschema = new Benchmark "jayschema: valid document", (bm) ->
-      bm.setup -> new JaySchema()
-      bm.measure (validator) ->
-        for i in [1..repeats]
-          result = validator.validate(valid_doc, schema)
+    if 4 == draft
+      jayschema = new Benchmark "jayschema: valid document", (bm) ->
+        bm.setup -> new JaySchema()
+        bm.measure (validator) ->
+          for i in [1..repeats]
+            result = validator.validate(valid_doc, schema)
 
     tv4Benchmark = new Benchmark "tv4: valid document", (bm) ->
       bm.setup -> tv4
@@ -53,7 +55,7 @@ module.exports =
         for i in [1..repeats]
           result = validator.validate(valid_doc, schema).error
 
-    if 3 == draft # JSV currently lacks draft 4 support
+    if 3 == draft # JSV and json-gate lack draft 4 support
 
       jsv_bm = new Benchmark "JSV: valid document", (bm) ->
         bm.setup ->
@@ -63,14 +65,25 @@ module.exports =
           for i in [1..repeats]
             result = validator.validate(valid_doc).errors
 
+      jsonGate_bm = new Benchmark "json-gate: valid document", (bm) ->
+        bm.setup ->
+          jg = jsonGateCreateSchema(schema)
+        bm.measure (validator) ->
+          for i in [1..repeats]
+            result = validator.validate(valid_doc)
+
     libraries = [
       jsck
       tv4Benchmark
       jsonschema
-      jayschema
     ]
 
-    libraries.push jsv_bm if 3 == draft
+    if 3 == draft
+      libraries.push jsv_bm
+      libraries.push jsonGate_bm
+
+    if 4 == draft
+      libraries.push jayschema
 
     results = Benchmark.compare libraries, {samples}
 
