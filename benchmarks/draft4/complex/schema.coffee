@@ -9,17 +9,11 @@ module.exports =
     base58:
       id: "#base58"
       # https://en.bitcoin.it/wiki/Base58Check_encoding
-      description: """
-        A value encoded as base58.
-      """
       type: "string"
       pattern: "^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+$"
 
     hex:
       id: "#hex"
-      description: """
-        A value encoded as hexadecimal.
-      """
       type: "string"
       pattern: "^[0123456789A-Fa-f]+$"
 
@@ -61,6 +55,7 @@ module.exports =
 
         metadata:
           type: "object"
+          required: ["amount", "fee"]
           properties:
             amount:
               type: "integer"
@@ -69,7 +64,7 @@ module.exports =
               multipleOf: 10000
             status:
               type: "string"
-              enum: ["unsigned", "unconfirmed", "confirmed", "invalid", "canceled"]
+              enum: ["unsigned", "unconfirmed", "confirmed", "invalid"]
             confirmations:
               type: "integer"
               minimum: 0
