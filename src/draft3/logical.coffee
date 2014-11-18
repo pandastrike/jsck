@@ -17,7 +17,7 @@ module.exports =
     tests = []
     for schema, i in schemas
       new_context = context.child(i)
-      tests.push @compile(schema, new_context)
+      tests.push @compile(new_context, schema)
 
     (data, runtime) =>
       for test in tests
@@ -29,7 +29,7 @@ module.exports =
       for type, i in definition
         do (i) =>
           if @test_type "object", type
-            inverse = @compile type, context
+            inverse = @compile context, type
             tests.push (data, runtime) =>
               temp = new runtime.constructor
                 pointer: ""

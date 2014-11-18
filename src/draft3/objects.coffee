@@ -7,7 +7,7 @@ module.exports =
     required = []
     for property, schema of definition
       new_context = context.child(property)
-      test = @compile(schema, new_context)
+      test = @compile(new_context, schema)
       tests[property] = test
       if schema.required == true
         required.push property
