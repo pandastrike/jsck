@@ -1,6 +1,4 @@
 module.exports =
-  $schema: {}
-  id: {}
 
   type: {}
   enum: {}
@@ -31,7 +29,6 @@ module.exports =
     ]
   maxItems: {}
   minItems: {}
-  additionalItems: {}
   uniqueItems: {}
 
 

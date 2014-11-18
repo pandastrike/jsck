@@ -250,7 +250,7 @@ module.exports = (uri, mixins) ->
     compile_definitions: (context, object) ->
       if object.type? || object.$ref?
         @compile(context, object)
-      else
+      else if @test_type "object", object
         for name, definition of object
           @compile_definitions context.child(name), definition
 
