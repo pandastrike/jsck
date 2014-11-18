@@ -22,7 +22,7 @@ module.exports =
                   runtime.child(property).error context
 
         else if @test_type "object", dependency
-          fn = @compile dependency, context
+          fn = @compile context, dependency
           tests.push (data, runtime) =>
             if data[property]
               fn data, runtime
@@ -59,7 +59,7 @@ module.exports =
 
       tests[pattern] =
         regex: new RegExp(pattern)
-        test: @compile schema, context.child(pattern)
+        test: @compile context.child(pattern), schema
 
     (data, runtime) =>
       for property, value of data
@@ -73,7 +73,7 @@ module.exports =
     # also improve performance.
     {properties, patternProperties} = context.modifiers
     if @test_type "object", definition
-      add_prop_test = @compile(definition, context)
+      add_prop_test = @compile(context, definition)
     else if definition == false
       add_prop_test = (data, runtime) =>
         runtime.error context
@@ -86,7 +86,7 @@ module.exports =
     for pattern, schema of patternProperties
       patterns[pattern] =
         regex: new RegExp(pattern)
-        test: @compile(schema, context.sibling("patternProperties").child(pattern))
+        test: @compile(context.sibling("patternProperties").child(pattern), schema)
 
     (data, runtime) =>
       if @test_type "object", data

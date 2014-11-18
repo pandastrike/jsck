@@ -8,7 +8,7 @@ module.exports =
       for type in definition
         do (type) =>
           if @test_type "object", type
-            test = @compile type, context
+            test = @compile context, type
             tests.push (data, runtime) =>
               temp = new runtime.constructor
                 pointer: ""
@@ -28,7 +28,7 @@ module.exports =
           runtime.error context
 
     else if @test_type "object", definition
-      @compile(definition, context)
+      @compile(context, definition)
     else
       (data, runtime) =>
         if !@test_type definition, data

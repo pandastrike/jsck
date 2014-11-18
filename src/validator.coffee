@@ -67,7 +67,7 @@ module.exports = (uri, mixins) ->
         pointers = (uri for key, {uri} of @unresolved)
         throw new Error "Unresolvable $ref values: #{JSON.stringify pointers}"
 
-      @compile(schema, context)
+      @compile(context, schema)
 
     register: (uri, schema) ->
       @uris[uri] = schema
@@ -182,10 +182,7 @@ module.exports = (uri, mixins) ->
           @unresolved[pointer] = {scope, uri}
 
 
-    compile: (schema, context) ->
-      unless @test_type "object", schema
-        console.trace()
-        throw new Error JSON.stringify(schema)
+    compile: (context, schema) ->
       {scope, pointer} = context
       tests = []
 
@@ -201,64 +198,62 @@ module.exports = (uri, mixins) ->
         if !schema
           throw new Error "No schema found for $ref '#{uri}'"
 
-      for attribute, definition of schema
+      for key, definition of schema when key != "_test"
         # Create a child context to track our progress into a new attribute.
-        new_context = context.child(attribute)
-        # Schemas may contain arbitrary fields.  We only act on those that
-        # have meaning in JSON Schema.
-        if (spec = Validator.attributes[attribute])?
+        new_context = context.child(key)
 
-          # Some validation attributes can be modified by other attributes
-          # at the same level.  E.g. minimum is modified by exclusiveMinimum.
-          # Here we check the schema for such auxiliary attributes and stow
-          # them in the context, so the primary attribute handler can act
-          # on them.
-          new_context.modifiers = {}
-          if spec.modifiers
-            for key in spec.modifiers
-              new_context.modifiers[key] = schema[key]
-
-          # Call the attribute's handler.
-          # The return value will be a function that validates a document.
-          # In rare cases, the attribute handler does not return a test
-          # function, because some related attribute performs the test.
-          if @[attribute]?
-            if (test = @[attribute](definition, new_context))?
-              # TODO: Commented this out because I believe it's obsolete.
-              # Delete when sure.
-              #test.pointer = new_context.pointer
-
-              tests.push test
-
+        if (spec = Validator.attributes[key])?
+          test = @compile_attribute(new_context, key, schema, definition)
+          tests.push(test) if test
         else
-          if definition.type? || definition.$ref?
-            @compile definition, new_context
-          else
-            # Unknown attribute, thus treat it as a container of schemas.
-            @compile_definitions(new_context, definition)
+          # If the key doesn't correspond to a known attribute name, treat
+          # the object as a container of definitions.
+          @compile_definitions(new_context, definition)
 
       test_function = (data, runtime) =>
         for test in tests
           test(data, runtime)
         null
 
-      # Record the schema's test function for use by such things as
-      # @recursive_test.  
+      # Record the test function for use by such things as @recursive_test.
       @find(pointer)?._test = test_function
       # Also record the function for schemas with "alias" ids.
       if schema.id
         uri = URI.resolve scope, schema.id
         @find(uri)?._test = test_function
 
-      test_function
+      return test_function
 
 
-    compile_definitions: (context, definitions) ->
-      if @test_type "object", definitions
-        for name, definition of definitions
-          @compile definition, context.child(name)
-      #else
-        #console.log context.pointer, JSON.stringify(definitions)
+    compile_attribute: (context, attribute, schema, definition) ->
+      spec = Validator.attributes[attribute]
+
+      # Some validation attributes can be modified by other attributes
+      # at the same level.  E.g. minimum is modified by exclusiveMinimum.
+      # Here we check the schema for such auxiliary attributes and stow
+      # them in the context, so the primary attribute handler can act
+      # on them.
+      context.modifiers = {}
+      if spec.modifiers
+        for key in spec.modifiers
+          context.modifiers[key] = schema[key]
+
+      # Call the attribute's handler.
+      # The return value will be a function that validates a document.
+      # In rare cases, the attribute handler does not return a test
+      # function, because some related attribute performs the test.
+      if @[attribute]?
+        if (test = @[attribute](definition, context))?
+          return test
+
+
+    compile_definitions: (context, object) ->
+      if object.type? || object.$ref?
+        @compile(context, object)
+      else
+        for name, definition of object
+          @compile_definitions context.child(name), definition
+
 
     recursive_test: (schema, {scope, pointer}) ->
       uri = URI.resolve(scope, schema.$ref)

@@ -12,7 +12,7 @@ module.exports =
       unless @test_type "object", schema
         throw new Error "The 'anyOf' array values must be objects"
       new_context = context.child(i)
-      tests.push @compile(schema, new_context)
+      tests.push @compile(new_context, schema)
 
     (data, runtime) =>
       answer = tests.some (test) =>
@@ -40,7 +40,7 @@ module.exports =
         throw new Error "The 'allOf' array values must be objects"
 
       new_context = context.child(i)
-      tests.push @compile(schema, new_context)
+      tests.push @compile(new_context, schema)
 
     (data, runtime) =>
       for test in tests
@@ -59,7 +59,7 @@ module.exports =
         throw new Error "The 'oneOf' array values must be objects"
 
       new_context = context.child(i)
-      tests.push @compile(schema, new_context)
+      tests.push @compile(new_context, schema)
 
     # TODO optimize?
     (data, runtime) =>
@@ -80,7 +80,7 @@ module.exports =
     unless @test_type "object", definition
       throw new Error "The 'not' attribute must be an object"
 
-    inverse = @compile definition, context
+    inverse = @compile context, definition
     (data, runtime) =>
       temp = new runtime.constructor
         pointer: ""

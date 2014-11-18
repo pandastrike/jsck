@@ -29,7 +29,7 @@ module.exports =
         throw new Error "The 'properties' attribute must be an object"
 
       new_context = context.child(property)
-      test = @compile(schema, new_context)
+      test = @compile(new_context, schema)
       tests[property] = test
 
     (data, runtime) =>
@@ -74,7 +74,7 @@ module.exports =
                   runtime.child(property).error context
 
         else if @test_type "object", dependency
-          fn = @compile dependency, context
+          fn = @compile context, dependency
           tests.push (data, runtime) =>
             if data[property]
               fn data, runtime
