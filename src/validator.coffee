@@ -183,6 +183,9 @@ module.exports = (uri, mixins) ->
 
 
     compile: (schema, context) ->
+      unless @test_type "object", schema
+        console.trace()
+        throw new Error JSON.stringify(schema)
       {scope, pointer} = context
       tests = []
 
@@ -219,17 +222,20 @@ module.exports = (uri, mixins) ->
           # The return value will be a function that validates a document.
           # In rare cases, the attribute handler does not return a test
           # function, because some related attribute performs the test.
-          if (test = @[attribute](definition, new_context))?
-            # TODO: Commented this out because I believe it's obsolete.
-            # Delete when sure.
-            #test.pointer = new_context.pointer
+          if @[attribute]?
+            if (test = @[attribute](definition, new_context))?
+              # TODO: Commented this out because I believe it's obsolete.
+              # Delete when sure.
+              #test.pointer = new_context.pointer
 
-            tests.push test
+              tests.push test
 
         else
-          # Unknown attribute, thus treat it as a container of schemas.
-          if @test_type "object", definition
+          if definition.type? || definition.$ref?
             @compile definition, new_context
+          else
+            # Unknown attribute, thus treat it as a container of schemas.
+            @compile_definitions(new_context, definition)
 
       test_function = (data, runtime) =>
         for test in tests
@@ -246,6 +252,13 @@ module.exports = (uri, mixins) ->
 
       test_function
 
+
+    compile_definitions: (context, definitions) ->
+      if @test_type "object", definitions
+        for name, definition of definitions
+          @compile definition, context.child(name)
+      #else
+        #console.log context.pointer, JSON.stringify(definitions)
 
     recursive_test: (schema, {scope, pointer}) ->
       uri = URI.resolve(scope, schema.$ref)
