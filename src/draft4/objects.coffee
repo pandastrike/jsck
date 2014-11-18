@@ -35,7 +35,7 @@ module.exports =
     (data, runtime) =>
       if (typeof data) == "object" && !(data instanceof Array)
         for property, value of data
-          if test = tests[property]
+          if (test = tests[property])?
             test value, runtime.child(property)
         null
 
