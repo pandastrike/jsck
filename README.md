@@ -138,7 +138,25 @@ For more information on the topic of scope manipulation, see this issue: https:/
 
 ## Benchmarks
 
-JSCK has fairly comprehensive benchmarks which show it to be the fastest JSON Schema validator available for Node.js. Pull requests welcome, of course.
+JSCK has fairly comprehensive benchmarks which show it to be the fastest JSON
+Schema validator available for Node.js. Pull requests welcome, of course.
+
+### Adding New Benchmarks
+
+Benchmark setup happens in `benchmarks/validators.coffee`. The lines of code to set up a typical benchmarker look like this:
+
+```coffeescript
+  benchmarker("jayschema: valid document", new JaySchema(), (validator) ->
+    validator.validate(valid_doc, schema))
+```
+
+You pass the function a description, a validator, and a callback function, which
+has the validator validate a valid document. The `benchmarker` function takes
+care of the rest. Caveat: there's a `switch/when` statement for validators that
+can only handle one draft or another of JSON Schema.
+
+
+### Running Benchmarks
 
 You can run very specific benchmarks, like the medium-complexity benchmarks for draft 3 only, like so:
 
