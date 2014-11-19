@@ -23,8 +23,12 @@ request = require("request")
 zValidator = new z()
 remoteSchema = "http://json-schema.org/draft-04/schema"
 
+# don't actually download the draft, because GitHub Pages might be down.
+# yet you still set the URL as a remote reference - it's how it's done in
+# z-schema tests.
+actualDraft = require("fs").readFileSync("./test/json-schema/draft-04/schema", "utf8")
 request(remoteSchema, (error, response, body) ->
-  zValidator.setRemoteReference(remoteSchema, JSON.parse(body)))
+  zValidator.setRemoteReference(remoteSchema, JSON.parse(actualDraft)))
 
 samples = 64
 
