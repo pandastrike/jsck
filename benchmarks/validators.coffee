@@ -22,7 +22,7 @@ remoteSchema = "http://json-schema.org/draft-04/schema"
 
 # don't actually download the draft, because GitHub Pages might be down.
 # yet you still set the URL as a remote reference - it's how it's done in
-# z-schema tests.
+# the z-schema tests.
 actualDraft = require("fs").readFileSync("./test/json-schema/draft-04/schema", "utf8")
 request(remoteSchema, (error, response, body) ->
   zValidator.setRemoteReference(remoteSchema, JSON.parse(actualDraft)))
@@ -32,14 +32,19 @@ JSCK = (draft) ->
     when 3 then require "../src/draft3"
     when 4 then require "../src/draft4"
 
-
-
 # do the actual benchmarking
 module.exports =
 
   benchmark: ({draft, name, schema, valid_doc, repeats}) ->
 
     libraries = []
+
+    benchmarker = (description, theValidator, callback) ->
+      libraries.push new Benchmark description, (bm) ->
+        bm.setup -> theValidator
+        bm.measure (validator) ->
+          for i in [1..repeats]
+            result = callback(validator)
 
     console.log """
 
@@ -50,75 +55,40 @@ module.exports =
     """
 
     # these validators work for either draft 3 or 4 of JSON Schema
-    jsck = new Benchmark "JSCK: valid document", (bm) ->
-      bm.setup -> new (JSCK draft)(schema)
-      bm.measure (validator) ->
-        for i in [1..repeats]
-          result = validator.validate(valid_doc)
-    libraries.push jsck
+    benchmarker("JSCK: valid document", new (JSCK draft)(schema), (validator) ->
+      validator.validate(valid_doc))
 
-    jsonschema = new Benchmark "jsonschema: valid document", (bm) ->
-      bm.setup -> new JSONSchema()
-      bm.measure (validator) ->
-        for i in [1..repeats]
-          result = validator.validate(valid_doc, schema).errors
-    libraries.push jsonschema
+    benchmarker("jsonschema: valid document", new JSONSchema(), (validator) ->
+      validator.validate(valid_doc, schema).errors)
 
-    tv4Benchmark = new Benchmark "tv4: valid document", (bm) ->
-      bm.setup -> tv4
-      bm.measure (validator) ->
-        for i in [1..repeats]
-          result = validator.validate(valid_doc, schema).error
-    libraries.push tv4Benchmark
+    benchmarker("tv4: valid document", tv4, (validator) ->
+      validator.validate(valid_doc, schema).error)
 
     switch draft
       when 4 # these validators work only for draft 4 of JSON Schema
 
-        jayschema = new Benchmark "jayschema: valid document", (bm) ->
-          bm.setup -> new JaySchema()
-          bm.measure (validator) ->
-            for i in [1..repeats]
-              result = validator.validate(valid_doc, schema)
-        libraries.push jayschema
+        benchmarker("jayschema: valid document", new JaySchema(), (validator) ->
+          validator.validate(valid_doc, schema))
 
         # note: z-schema will not recognize the valid doc as a valid doc
-        zSchema = new Benchmark "z-schema: valid document", (bm) ->
-          bm.setup -> zValidator
-          bm.measure (validator) ->
-            for i in [1..repeats]
-              result = validator.validate(valid_doc, schema)
-        libraries.push zSchema
+        benchmarker("z-schema: valid document", zValidator, (validator) ->
+          validator.validate(valid_doc, schema))
 
-    # these validators work only for draft 3 of JSON Schema
-      when 3
+      when 3 # these validators work only for draft 3 of JSON Schema
 
         # note: amanda reports errors on integers as utc-millisec,
         # and on http://localhost:8998, due to a huge URL regex
-        amanda_bm = new Benchmark "Amanda: valid document", (bm) ->
-          bm.setup ->
-            amandaValidator = amanda("json")
-          bm.measure (validator) ->
-            for i in [1..repeats]
-              # pass Amanda an empty error-reporting function
-              result = validator.validate(valid_doc, schema, () ->)
-        libraries.push amanda_bm
+        benchmarker("Amanda: valid document", amanda("json"), (validator) ->
+          # pass Amanda an empty error-reporting function for generous benchmarking
+          validator.validate(valid_doc, schema, () ->))
 
-        jsv_bm = new Benchmark "JSV: valid document", (bm) ->
-          bm.setup ->
-            jsv = JSV.createEnvironment("json-schema-draft-03")
-            jsv.createSchema(schema)
-          bm.measure (validator) ->
-            for i in [1..repeats]
-              result = validator.validate(valid_doc).errors
-        libraries.push jsv_bm
+        jsv = JSV.createEnvironment("json-schema-draft-03")
+        jsv.createSchema(schema)
+        benchmarker("JSV: valid document", jsv, (validator) ->
+          validator.validate(valid_doc).errors)
 
-        jsonGate_bm = new Benchmark "json-gate: valid document", (bm) ->
-          bm.setup ->
-            jg = jsonGateCreateSchema(schema)
-          bm.measure (validator) ->
-            for i in [1..repeats]
-              result = validator.validate(valid_doc)
-        libraries.push jsonGate_bm
+        benchmarker("json-gate: valid document", jsonGateCreateSchema(schema), (validator) ->
+          validator.validate(valid_doc))
 
     results = Benchmark.compare libraries, {samples}
 
