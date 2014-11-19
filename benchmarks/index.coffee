@@ -1,8 +1,3 @@
-{benchmark} = require "./validators"
-
-for name in [
-  "event"
-  "config"
-]
-  require "./#{name}"
+require "./draft3/"
+require "./draft4/"
 

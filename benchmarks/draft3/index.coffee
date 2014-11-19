@@ -1,0 +1,2 @@
+require "./trivial/"
+require "./medium/"

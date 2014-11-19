@@ -138,16 +138,23 @@ For more information on the topic of scope manipulation, see this issue: https:/
 
 ## Benchmarks
 
-JSCK has fairly comprehensive benchmarks which show it to be the fastest JSON Schema validator available for Node.js.
+JSCK has fairly comprehensive benchmarks which show it to be the fastest JSON Schema validator available for Node.js. Pull requests welcome, of course.
 
-Pull requests welcome, of course.
+You can run very specific benchmarks, like the medium-complexity benchmarks for draft 3 only, like so:
+
+`coffee benchmarks/draft3/medium`
+
+You can run all benchmarks for a specific JSON Schema draft:
+
+`coffee benchmarks/draft4`
+
+Or, to run all benchmarks:
+
+`coffee benchmarks/`
+
+You should then see something like this:
 
 ```
-$ coffee benchmarks/draft3/trivial/ && \
-  coffee benchmarks/draft3/medium/ && \
-  coffee benchmarks/draft4/trivial/ && \
-  coffee benchmarks/draft4/medium/
-
 Benchmarks for schema 'Event'.  A simple schema, exercising very few attributes
 Sample size: 64
 Validations per sample: 256
@@ -155,10 +162,13 @@ Validations per sample: 256
   JSCK: valid document
   Iterations: ................................................................
 
+  jsonschema: valid document
+  Iterations: ................................................................
+
   tv4: valid document
   Iterations: ................................................................
 
-  jsonschema: valid document
+  Amanda: valid document
   Iterations: ................................................................
 
   JSV: valid document
@@ -169,19 +179,22 @@ Validations per sample: 256
 
 
   JSCK: valid document
-  median: 1.2574999999999998 ms  max: 6.942 ms  min: 1.157 ms
-
-  tv4: valid document
-  median: 4.026 ms  max: 15.886 ms  min: 3.604 ms
+  median: 1.27 ms  max: 6.228 ms  min: 1.149 ms
 
   jsonschema: valid document
-  median: 101.827 ms  max: 129.378 ms  min: 98.395 ms
+  median: 98.314 ms  max: 127.162 ms  min: 94.333 ms
+
+  tv4: valid document
+  median: 4.399 ms  max: 14.267 ms  min: 4.023 ms
+
+  Amanda: valid document
+  median: 71.158 ms  max: 91.979 ms  min: 57.45 ms
 
   JSV: valid document
-  median: 102.7185 ms  max: 124.258 ms  min: 101.037 ms
+  median: 34.236 ms  max: 65.83 ms  min: 31.651 ms
 
   json-gate: valid document
-  median: 3.557 ms  max: 9.822 ms  min: 3.306 ms
+  median: 3.431 ms  max: 16.098 ms  min: 3.243 ms
 
 
 Benchmarks for schema 'Configuration'.  A moderately complex schema with some nesting and value constraints
@@ -191,10 +204,13 @@ Validations per sample: 128
   JSCK: valid document
   Iterations: ................................................................
 
+  jsonschema: valid document
+  Iterations: ................................................................
+
   tv4: valid document
   Iterations: ................................................................
 
-  jsonschema: valid document
+  Amanda: valid document
   Iterations: ................................................................
 
   JSV: valid document
@@ -205,19 +221,22 @@ Validations per sample: 128
 
 
   JSCK: valid document
-  median: 0.983 ms  max: 3.31 ms  min: 0.882 ms
-
-  tv4: valid document
-  median: 4.151 ms  max: 25.851 ms  min: 3.879 ms
+  median: 1.097 ms  max: 1.704 ms  min: 1 ms
 
   jsonschema: valid document
-  median: 100.5505 ms  max: 213.665 ms  min: 92.328 ms
+  median: 97.238 ms  max: 137.232 ms  min: 91.158 ms
+
+  tv4: valid document
+  median: 4.982 ms  max: 27.288 ms  min: 4.602 ms
+
+  Amanda: valid document
+  median: 39.832 ms  max: 56.923 ms  min: 25.332 ms
 
   JSV: valid document
-  median: 152.74 ms  max: 184.7 ms  min: 104.712 ms
+  median: 16.514 ms  max: 44.734 ms  min: 15.787 ms
 
   json-gate: valid document
-  median: 3.298 ms  max: 9.591 ms  min: 3.148 ms
+  median: 3.291 ms  max: 9.765 ms  min: 3.078 ms
 
 
 Benchmarks for schema 'Event'.  A simple schema, exercising very few attributes
@@ -227,10 +246,10 @@ Validations per sample: 256
   JSCK: valid document
   Iterations: ................................................................
 
-  tv4: valid document
+  jsonschema: valid document
   Iterations: ................................................................
 
-  jsonschema: valid document
+  tv4: valid document
   Iterations: ................................................................
 
   jayschema: valid document
@@ -241,19 +260,19 @@ Validations per sample: 256
 
 
   JSCK: valid document
-  median: 1.2934999999999999 ms  max: 5.738 ms  min: 1.166 ms
-
-  tv4: valid document
-  median: 7.718999999999999 ms  max: 20.149 ms  min: 5.248 ms
+  median: 1.306 ms  max: 2.791 ms  min: 1.197 ms
 
   jsonschema: valid document
-  median: 119.27850000000001 ms  max: 197.015 ms  min: 100.992 ms
+  median: 100.305 ms  max: 137.678 ms  min: 95.807 ms
+
+  tv4: valid document
+  median: 6.087 ms  max: 9.463 ms  min: 5.713 ms
 
   jayschema: valid document
-  median: 211.01749999999998 ms  max: 379.6 ms  min: 184.505 ms
+  median: 188.783 ms  max: 225.096 ms  min: 185.282 ms
 
   z-schema: valid document
-  median: 4.4719999999999995 ms  max: 7.517 ms  min: 2.606 ms
+  median: 2.965 ms  max: 9.707 ms  min: 2.581 ms
 
 
 Benchmarks for schema 'Configuration'.  A moderately complex schema with some nesting and value constraints
@@ -263,10 +282,10 @@ Validations per sample: 128
   JSCK: valid document
   Iterations: ................................................................
 
-  tv4: valid document
+  jsonschema: valid document
   Iterations: ................................................................
 
-  jsonschema: valid document
+  tv4: valid document
   Iterations: ................................................................
 
   jayschema: valid document
@@ -277,19 +296,19 @@ Validations per sample: 128
 
 
   JSCK: valid document
-  median: 1.225 ms  max: 4.961 ms  min: 0.819 ms
-
-  tv4: valid document
-  median: 7.569 ms  max: 28.811 ms  min: 5.874 ms
+  median: 1.004 ms  max: 2.363 ms  min: 0.905 ms
 
   jsonschema: valid document
-  median: 107.253 ms  max: 202.845 ms  min: 96.152 ms
+  median: 94.664 ms  max: 124.83 ms  min: 89.514 ms
+
+  tv4: valid document
+  median: 7.252 ms  max: 16.651 ms  min: 6.907 ms
 
   jayschema: valid document
-  median: 193.698 ms  max: 367.262 ms  min: 185.398 ms
+  median: 183.689 ms  max: 211.238 ms  min: 179.26 ms
 
   z-schema: valid document
-  median: 3.4699999999999998 ms  max: 10.358 ms  min: 3.276 ms
+  median: 3.473 ms  max: 8.467 ms  min: 3.223 ms
 ```
 
 ## Plans

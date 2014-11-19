@@ -97,6 +97,6 @@ module.exports =
       {median, max, min, sample_size} = result.summarize()
       console.log "  #{name}"
       console.log util.format "  median: %d ms  max: %d ms  min: %d ms",
-        median, max, min
+        median.toFixed(3), max.toFixed(3), min.toFixed(3)
       console.log()
 
