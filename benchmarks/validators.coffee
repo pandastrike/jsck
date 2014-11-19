@@ -30,6 +30,8 @@ actualDraft = require("fs").readFileSync("./test/json-schema/draft-04/schema", "
 request(remoteSchema, (error, response, body) ->
   zValidator.setRemoteReference(remoteSchema, JSON.parse(actualDraft)))
 
+amanda = require "amanda"
+
 samples = 64
 
 module.exports =
@@ -77,7 +79,17 @@ module.exports =
         for i in [1..repeats]
           result = validator.validate(valid_doc, schema).error
 
-    if 3 == draft # JSV and json-gate lack draft 4 support
+    if 3 == draft # JSV, amanda, and json-gate lack draft 4 support
+
+      # note: amanda reports errors on integers as utc-millisec,
+      # and on http://localhost:8998, due to a huge URL regex
+      amanda_bm = new Benchmark "Amanda: valid document", (bm) ->
+        bm.setup ->
+          amandaValidator = amanda("json")
+        bm.measure (validator) ->
+          for i in [1..repeats]
+            # pass Amanda an empty error-reporting function
+            result = validator.validate(valid_doc, schema, () ->)
 
       jsv_bm = new Benchmark "JSV: valid document", (bm) ->
         bm.setup ->
@@ -102,6 +114,7 @@ module.exports =
 
     switch draft
       when 3
+        libraries.push amanda_bm
         libraries.push jsv_bm
         libraries.push jsonGate_bm
       when 4
