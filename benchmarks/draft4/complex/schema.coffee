@@ -51,6 +51,7 @@ module.exports =
     transaction:
       id: "#transaction"
       additionalProperties: false
+      required: ["metadata", "hash", "inputs", "outputs"]
       properties:
 
         metadata:
@@ -70,7 +71,6 @@ module.exports =
               minimum: 0
             block_time:
               type: "integer"
-              format: "utc-millisec"
 
         version: {type: "integer"}
         lock_time: {type: "integer"}
@@ -78,16 +78,19 @@ module.exports =
         inputs:
           type: "array"
           items: {$ref: "#input"}
+          minItems: 1
         outputs:
           type: "array"
           items: {$ref: "#output"}
+          minItems: 1
 
 
 
     input:
       id: "#input"
       type: "object"
-      required: ["index", "output", "sig_hash"]
+      additionalProperties: false
+      required: ["index", "output", "script_sig"]
       properties:
         index:
           type: "integer"
@@ -106,8 +109,24 @@ module.exports =
     output:
       id: "#output"
       type: "object"
+      additionalProperties: false
+      required: ["hash", "index", "value", "script"]
       properties:
         hash: {$ref: "#tx_id"}
+        index:
+          type: "integer"
+          minimum: 0
+        value:
+          type: "integer"
+        script:
+          type: "object"
+          properties:
+            type:
+              type: "string"
+              enum: ["standard", "p2sh"]
+            asm:
+              type: "string"
+        address: {$ref: "#address"}
         metadata:
           type: "object"
           dependencies:
@@ -127,18 +146,4 @@ module.exports =
                   {$ref: "#base58"}
                   {$ref: "#hex"}
                 ]
-        index:
-          type: "integer"
-          minimum: 0
-        address: {$ref: "#address"}
-        value:
-          type: "integer"
-        script:
-          type: "object"
-          properties:
-            type:
-              type: "string"
-              enum: ["standard", "p2sh"]
-            asm:
-              type: "string"
 
