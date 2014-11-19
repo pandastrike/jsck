@@ -1,7 +1,7 @@
 module.exports =
   api_server:
-    url: "http://localhost:8998"
-    host: "localhost"
+    url: "http://example.com:8998"
+    host: "example.com"
     port: 8998
 
   transport:

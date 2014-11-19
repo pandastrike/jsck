@@ -70,14 +70,11 @@ module.exports =
         benchmarker("jayschema: valid document", new JaySchema(), (validator) ->
           validator.validate(valid_doc, schema))
 
-        # note: z-schema will not recognize the valid doc as a valid doc
         benchmarker("z-schema: valid document", zValidator, (validator) ->
           validator.validate(valid_doc, schema))
 
       when 3 # these validators work only for draft 3 of JSON Schema
 
-        # note: amanda reports errors on integers as utc-millisec,
-        # and on http://localhost:8998, due to a huge URL regex
         benchmarker("Amanda: valid document", amanda("json"), (validator) ->
           # pass Amanda an empty error-reporting function for generous benchmarking
           validator.validate(valid_doc, schema, () ->))

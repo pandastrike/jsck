@@ -13,6 +13,5 @@ module.exports =
       items: {type: "string"}
     timestamp:
       type: "integer"
-      format: "utc-millisec"
     data: { type: "object" }
 
