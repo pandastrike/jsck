@@ -138,27 +138,159 @@ For more information on the topic of scope manipulation, see this issue: https:/
 
 ## Benchmarks
 
-Results of a benchmark of a [somewhat simple schema](benchmarks/config/schema.coffee) against other JSON Schema validators:
+JSCK has fairly comprehensive benchmarks which show it to be the fastest JSON Schema validator available for Node.js.
+
+Pull requests welcome, of course.
 
 ```
-$ coffee benchmarks/config
+$ coffee benchmarks/draft3/trivial/ && \
+  coffee benchmarks/draft3/medium/ && \
+  coffee benchmarks/draft4/trivial/ && \
+  coffee benchmarks/draft4/medium/
+
+Benchmarks for schema 'Event'.  A simple schema, exercising very few attributes
+Sample size: 64
+Validations per sample: 256
+
+  JSCK: valid document
+  Iterations: ................................................................
+
+  tv4: valid document
+  Iterations: ................................................................
+
+  jsonschema: valid document
+  Iterations: ................................................................
+
+  JSV: valid document
+  Iterations: ................................................................
+
+  json-gate: valid document
+  Iterations: ................................................................
+
+
+  JSCK: valid document
+  median: 1.2574999999999998 ms  max: 6.942 ms  min: 1.157 ms
+
+  tv4: valid document
+  median: 4.026 ms  max: 15.886 ms  min: 3.604 ms
+
+  jsonschema: valid document
+  median: 101.827 ms  max: 129.378 ms  min: 98.395 ms
+
+  JSV: valid document
+  median: 102.7185 ms  max: 124.258 ms  min: 101.037 ms
+
+  json-gate: valid document
+  median: 3.557 ms  max: 9.822 ms  min: 3.306 ms
+
 
 Benchmarks for schema 'Configuration'.  A moderately complex schema with some nesting and value constraints
 Sample size: 64
 Validations per sample: 128
 
   JSCK: valid document
-  median: 1.019 ms  max: 2.935 ms  min: 0.985 ms
+  Iterations: ................................................................
+
+  tv4: valid document
+  Iterations: ................................................................
 
   jsonschema: valid document
-  median: 80.402 ms  max: 100.552 ms  min: 78.129 ms
+  Iterations: ................................................................
 
   JSV: valid document
-  median: 86.13900000000001 ms  max: 96.913 ms  min: 84.626 ms
+  Iterations: ................................................................
+
+  json-gate: valid document
+  Iterations: ................................................................
 
 
+  JSCK: valid document
+  median: 0.983 ms  max: 3.31 ms  min: 0.882 ms
+
+  tv4: valid document
+  median: 4.151 ms  max: 25.851 ms  min: 3.879 ms
+
+  jsonschema: valid document
+  median: 100.5505 ms  max: 213.665 ms  min: 92.328 ms
+
+  JSV: valid document
+  median: 152.74 ms  max: 184.7 ms  min: 104.712 ms
+
+  json-gate: valid document
+  median: 3.298 ms  max: 9.591 ms  min: 3.148 ms
+
+
+Benchmarks for schema 'Event'.  A simple schema, exercising very few attributes
+Sample size: 64
+Validations per sample: 256
+
+  JSCK: valid document
+  Iterations: ................................................................
+
+  tv4: valid document
+  Iterations: ................................................................
+
+  jsonschema: valid document
+  Iterations: ................................................................
+
+  jayschema: valid document
+  Iterations: ................................................................
+
+  z-schema: valid document
+  Iterations: ................................................................
+
+
+  JSCK: valid document
+  median: 1.2934999999999999 ms  max: 5.738 ms  min: 1.166 ms
+
+  tv4: valid document
+  median: 7.718999999999999 ms  max: 20.149 ms  min: 5.248 ms
+
+  jsonschema: valid document
+  median: 119.27850000000001 ms  max: 197.015 ms  min: 100.992 ms
+
+  jayschema: valid document
+  median: 211.01749999999998 ms  max: 379.6 ms  min: 184.505 ms
+
+  z-schema: valid document
+  median: 4.4719999999999995 ms  max: 7.517 ms  min: 2.606 ms
+
+
+Benchmarks for schema 'Configuration'.  A moderately complex schema with some nesting and value constraints
+Sample size: 64
+Validations per sample: 128
+
+  JSCK: valid document
+  Iterations: ................................................................
+
+  tv4: valid document
+  Iterations: ................................................................
+
+  jsonschema: valid document
+  Iterations: ................................................................
+
+  jayschema: valid document
+  Iterations: ................................................................
+
+  z-schema: valid document
+  Iterations: ................................................................
+
+
+  JSCK: valid document
+  median: 1.225 ms  max: 4.961 ms  min: 0.819 ms
+
+  tv4: valid document
+  median: 7.569 ms  max: 28.811 ms  min: 5.874 ms
+
+  jsonschema: valid document
+  median: 107.253 ms  max: 202.845 ms  min: 96.152 ms
+
+  jayschema: valid document
+  median: 193.698 ms  max: 367.262 ms  min: 185.398 ms
+
+  z-schema: valid document
+  median: 3.4699999999999998 ms  max: 10.358 ms  min: 3.276 ms
 ```
-
 
 ## Plans
 
