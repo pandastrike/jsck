@@ -67,8 +67,8 @@ module.exports =
     switch draft
       when 4 # these validators work only for draft 4 of JSON Schema
 
-        #benchmarker("jayschema: valid document", new JaySchema(), (validator) ->
-          #validator.validate(valid_doc, schema))
+        benchmarker("jayschema: valid document", new JaySchema(), (validator) ->
+          validator.validate(valid_doc, schema))
 
         benchmarker("z-schema: valid document", zValidator, (validator) ->
           validator.validate(valid_doc, schema))
