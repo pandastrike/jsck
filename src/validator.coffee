@@ -7,23 +7,18 @@ module.exports = ({uri, mixins}) ->
 
   class Validator
 
-    @attributes:
-      patternProperties:
-        modifiers: [ "additionalProperties" ]
+    @modifiers:
+      patternProperties: [ "additionalProperties" ]
 
-      additionalProperties:
-        modifiers: [
-          "properties"
-          "patternProperties"
-        ]
+      additionalProperties: [
+        "properties"
+        "patternProperties"
+      ]
 
-      items:
-        modifiers: [ "additionalItems" ]
+      items: [ "additionalItems" ]
 
-      minimum:
-        modifiers: [ "exclusiveMinimum" ]
-      maximum:
-        modifiers: [ "exclusiveMaximum" ]
+      minimum: [ "exclusiveMinimum" ]
+      maximum: [ "exclusiveMaximum" ]
 
     SCHEMA_URI = uri
 
@@ -71,28 +66,8 @@ module.exports = ({uri, mixins}) ->
         pointer: schema.id || "#"
         scope: schema.id || "#"
 
-      # Make an initial pass over the schema looking for $ref fields,
-      # recording their targets for use in actual compilation.
       @compile_references context, schema
-
-      # We try a second time to resolve $ref values, because a schema may have
-      # been defined after we initially tried to resolve a $ref.
-      for ref, {scope, uri} of @unresolved
-        if (found_schema = @resolve_uri(uri, scope))?
-          delete @unresolved[ref]
-          @register ref, found_schema
-      if Object.keys(@unresolved).length > 0
-        pointers = (uri for key, {uri} of @unresolved)
-        throw new Error "Unresolvable $ref values: #{JSON.stringify pointers}"
-
       @compile(context, schema)
-
-    register: (uri, schema) ->
-      @uris[uri] = schema
-      # TODO: enforce uniqueness of types
-      if (media_type = schema.mediaType)?
-        if media_type != "application/json"
-          @media_types[media_type] = schema
 
     validate: (data) ->
       @validator("#").validate(data)
@@ -115,6 +90,7 @@ module.exports = ({uri, mixins}) ->
           schema
       else
         throw new Error "No schema found for '#{JSON.stringify(arg)}'"
+
 
     # Find a registered schema.
     #
@@ -143,7 +119,31 @@ module.exports = ({uri, mixins}) ->
           schema
 
 
+    register: (uri, schema) ->
+      @uris[uri] = schema
+      # TODO: enforce uniqueness of types
+      if (media_type = schema.mediaType)?
+        if media_type != "application/json"
+          @media_types[media_type] = schema
+
+
     compile_references: (context, schema) ->
+      # Make an initial pass over the schema looking for $ref fields,
+      # recording their targets for use in actual compilation.
+      @_compile_references(context, schema)
+
+      # We try a second time to resolve $ref values, because a schema may have
+      # been defined after we initially tried to resolve a $ref.
+      for ref, {scope, uri} of @unresolved
+        if (found_schema = @resolve_uri(uri, scope))?
+          delete @unresolved[ref]
+          @register ref, found_schema
+      if Object.keys(@unresolved).length > 0
+        pointers = (uri for key, {uri} of @unresolved)
+        throw new Error "Unresolvable $ref values: #{JSON.stringify pointers}"
+
+
+    _compile_references: (context, schema) ->
       if schema == null
         culprit = context.pointer
         throw new Error "null is not a valid schema.  Culprit: '#{culprit}'"
@@ -168,19 +168,7 @@ module.exports = ({uri, mixins}) ->
           if "$ref" == attribute
             @resolve_reference(context, schema, definition)
           else
-            @_compile_references context.child(attribute), definition
-
-    _compile_references: (context, schema) ->
-      if @test_type "array", schema
-        for definition, i in schema
-          if @test_type "object", definition
-            @compile_references context.child(i), definition
-
-      else if @test_type("object", schema)
-        @compile_references context, schema
-      else
-        # No action required.
-
+            @reference_container context.child(attribute), definition
 
     resolve_reference: (context, schema, definition) ->
       {scope, pointer} = context
@@ -193,11 +181,24 @@ module.exports = ({uri, mixins}) ->
       if pointer.indexOf(uri + "/") != 0
         schema.$ref = uri
         if (schema = @resolve_uri(uri, scope))?
-          @compile_references context, schema
+          @_compile_references context, schema
         else
           # Store the unresolvable reference so we can try to resolve
           # it again after having traversed the all schemas.
           @unresolved[pointer] = {scope, uri}
+
+
+    reference_container: (context, schema) ->
+      if @test_type "array", schema
+        for definition, i in schema
+          if @test_type "object", definition
+            @_compile_references context.child(i), definition
+
+      else if @test_type("object", schema)
+        @_compile_references context, schema
+      else
+        # No action required.
+
 
 
     compile: (context, schema) ->
@@ -251,7 +252,8 @@ module.exports = ({uri, mixins}) ->
       # them in the context, so the primary attribute handler can act
       # on them.
       context.modifiers = {}
-      if (modifiers = Validator.attributes[attribute]?.modifiers)
+
+      if (modifiers = Validator.modifiers[attribute])?
         for key in modifiers
           context.modifiers[key] = schema[key]
 
