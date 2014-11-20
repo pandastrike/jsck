@@ -20,6 +20,7 @@ module.exports =
               for item in dependency
                 if !data[item]?
                   runtime.child(property).error context
+              null
 
         else if @test_type "object", dependency
           fn = @compile context, dependency
@@ -36,6 +37,7 @@ module.exports =
       if @test_type "object", data
         for test in tests
           test data, runtime
+        null
 
 
   patternProperties: (definition, context) ->
@@ -66,6 +68,7 @@ module.exports =
         for pattern, object of tests
           if object.regex.test(property)
             object.test value, runtime.child(property)
+      null
 
 
   additionalProperties: (definition, context) ->

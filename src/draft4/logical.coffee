@@ -45,6 +45,7 @@ module.exports =
     (data, runtime) =>
       for test in tests
         test data, runtime
+      null
 
   oneOf: (definition, context) ->
     unless @test_type "array", definition

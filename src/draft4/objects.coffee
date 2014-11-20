@@ -72,6 +72,7 @@ module.exports =
               for item in dependency
                 if !data[item]?
                   runtime.child(property).error context
+              null
 
         else if @test_type "object", dependency
           fn = @compile context, dependency
