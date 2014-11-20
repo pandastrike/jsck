@@ -33,7 +33,7 @@ module.exports =
       tests[property] = test
 
     (data, runtime) =>
-      if (typeof data) == "object" && !(data instanceof Array)
+      if @test_type "object", data
         for property, value of data
           if (test = tests[property])?
             test value, runtime.child(property)

@@ -3,9 +3,27 @@ deap = require "deap"
 
 {escape, Runtime, Context} = require "./util"
 
-module.exports = (uri, mixins) ->
+module.exports = ({uri, mixins}) ->
 
   class Validator
+
+    @attributes:
+      patternProperties:
+        modifiers: [ "additionalProperties" ]
+
+      additionalProperties:
+        modifiers: [
+          "properties"
+          "patternProperties"
+        ]
+
+      items:
+        modifiers: [ "additionalItems" ]
+
+      minimum:
+        modifiers: [ "exclusiveMinimum" ]
+      maximum:
+        modifiers: [ "exclusiveMaximum" ]
 
     SCHEMA_URI = uri
 
@@ -93,7 +111,7 @@ module.exports = (uri, mixins) ->
 
           valid = runtime.errors.length == 0
           {valid, errors}
-        toJSON: (args...) =>
+        toJSON: (args...) ->
           schema
       else
         throw new Error "No schema found for '#{JSON.stringify(arg)}'"
@@ -202,7 +220,7 @@ module.exports = (uri, mixins) ->
         # Create a child context to track our progress into a new attribute.
         new_context = context.child(key)
 
-        if (spec = Validator.attributes[key])?
+        if @[key]?
           test = @compile_attribute(new_context, key, schema, definition)
           tests.push(test) if test
         else
@@ -210,7 +228,7 @@ module.exports = (uri, mixins) ->
           # the object as a container of definitions.
           @compile_definitions(new_context, definition)
 
-      test_function = (data, runtime) =>
+      test_function = (data, runtime) ->
         for test in tests
           test(data, runtime)
         null
@@ -226,7 +244,6 @@ module.exports = (uri, mixins) ->
 
 
     compile_attribute: (context, attribute, schema, definition) ->
-      spec = Validator.attributes[attribute]
 
       # Some validation attributes can be modified by other attributes
       # at the same level.  E.g. minimum is modified by exclusiveMinimum.
@@ -234,8 +251,8 @@ module.exports = (uri, mixins) ->
       # them in the context, so the primary attribute handler can act
       # on them.
       context.modifiers = {}
-      if spec.modifiers
-        for key in spec.modifiers
+      if (modifiers = Validator.attributes[attribute]?.modifiers)
+        for key in modifiers
           context.modifiers[key] = schema[key]
 
       # Call the attribute's handler.
@@ -258,7 +275,7 @@ module.exports = (uri, mixins) ->
     recursive_test: (schema, {scope, pointer}) ->
       uri = URI.resolve(scope, schema.$ref)
       if (schema = @find uri)?
-        (data, runtime) =>
+        (data, runtime) ->
           schema._test(data, runtime)
       else
         throw new Error "No schema found for $ref '#{uri}'"

@@ -1,5 +1,4 @@
-creator = require("./validator")
-uri = "http://json-schema.org/draft-04/schema#"
+validator = require("./validator")
 
 modules = [
   "type"
@@ -9,12 +8,6 @@ modules = [
   "strings"
 ]
 
-mixins = for name in modules
-  require "./draft4/#{name}"
-
-Validator = creator(uri, mixins)
-Validator.attributes = require "./draft4/attributes"
-
-module.exports = Validator
-
-
+module.exports = validator
+  uri: "http://json-schema.org/draft-04/schema#"
+  mixins: (require "./draft4/#{name}" for name in modules)
