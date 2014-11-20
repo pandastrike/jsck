@@ -3,4 +3,5 @@ console.log
 
 require "./trivial/"
 require "./medium/"
+require "./complex/"
 

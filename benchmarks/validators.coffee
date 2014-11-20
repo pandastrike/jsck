@@ -61,8 +61,8 @@ module.exports =
     #benchmarker("jsonschema: valid document", new JSONSchema(), (validator) ->
       #validator.validate(valid_doc, schema).errors)
 
-    #benchmarker("tv4: valid document", tv4, (validator) ->
-      #validator.validate(valid_doc, schema).error)
+    benchmarker("tv4: valid document", tv4, (validator) ->
+      validator.validate(valid_doc, schema).error)
 
     switch draft
       when 4 # these validators work only for draft 4 of JSON Schema
