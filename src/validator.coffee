@@ -1,7 +1,13 @@
 URI = require "./uri"
-deap = require "deap"
 
 {escape, Runtime, Context} = require "./util"
+
+# Schemas should always be JSON stringifiable, so this is a simple
+# method for obtaining a deep clone of one.  This function only gets
+# used at schema-compilationg time, so there are no performance
+# implications unless you are constantly compiling new schemas.
+clone = (value) ->
+  JSON.parse(JSON.stringify(value))
 
 module.exports = ({uri, mixins}) ->
 
@@ -54,7 +60,7 @@ module.exports = ({uri, mixins}) ->
 
     add: (schema) ->
       # Clone the schema to prevent any user changes from affecting JSCK.
-      schema = deap.clone(schema)
+      schema = clone(schema)
 
       if schema.id
         # Make sure the schema id always ends with "#"
