@@ -4,7 +4,7 @@ URI = require "./uri"
 
 # Schemas should always be JSON stringifiable, so this is a simple
 # method for obtaining a deep clone of one.  This function only gets
-# used at schema-compilationg time, so there are no performance
+# used at schema-compilation time, so there are no performance
 # implications unless you are constantly compiling new schemas.
 clone = (value) ->
   JSON.parse(JSON.stringify(value))
