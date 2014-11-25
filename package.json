@@ -3,32 +3,33 @@
   "version": "0.1.4",
   "description": "JSON Schema Compiled checK",
   "scripts": {
-    "test": "coffee test"
+    "postinstall": "coffee tasks/update",
+    "test": "coffee test",
+    "prepublish": "coffee tasks/build"
   },
   "main": "lib/index.js",
   "files": [
     "lib/",
     "README.md"
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "JSV": "~4.0.2",
-    "jayschema": "~0.3.1",
-    "tv4": "~1.1.4",
-    "json-gate": "~0.8.21",
-    "z-schema": "~3.1.2",
-    "request": "~2.48.0",
     "amanda": "~0.5.1",
     "coffee-script": "~1.7",
     "glob": "~3.2.6",
+    "jayschema": "~0.3.1",
+    "json-gate": "~0.8.21",
     "jsonschema": "~1.0.0",
     "microtime": "^1.0.1",
+    "request": "~2.48.0",
+    "shelljs": "^0.3.0",
     "simple-http-server": "~0.1.8",
-    "testify": "~0.2.11"
+    "testify": "~0.2.11",
+    "tv4": "~1.1.4",
+    "z-schema": "~3.1.2"
   },
-  "repository": "git@github.com:automatthew/jsck.git",
-  "author": "Matthew King <automatthew@gmail.com>",
+  "repository": "git@github.com:pandastrike/jsck.git",
+  "author": "Matthew King <matthew@pandastrike.com>",
   "license": "MIT"
 }
-
