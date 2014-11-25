@@ -1,94 +1,103 @@
-# JSON Schema Compiled ChecK
+# JSON Schema Compiled checK
 
-The fastest JSON Schema validator for Node.js.
-
-Supports drafts 3 and 4, with a few caveats (see below).
-
-
-## Installation
-
-To use it in your project:
-
-```
-npm install jsck
-```
-
-To contribute, hack on it, or run the tests:
-
-```
-git clone git@github.com:pandastrike/jsck.git && \
-cd jsck && \
-git submodule init && \
-npm install
-```
+JSCK is the fastest [JSON Schema](http://json-schema.org) validator for Node.js.
+It supports JSON Schema drafts
+[3][draft3_doc] and
+[4][draft4_doc],
+with a few caveats (see [below](#coverage)).
 
 
-## About
+## Installation and Usage
+
+Install with NPM:
+
+    npm install --save jsck
 
 
-JSCK is a "compiling" schema validator, meaning that it traverses a schema only once (at instantiation)
-and generates the functions needed to validate documents against the schema.
-By doing so, it avoids the need to re-traverse the schema structure for every document it validates.
-This leads to substantial performance improvements.
-
-JSCK reports schema errors, but somewhat cryptically. PRs welcome.
-
-Supports most of JSON Schema Drafts 3 and/or 4.
-
-
-## Usage
-
-Here's a simple example:
+Require:
 
 ```coffee
-JSCK = require("../src/index").draft3
+JSCK = require "jsck"
+```
 
-# a schema without an "id" declaration
+JSCK can create validators from multiple schemas, but this requires that
+each schema be identified with a URI in a top-level "id" field.  In many
+cases, only a single schema is needed, and there is no need to uniquely
+identify the schema.  This is the easiest way to use JSCK, as it is a
+common pattern.
 
-jsck = new JSCK
+
+```coffee
+# Construct a validator for a schema lacking an "id" declaration
+
+validator = new JSCK.draft4
   type: "object"
   properties:
     user:
       type: "object"
+      required: ["login"]
       properties:
         login:
-          required: true
           type: "string"
           pattern: "^[\\w\\d_]{3,32}$"
         email:
           type: "string"
+          format: "email"
 
-{valid} = jsck.validate
+console.log "valid document:", validator.validate
   user:
-    login: "automatthew"
-    email: "automatthew@mailinator.com"
+    login: "matthew"
+    email: "matthew@pandastrike.com"
 
-console.log "Anonymous schema:", valid
+{errors} = validator.validate
+  user:
+    login: "matthew"
+    email: "pandastrike.com"
+
+console.log "invalid document:", errors
 
 ```
 
 
 
-This example uses Draft 3. To use Draft 4:
+To use Draft 3 schemas:
 
 ```.coffee
-JSCK = require("../src/index").draft4
+validator = new JSCK.draft3(schema)
 ```
 
 
-### [Advanced usage examples](examples/draft3_advanced.coffee)
+See these [advanced usage examples](examples/draft3_advanced.coffee) for help
+working with multiple schemas.
 
+
+### Validation errors
+
+The JSCK validation report includes information about the errors, but they are
+currently somewhat cryptic. PRs welcome.
+
+
+## Why JSCK?
+
+JSCK is [faster](#benchmarks) than other JavaScript libraries for validating
+JSON Schemas because it "compiles" them. That is, JSCK generates the tree of
+functions needed to validate a particular schema when you construct a
+validator.  The schema is thus traversed only during preparation, and most of
+the work of interpreting the schema is done at this time, rather than for every
+document submitted for validation.  This minimizes the work required during
+validation, which leads to substantial performance improvements over
+non-compiling validators.
 
 
 ## Coverage
 
 ### Draft 4
 
-JSCK passes all tests in the [canonical JSON Schema Test Suite
-project](https://github.com/json-schema/JSON-Schema-Test-Suite), except for these items:
+JSCK passes all tests in the canonical
+[JSON Schema Test Suite][canonical], except for these items:
 
-* use of `maxLength` and `minLength` with some Unicode characters.
-* `refRemote` (Trying to keep this lib synchronous for v0.1.x)
+* use of `maxLength` and `minLength` with Unicode surrogate pairs.
+* `refRemote` (this is an essential feature we do plan to support)
 * `ref`
   * remote ref, containing refs itself
 * `uniqueItems`
@@ -97,14 +106,40 @@ project](https://github.com/json-schema/JSON-Schema-Test-Suite), except for thes
 
 ### Draft 3
 
-Currently passing the canonical [test suite][canonical] for draft3 except for these items:
+Currently passing the canonical [test suite][canonical] for draft3 except for
+these items:
 
-* `refRemote` (Trying to keep this lib synchronous for v0.1.x)
+* `refRemote`
 * `ref`
   * remote ref, containing refs itself
 * `uniqueItems`
 * `optional/zeroTerminatedFloats`
 
+### Managing resolution scope with the "id" attribute
+
+JSCK does not support the full range of scope manipulations suggested by drafts
+3 and 4.  Scope manipulation is a controversial topic, and with JSCK we have
+chosen to play it safe, supporting "id" declarations only in cases that will
+(probably) not lead to any ambiguity. Specifically, JSCK uses "id" declarations
+only in these cases:
+
+* at the top level of a schema, to provide a namespace for schemas not loaded from URIs.
+* non-JSON-pointer fragments (`"id": "#user"`), which serve merely as aliases for specific subschemas, and are thus convenient and unambiguous.
+
+For more information on the topic of the "id" attribute and scope manipulation,
+see this issue: https://github.com/json-schema/json-schema/issues/77.
+
+
+## Contributing
+
+To contribute, hack on it, or run the tests:
+
+```shell
+git clone git@github.com:pandastrike/jsck.git
+cd jsck
+coffee tasks/update
+npm install
+```
 
 ### Tests
 
@@ -125,17 +160,6 @@ And to run only the third test for that attribute, use:
     coffee test/draft4 type 3
 
 You'll find the official test suites in `test/JSON-Schema-Test-Suite`. (Don't forget to initialize the git submodules! That test suite is in a git submodule.)
-
-
-### Managing resolution scope with the "id" attribute
-
-
-JSCK does not support the full range of scope manipulations suggested by drafts 3 and 4.  It uses "id" declarations only in these cases:
-
-* at the top level of a schema, to provide a namespace for schemas not loaded from URIs.
-* non-JSON-pointer fragments (`"id": "#user"`), which serve merely as aliases for specific subschemas, and are thus convenient and unambiguous.
-
-For more information on the topic of scope manipulation, see this issue: https://github.com/json-schema/json-schema/issues/77.
 
 
 ## Benchmarks
@@ -334,20 +358,13 @@ Validations per sample: 128
 
 ## Plans
 
-### 0.2.0
-
-* improved validation error reports (reports are currently somewhat cryptic)
-* adding more comprehensive tests to the official test suite
-* Support Draft 4
-
 ### 0.3
+* improved validation error reports (reports are currently somewhat cryptic)
 * support remote references
+* use $schema values to determine which JSON Schema draft to use
 
 
 [draft3_doc]:http://tools.ietf.org/html/draft-zyp-json-schema-03
 [draft3_impl]:https://github.com/json-schema/json-schema/tree/master/draft-03
+[draft4_doc]:[http://tools.ietf.org/html/draft-zyp-json-schema-04]
 [canonical]:https://github.com/json-schema/JSON-Schema-Test-Suite
-
-## Rake tasks
-
-Rubyists will find useful Rake tasks in a Rakefile. Ruby isn't required to work with or use JSCK, but it can come in handy.

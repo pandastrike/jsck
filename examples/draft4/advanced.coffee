@@ -1,16 +1,16 @@
-JSCK = require("../src/index").draft3
+JSCK = require("../src/index")
 
 # using a schema that declares a URI with "id"
 
-jsck = new JSCK
+jsck = new JSCK.draft4
   $schema: "http://json-schema.org/draft-03/schema#"
   id: "urn:jsck.examples.advanced#"
   definitions:
     user:
       type: "object"
+      required: ["login"]
       properties:
         login:
-          required: true
           type: "string"
           pattern: "^[\\w\\d_]{3,32}$"
         email:
@@ -53,4 +53,5 @@ validator = jsck.validator "urn:jsck.examples.user_list#"
 ]
 
 console.log "Multiple schemas:", valid
+
 
