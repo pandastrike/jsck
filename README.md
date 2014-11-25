@@ -366,5 +366,5 @@ Validations per sample: 128
 
 [draft3_doc]:http://tools.ietf.org/html/draft-zyp-json-schema-03
 [draft3_impl]:https://github.com/json-schema/json-schema/tree/master/draft-03
-[draft4_doc]:[http://tools.ietf.org/html/draft-zyp-json-schema-04]
+[draft4_doc]:http://tools.ietf.org/html/draft-zyp-json-schema-04
 [canonical]:https://github.com/json-schema/JSON-Schema-Test-Suite
