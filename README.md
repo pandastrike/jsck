@@ -40,8 +40,7 @@ Supports most of JSON Schema Drafts 3 and/or 4.
 
 Here's a simple example:
 
-```.coffee
-
+```coffee
 JSCK = require("../src/index").draft3
 
 # a schema without an "id" declaration
@@ -65,7 +64,10 @@ jsck = new JSCK
     email: "automatthew@mailinator.com"
 
 console.log "Anonymous schema:", valid
+
 ```
+
+
 
 This example uses Draft 3. To use Draft 4:
 
@@ -329,6 +331,7 @@ Validations per sample: 128
   median: 3.473 ms  max: 8.467 ms  min: 3.223 ms
 ```
 
+
 ## Plans
 
 ### 0.2.0
@@ -348,4 +351,3 @@ Validations per sample: 128
 ## Rake tasks
 
 Rubyists will find useful Rake tasks in a Rakefile. Ruby isn't required to work with or use JSCK, but it can come in handy.
-
