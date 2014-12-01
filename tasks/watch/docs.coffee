@@ -1,7 +1,9 @@
 fs = require "fs"
-{exec} = require "../helpers"
+{docs, build_docs} = require "../helpers"
 
-fs.watchFile "doc/README.pfm.md", (curr, prev) ->
-  exec "pfm doc/README.pfm.md -o README.md"
+for source, _dest of docs
+  do (source) ->
+    fs.watchFile source, (curr, prev) ->
+      build_docs(source)
 
 
