@@ -4,7 +4,7 @@ JSCK is the fastest [JSON Schema](http://json-schema.org) validator for Node.js.
 It supports JSON Schema drafts
 [3][draft3_doc] and
 [4][draft4_doc],
-with a few caveats (see [below](#coverage)).
+with a few caveats (see the [Coverage section](#coverage) below).
 
 
 ## Installation and Usage
@@ -41,22 +41,20 @@ See these [advanced usage examples](examples/draft3_advanced.coffee) for help
 working with multiple schemas.
 
 
-### Validation errors
-
-The JSCK validation report includes information about the errors, but they are
-currently somewhat cryptic. PRs welcome.
-
 
 ## Why JSCK?
 
 JSCK is [faster](#benchmarks) than other JavaScript libraries for validating
-JSON Schemas because it "compiles" them. That is, JSCK generates the tree of
-functions needed to validate a particular schema when you construct a
+JSON Schemas because it "compiles" the schemas. That is, JSCK generates the
+tree of functions needed to validate a particular schema when you construct a
 validator.  The schema is thus traversed only during preparation, and most of
 the work of interpreting the schema is done at this time, rather than for every
 document submitted for validation.  This minimizes the work required during
 validation, which leads to substantial performance improvements over
 non-compiling validators.
+
+
+## Why JSON Schema?
 
 
 ## Coverage
@@ -87,11 +85,11 @@ these items:
 
 ### Managing resolution scope with the "id" attribute
 
-JSCK does not support the full range of scope manipulations suggested by drafts
-3 and 4.  Scope manipulation is a controversial topic, and with JSCK we have
-chosen to play it safe, supporting "id" declarations only in cases that will
-(probably) not lead to any ambiguity. Specifically, JSCK uses "id" declarations
-only in these cases:
+JSCK does not support the full range of scope manipulations suggested by JSON
+Schema drafts 3 and 4.  Scope manipulation is a controversial topic, and with
+JSCK we have chosen to play it safe, supporting "id" declarations only in cases
+that will (probably) not lead to any ambiguity. Specifically, JSCK uses "id"
+declarations only in these cases:
 
 * at the top level of a schema, to provide a namespace for schemas not loaded from URIs.
 * non-JSON-pointer fragments (`"id": "#user"`), which serve merely as aliases for specific subschemas, and are thus convenient and unambiguous.
@@ -124,195 +122,56 @@ See [this document](doc/tests.md) for more information on working with JSCK test
 ## Benchmarks
 
 JSCK has fairly comprehensive benchmarks which show it to be the fastest JSON
-Schema validator available for Node.js. Pull requests welcome, of course.
+Schema validator available for Node.js.  Pull requests welcome, of course.
 
-### Adding New Benchmarks
+Because performance varies (at very least) based on the complexity
+of the schema being validated, we run benchmarks against several different
+schemas, ranging from quite simple to moderately complex.  We currently measure
+the time to complete a given number of document validations, but it would be
+better to express this as the number of validations per second.  Soon.
 
-Benchmark setup happens in `benchmarks/validators.coffee`. The lines of code to set up a typical benchmarker look like this:
+For JSON Schema Draft4, we run benchmarks against JSCK, tv4, jayschema, and
+z-schema.  On the
+[trivial schema](benchmarks/draft4/trivial/schema.coffee),
+our benchmarks produce this relative performance for these validators
+(lower is better):
 
-```coffeescript
-  benchmarker("jayschema: valid document", new JaySchema(), (validator) ->
-    validator.validate(valid_doc, schema))
+```coffee
+JSCK: 1
+z-schema: 2.1
+tv4: 3.2
+jayschema: 128
 ```
 
-You pass the function a description, a validator, and a callback function, which
-has the validator validate a valid document. The `benchmarker` function takes
-care of the rest. Caveat: there's a `switch/when` statement for validators that
-can only handle one draft or another of JSON Schema.
 
+For the schema of [medium complexity](benchmarks/draft4/medium/schema.coffee),
+our benchmarks produce this relative performance for the tested validators
+(lower is better):
 
-### Running Benchmarks
-
-You can run very specific benchmarks, like the medium-complexity benchmarks for draft 3 only, like so:
-
-`coffee benchmarks/draft3/medium`
-
-You can run all benchmarks for a specific JSON Schema draft:
-
-`coffee benchmarks/draft4`
-
-Or, to run all benchmarks:
-
-`coffee benchmarks/`
-
-You should then see something like this:
-
+```coffee
+JSCK: 1
+z-schema: 2.7
+tv4: 5.1
+jayschema: 146
 ```
-Benchmarks for schema 'Event'.  A simple schema, exercising very few attributes
-Sample size: 64
-Validations per sample: 256
 
-  JSCK: valid document
-  Iterations: ................................................................
+For the schema of [higher complexity](benchmarks/draft4/complex/schema.coffee),
+our benchmarks produce this relative performance for the tested validators
+(lower is better):
 
-  jsonschema: valid document
-  Iterations: ................................................................
-
-  tv4: valid document
-  Iterations: ................................................................
-
-  Amanda: valid document
-  Iterations: ................................................................
-
-  JSV: valid document
-  Iterations: ................................................................
-
-  json-gate: valid document
-  Iterations: ................................................................
-
-
-  JSCK: valid document
-  median: 1.27 ms  max: 6.228 ms  min: 1.149 ms
-
-  jsonschema: valid document
-  median: 98.314 ms  max: 127.162 ms  min: 94.333 ms
-
-  tv4: valid document
-  median: 4.399 ms  max: 14.267 ms  min: 4.023 ms
-
-  Amanda: valid document
-  median: 71.158 ms  max: 91.979 ms  min: 57.45 ms
-
-  JSV: valid document
-  median: 34.236 ms  max: 65.83 ms  min: 31.651 ms
-
-  json-gate: valid document
-  median: 3.431 ms  max: 16.098 ms  min: 3.243 ms
-
-
-Benchmarks for schema 'Configuration'.  A moderately complex schema with some nesting and value constraints
-Sample size: 64
-Validations per sample: 128
-
-  JSCK: valid document
-  Iterations: ................................................................
-
-  jsonschema: valid document
-  Iterations: ................................................................
-
-  tv4: valid document
-  Iterations: ................................................................
-
-  Amanda: valid document
-  Iterations: ................................................................
-
-  JSV: valid document
-  Iterations: ................................................................
-
-  json-gate: valid document
-  Iterations: ................................................................
-
-
-  JSCK: valid document
-  median: 1.097 ms  max: 1.704 ms  min: 1 ms
-
-  jsonschema: valid document
-  median: 97.238 ms  max: 137.232 ms  min: 91.158 ms
-
-  tv4: valid document
-  median: 4.982 ms  max: 27.288 ms  min: 4.602 ms
-
-  Amanda: valid document
-  median: 39.832 ms  max: 56.923 ms  min: 25.332 ms
-
-  JSV: valid document
-  median: 16.514 ms  max: 44.734 ms  min: 15.787 ms
-
-  json-gate: valid document
-  median: 3.291 ms  max: 9.765 ms  min: 3.078 ms
-
-
-Benchmarks for schema 'Event'.  A simple schema, exercising very few attributes
-Sample size: 64
-Validations per sample: 256
-
-  JSCK: valid document
-  Iterations: ................................................................
-
-  jsonschema: valid document
-  Iterations: ................................................................
-
-  tv4: valid document
-  Iterations: ................................................................
-
-  jayschema: valid document
-  Iterations: ................................................................
-
-  z-schema: valid document
-  Iterations: ................................................................
-
-
-  JSCK: valid document
-  median: 1.306 ms  max: 2.791 ms  min: 1.197 ms
-
-  jsonschema: valid document
-  median: 100.305 ms  max: 137.678 ms  min: 95.807 ms
-
-  tv4: valid document
-  median: 6.087 ms  max: 9.463 ms  min: 5.713 ms
-
-  jayschema: valid document
-  median: 188.783 ms  max: 225.096 ms  min: 185.282 ms
-
-  z-schema: valid document
-  median: 2.965 ms  max: 9.707 ms  min: 2.581 ms
-
-
-Benchmarks for schema 'Configuration'.  A moderately complex schema with some nesting and value constraints
-Sample size: 64
-Validations per sample: 128
-
-  JSCK: valid document
-  Iterations: ................................................................
-
-  jsonschema: valid document
-  Iterations: ................................................................
-
-  tv4: valid document
-  Iterations: ................................................................
-
-  jayschema: valid document
-  Iterations: ................................................................
-
-  z-schema: valid document
-  Iterations: ................................................................
-
-
-  JSCK: valid document
-  median: 1.004 ms  max: 2.363 ms  min: 0.905 ms
-
-  jsonschema: valid document
-  median: 94.664 ms  max: 124.83 ms  min: 89.514 ms
-
-  tv4: valid document
-  median: 7.252 ms  max: 16.651 ms  min: 6.907 ms
-
-  jayschema: valid document
-  median: 183.689 ms  max: 211.238 ms  min: 179.26 ms
-
-  z-schema: valid document
-  median: 3.473 ms  max: 8.467 ms  min: 3.223 ms
+```coffee
+JSCK: 1
+z-schema: 3.6
+tv4: 6.5
+jayschema: 626
 ```
+
+As the complexity of the schema increases, the performance benefits of the
+compilation model become more evident.
+
+
+See [this document](doc/benchmarks.md) for detailed results and information on
+running and creating benchmarks.
 
 
 ## Plans

@@ -2,7 +2,7 @@
 # Benchmarks
 
 JSCK has fairly comprehensive benchmarks which show it to be the fastest JSON
-Schema validator available for Node.js. Pull requests welcome, of course.
+Schema validator available for Node.js.
 
 ## Adding New Benchmarks
 

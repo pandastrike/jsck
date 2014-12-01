@@ -55,45 +55,56 @@ module.exports =
     """
 
     # these validators work for either draft 3 or 4 of JSON Schema
-    benchmarker("JSCK: valid document", new (JSCK draft)(schema), (validator) ->
+    benchmarker("JSCK", new (JSCK draft)(schema), (validator) ->
       validator.validate(valid_doc))
 
-    #benchmarker("jsonschema: valid document", new JSONSchema(), (validator) ->
+    #benchmarker("jsonschema", new JSONSchema(), (validator) ->
       #validator.validate(valid_doc, schema).errors)
 
-    benchmarker("tv4: valid document", tv4, (validator) ->
+    benchmarker("tv4", tv4, (validator) ->
       validator.validate(valid_doc, schema).error)
 
     switch draft
       when 4 # these validators work only for draft 4 of JSON Schema
 
-        benchmarker("jayschema: valid document", new JaySchema(), (validator) ->
+        benchmarker("z-schema", zValidator, (validator) ->
           validator.validate(valid_doc, schema))
 
-        benchmarker("z-schema: valid document", zValidator, (validator) ->
+        benchmarker("jayschema", new JaySchema(), (validator) ->
           validator.validate(valid_doc, schema))
 
       when 3 # these validators work only for draft 3 of JSON Schema
 
-        benchmarker("Amanda: valid document", amanda("json"), (validator) ->
+        benchmarker("Amanda", amanda("json"), (validator) ->
           # pass Amanda an empty error-reporting function for generous benchmarking
           validator.validate(valid_doc, schema, () ->))
 
         jsv = JSV.createEnvironment("json-schema-draft-03")
         jsv.createSchema(schema)
-        benchmarker("JSV: valid document", jsv, (validator) ->
+        benchmarker("JSV", jsv, (validator) ->
           validator.validate(valid_doc).errors)
 
-        benchmarker("json-gate: valid document", jsonGateCreateSchema(schema), (validator) ->
+        benchmarker("json-gate", jsonGateCreateSchema(schema), (validator) ->
           validator.validate(valid_doc))
 
-    results = Benchmark.compare libraries, {samples}
+    results = Benchmark.compare libraries, {samples, warmup: 100}
 
     console.log()
-    for name, result of results
+    x = for name, result of results
       {median, max, min, sample_size} = result.summarize()
       console.log "  #{name}"
       console.log util.format "  median: %d ms  max: %d ms  min: %d ms",
         median.toFixed(3), max.toFixed(3), min.toFixed(3)
       console.log()
+      [name, median]
+
+    sorted = x.sort (a, b) ->
+      a[1] > b[1]
+
+    fastest = sorted[0]
+    ftime = fastest[1]
+
+    console.log "Relative times:"
+    for [name, time] in x
+      console.log name, ":", time / ftime
 
