@@ -113,23 +113,12 @@ npm install
 
 ### Tests
 
-To run all tests for all versions:
+JSCK uses the official [JSON Schema Test Suite][canonical] as well as some
+custom tests. To run all tests for all versions:
 
     coffee test
 
-Official test suite only a specific version:
-
-    coffee test/draft4
-
-To run only the tests for the "type" attribute, use:
-
-    coffee test/draft4 type
-
-And to run only the third test for that attribute, use:
-
-    coffee test/draft4 type 3
-
-You'll find the official test suites in `test/JSON-Schema-Test-Suite`. (Don't forget to initialize the git submodules! That test suite is in a git submodule.)
+See [this document](doc/tests.md) for more information on working with JSCK tests.
 
 
 ## Benchmarks

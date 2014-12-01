@@ -2,7 +2,7 @@ JSCK = require("../../src/index")
 
 # Construct a validator for a schema lacking an "id" declaration
 
-validator = new JSCK.draft4
+jsck = new JSCK.draft4
   type: "object"
   properties:
     user:
@@ -16,12 +16,12 @@ validator = new JSCK.draft4
           type: "string"
           format: "email"
 
-console.log "valid document:", validator.validate
+console.log "valid document:", jsck.validate
   user:
     login: "matthew"
     email: "matthew@pandastrike.com"
 
-{errors} = validator.validate
+{errors} = jsck.validate
   user:
     login: "matthew"
     email: "pandastrike.com"

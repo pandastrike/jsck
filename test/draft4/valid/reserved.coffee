@@ -12,8 +12,6 @@ module.exports = ({json_types}) ->
               type: "boolean"
         }
       ]
-
-
     }
 
     {
