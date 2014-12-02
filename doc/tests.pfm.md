@@ -14,13 +14,16 @@ To run all tests for all versions of JSON Schema:
 
 ## The official test suite
 
-You'll find the official test suite source as a git submodule at
-`test/JSON-Schema-Test-Suite`. Running `coffee tasks/update` will initialize
-and/or update the submodule.
-
-The README for the test suite provides a
+The good folks behind JSON Schema have provided a language-agnostic test suite,
+composed of JSON documents that define schemas and input objects that should be
+judged as valid or invalid for each schema. The README for the test suite
+provides a
 [good overview of the structure](https://github.com/json-schema/JSON-Schema-Test-Suite#structure-of-a-test)
 of the JSON test files.
+
+JSCK includes the official test suite as a git submodule at
+`test/JSON-Schema-Test-Suite`. Running `coffee tasks/update` will initialize
+and/or update the submodule.
 
 
 As a concrete example, here is the first case for the "items" attribute in Draft 4:
@@ -58,10 +61,10 @@ index of the test:
     coffee test/draft4 patternProperties 3
 
 
-### JSCK's test harness for the official tests
+### Ignoring specific tests
 
-The test harness allows you to ignore specific tests from the official suite.
-Here is how we define the ignores for Draft 4:
+The test harness provided by JSCK allows you to ignore specific tests from
+the official suite. Here is how we define the ignores for Draft 4:
 
 ```test/draft4/official.coffee#L7-32```
 
@@ -120,7 +123,10 @@ To run only the validity tests:
 
 ## Unit tests
 
-To run only the unit tests:
+JSCK also uses a few unit tests to assist in developing and troubleshooting
+some of the internal functions, such as scope resolution and URI construction.
+
+To run only the unit tests for a particular draft version:
 
     coffee test/draft4/unit
 
