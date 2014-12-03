@@ -54,8 +54,6 @@ validation, which leads to substantial performance improvements over
 non-compiling validators.
 
 
-## Why JSON Schema?
-
 
 ## Coverage
 

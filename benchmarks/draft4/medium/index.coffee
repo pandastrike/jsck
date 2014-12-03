@@ -1,9 +1,10 @@
-{benchmark} = require "../../validators"
+validators = require "../validators"
+{benchmark} = require("../../runner")(validators)
+
 benchmark {
-  draft: 4
   name: "Configuration"
-  repeats: 128
+  repeats: 256
   schema: require "./schema"
-  valid_doc: require "./valid_doc"
+  document: require "./valid_doc"
 }
 

@@ -17,23 +17,25 @@ module.exports = class Benchmark
   measure: (@_measure) ->
 
   run: ({samples, warmup}) ->
-    console.log "  #{@name}"
+    console.error "  #{@name}"
     results = []
-    arg = @_setup()
+    subject = @_setup()
 
     if warmup
-      console.log "  Warming up"
+      process.stderr.write "  Warming up: "
       for i in [1..warmup]
-        @_measure(arg)
+        @_measure(subject)
+        process.stderr.write "."
+      process.stderr.write("\n")
 
-    process.stdout.write "  Iterations: "
+    process.stderr.write "  Iterations: "
     for i in [1..samples]
       t0 = microtime.now()
-      @_measure(arg)
+      @_measure(subject)
       t1 = microtime.now()
       results.push (t1 - t0) / 1000
-      process.stdout.write "."
-    console.log("\n")
+      process.stderr.write "."
+    console.error("\n")
     results
 
 

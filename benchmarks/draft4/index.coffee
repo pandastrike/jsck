@@ -1,4 +1,4 @@
-console.log "draft 4 benchmarks"
+console.log "Benchmarks for Draft 4"
 console.log
 
 require "./trivial/"
