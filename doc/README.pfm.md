@@ -124,9 +124,7 @@ Schema validator available for Node.js.  Pull requests welcome, of course.
 
 Because performance varies (at very least) based on the complexity
 of the schema being validated, we run benchmarks against several different
-schemas, ranging from quite simple to moderately complex.  We currently measure
-the time to complete a given number of document validations, but it would be
-better to express this as the number of validations per second.  Soon.
+schemas, ranging from quite simple to moderately complex.
 
 For JSON Schema Draft4, we run benchmarks against JSCK, tv4, jayschema, and
 z-schema.  On the

@@ -13,13 +13,14 @@ module.exports = (validators) ->
 
     for library, {setup, validate, error} of validators
 
-      # preflight to check for incorrect validation errors
-      validator = setup(schema)
-      e = error(validate({validator, schema, document}))
-      if e
-        console.log "Aborting because #{library} declared the document invalid:"
-        console.log e
-        process.exit(1)
+      ## preflight to check for incorrect validation errors
+      ## Currently disabled because z-schema doesn't play well with others.
+      #validator = setup(schema)
+      #e = error(validate({validator, schema, document}))
+      #if e
+        #console.log "Aborting because #{library} declared the document invalid:"
+        #console.log e
+        #process.exit(1)
 
       do (setup, validate) ->
         libraries.push new Benchmark library, (bm) ->
@@ -64,4 +65,5 @@ module.exports = (validators) ->
     console.log "Relative speeds:"
     for [name, time] in x
       console.log name, ":", (time / ftime).toFixed(3)
+    console.log()
 
