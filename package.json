@@ -1,9 +1,8 @@
 {
   "name": "jsck",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "JSON Schema Compiled checK",
   "scripts": {
-    "postinstall": "coffee tasks/update",
     "test": "coffee test",
     "prepublish": "coffee tasks/build"
   },
