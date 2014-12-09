@@ -170,11 +170,16 @@ module.exports = ({uri, mixins}) ->
       if !@test_type "object", schema
         console.warn "Schema is not an object", schema
       else
-        for attribute, definition of schema
-          if "$ref" == attribute
-            @resolve_reference(context, schema, definition)
-          else
-            @reference_container context.child(attribute), definition
+        @schema_references context, schema
+
+    schema_references: (context, schema) ->
+      for attribute, definition of schema
+        if "$ref" == attribute
+          @resolve_reference(context, schema, definition)
+        else if (attribute in ["properties", "items"])
+          @schema_references context.child(attribute), definition
+        else if @test_type "object", definition
+          @container_references context.child(attribute), definition
 
     resolve_reference: (context, schema, definition) ->
       {scope, pointer} = context
@@ -194,7 +199,7 @@ module.exports = ({uri, mixins}) ->
           @unresolved[pointer] = {scope, uri}
 
 
-    reference_container: (context, schema) ->
+    container_references: (context, schema) ->
       if @test_type "array", schema
         for definition, i in schema
           if @test_type "object", definition

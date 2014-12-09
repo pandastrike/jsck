@@ -11,6 +11,12 @@ module.exports = ({json_types}) ->
             required:
               type: "boolean"
         }
+        {
+          type: "object"
+          properties:
+            id:
+              type: "string"
+        }
       ]
     }
 
