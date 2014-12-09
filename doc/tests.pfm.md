@@ -113,7 +113,7 @@ began rejecting schemas that used JSON Schema attribute names as properties.
 
 To prevent this, a validity test was added:
 
-```test/draft4/valid/reserved.coffee#L5-15```
+```test/draft4/valid/properties.coffee#L5-15```
 
 
 To run only the validity tests:

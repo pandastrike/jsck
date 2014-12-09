@@ -186,17 +186,17 @@ began rejecting schemas that used JSON Schema attribute names as properties.
 To prevent this, a validity test was added:
 
 ```coffee
-    {
-      description: "using known attribute name as a property name"
-      schemas: [
-        {
-          type: "object"
-          properties:
-            required:
-              type: "boolean"
-        }
-      ]
-    }
+
+      required:
+        type: "object"
+        properties:
+          required:
+            type: "boolean"
+
+      id:
+        type: "object"
+        properties:
+          id:
 
 ```
 
