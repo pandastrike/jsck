@@ -32,17 +32,16 @@ Testify.test "Accepting valid schemas", (context) ->
       # Dependency injection, where needed
       if tests.constructor == Function
         tests = tests(helpers)
-      for test in tests
-        context.test test.description, ->
-          for schema in test.schemas
-            try
-              new draft4(schema)
-            catch e
-              if test.debug
-                console.log "\n", attribute_name, test.description
-                #console.log schema
+
+      for name, test of tests
+        context.test name, (context) ->
+          for k, schema of test.schemas
+            context.test k, ->
+              try
+                new draft4(schema)
+              catch e
                 console.log e.stack
-              context.fail "#{test.description} - #{e}"
+                context.fail(e)
 
 
 

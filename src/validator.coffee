@@ -136,7 +136,7 @@ module.exports = ({uri, mixins}) ->
     compile_references: (context, schema) ->
       # Make an initial pass over the schema looking for $ref fields,
       # recording their targets for use in actual compilation.
-      @_compile_references(context, schema)
+      @schema_references(context, schema)
 
       # We try a second time to resolve $ref values, because a schema may have
       # been defined after we initially tried to resolve a $ref.
@@ -149,10 +149,9 @@ module.exports = ({uri, mixins}) ->
         throw new Error "Unresolvable $ref values: #{JSON.stringify pointers}"
 
 
-    _compile_references: (context, schema) ->
-      if schema == null
-        culprit = context.pointer
-        throw new Error "null is not a valid schema.  Culprit: '#{culprit}'"
+    schema_references: (context, schema) ->
+      if !@test_type "object", schema
+        throw new Error "Schema must be an object - #{context.pointer}"
 
       {scope, pointer} = context
       @register pointer, schema
@@ -167,19 +166,20 @@ module.exports = ({uri, mixins}) ->
         schema.id = uri
         @register uri, schema
 
-      if !@test_type "object", schema
-        console.warn "Schema is not an object", schema
-      else
-        @schema_references context, schema
-
-    schema_references: (context, schema) ->
       for attribute, definition of schema
         if "$ref" == attribute
           @resolve_reference(context, schema, definition)
-        else if (attribute in ["properties", "items"])
-          @schema_references context.child(attribute), definition
-        else if @test_type "object", definition
-          @container_references context.child(attribute), definition
+        else
+          new_context = context.child(attribute)
+          if "properties" == attribute
+            @properties_references new_context, definition
+          else if "items" == attribute
+            @items_references new_context, definition
+          else if "definitions" == attribute
+            @definitions_references new_context, definition
+          else if @test_type "object", definition
+            @schema_references new_context, definition
+
 
     resolve_reference: (context, schema, definition) ->
       {scope, pointer} = context
@@ -192,24 +192,33 @@ module.exports = ({uri, mixins}) ->
       if pointer.indexOf(uri + "/") != 0
         schema.$ref = uri
         if (schema = @resolve_uri(uri, scope))?
-          @_compile_references context, schema
+          @schema_references context, schema
         else
           # Store the unresolvable reference so we can try to resolve
           # it again after having traversed the all schemas.
           @unresolved[pointer] = {scope, uri}
 
 
-    container_references: (context, schema) ->
-      if @test_type "array", schema
-        for definition, i in schema
-          if @test_type "object", definition
-            @_compile_references context.child(i), definition
+    properties_references: (context, properties) ->
+      if !@test_type "object", properties
+        throw new Error "Properties must be an object - #{context.pointer}"
 
-      else if @test_type("object", schema)
-        @_compile_references context, schema
+      for property, schema of properties
+        @schema_references context.child(property), schema
+
+    items_references: (context, definition) ->
+      if @test_type "array", definition
+        for def, i in definition
+          @schema_references context.child(i), def
       else
-        # No action required.
+        @schema_references context, definition
 
+    definitions_references: (context, object) ->
+      if !@test_type "object", object
+        throw new Error "Value of 'definitions' must be an object - #{context.pointer}"
+
+      for name, schema of object
+        @schema_references context.child(name), schema
 
 
     compile: (context, schema) ->

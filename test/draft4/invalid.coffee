@@ -4,6 +4,8 @@ Testify = require "testify"
 
 {draft4} = require("../../src/index")
 
+[_, _, single_attr] = process.argv
+
 helpers =
   json_types:
     values:
@@ -27,6 +29,9 @@ Testify.test "Rejecting invalid schemas", (context) ->
     # chomp .coffee
     attribute_name = file.slice(l, -7)
 
+    if single_attr && attribute_name != single_attr
+      continue
+
     context.test attribute_name, (context) ->
       tests = require(file)
       # Dependency injection, where needed
@@ -40,7 +45,7 @@ Testify.test "Rejecting invalid schemas", (context) ->
               context.fail "#{test.description} - #{JSON.stringify schema}"
             catch e
               if test.debug
-                console.log "\n", attribute_name, test.description
+                console.log "\n", attribute_name, "-", test.description
                 console.log schema
                 console.log e.stack
 
