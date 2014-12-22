@@ -8,7 +8,7 @@ module.exports =
     (data, runtime) =>
       if @test_type "string", data
         if !regex.test(data)
-          runtime.error context
+          runtime.error context, data
 
   minLength: (value, context) ->
     unless @test_type "integer", value
@@ -17,7 +17,7 @@ module.exports =
     (data, runtime) =>
       if @test_type "string", data
         if !(data.length >= value)
-          runtime.error context
+          runtime.error context, data
 
   maxLength: (value, context) ->
     unless @test_type "integer", value
@@ -26,5 +26,5 @@ module.exports =
     (data, runtime) =>
       if @test_type "string", data
         if !(data.length <= value)
-          runtime.error context
+          runtime.error context, data
 

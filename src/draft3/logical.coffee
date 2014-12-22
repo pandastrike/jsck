@@ -36,7 +36,7 @@ module.exports =
                 errors: []
               inverse data, temp
               if temp.errors.length == 0
-                runtime.error context
+                runtime.error context, data
           else
             tests.push @disallow type, context
 
@@ -46,5 +46,5 @@ module.exports =
     else
       (data, runtime) =>
         if @test_type definition, data
-          runtime.error context
+          runtime.error context, data
 

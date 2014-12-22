@@ -9,7 +9,7 @@ module.exports =
       (data, runtime) =>
         for value in definition
           return if @equal(data, value)
-        runtime.error context
+        runtime.error context, data
     else
       throw new Error "Value of 'enum' MUST be an Array"
 

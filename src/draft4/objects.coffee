@@ -45,13 +45,13 @@ module.exports =
     (data, runtime) =>
       if @test_type "object", data
         if Object.keys(data).length < definition
-          runtime.error context
+          runtime.error context, data
 
   maxProperties: (definition, context) ->
     (data, runtime) =>
       if @test_type "object", data
         if Object.keys(data).length > definition
-          runtime.error context
+          runtime.error context, data
 
   dependencies: (definition, context) ->
     unless @test_type "object", definition

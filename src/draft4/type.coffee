@@ -22,14 +22,14 @@ module.exports =
           if test(data, runtime)
             valid = true
         if valid == false
-          runtime.error context
+          runtime.error context, data
 
     else if @test_type "string", definition
       unless @is_primitive(definition)
         throw new Error "Invalid 'type': #{definition} is not a primitive type"
       (data, runtime) =>
         if !@test_type definition, data
-          runtime.error context
+          runtime.error context, data
     else
       throw new Error "The value of 'type' must be a string or an array"
 

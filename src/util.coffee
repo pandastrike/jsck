@@ -16,24 +16,34 @@ module.exports =
         errors: @errors
         pointer: "#{@pointer}/#{token.toString()}"
 
-    error: (context) ->
+    error: (context, value) ->
       @errors.push
-        document:
-          pointer: @pointer
         schema:
           pointer: context.pointer
+          attribute: context._attribute
+          definition: context.definition
+        document:
+          pointer: @pointer
+          value: value
 
 
   # Maintains the URI scope and JSON pointer during traversal
   # of a schema.
   Context: class Context
 
-    constructor: ({@pointer, @scope}) ->
+    constructor: ({@pointer, @scope, @_attribute}) ->
+
+    attribute: (name) ->
+      new Context
+        pointer: "#{@pointer}/#{name.toString()}"
+        scope: @scope
+        _attribute: name
 
     child: (token) ->
       new Context
         pointer: "#{@pointer}/#{token.toString()}"
         scope: @scope
+        _attribute: @_attribute
 
     sibling: (token) ->
       pointer = @pointer.replace(/\/.*$/, "/#{token.toString()}")

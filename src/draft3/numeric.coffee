@@ -4,5 +4,5 @@ module.exports =
     (data, runtime) =>
       if @test_type "number", data
         if !((data / value) % 1 == 0)
-          runtime.error context
+          runtime.error context, data
 

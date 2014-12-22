@@ -23,7 +23,7 @@ module.exports =
         temp.errors.length == 0
 
       unless answer
-        runtime.error(context)
+        runtime.error context, data
 
 
   allOf: (definition, context) ->
@@ -73,7 +73,7 @@ module.exports =
         if temp.errors.length == 0
           valids++
       if valids != 1
-        runtime.error(context)
+        runtime.error context, data
 
 
 
@@ -88,5 +88,5 @@ module.exports =
         errors: []
       inverse data, temp
       if temp.errors.length == 0
-        runtime.error context
+        runtime.error context, data
 

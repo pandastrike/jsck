@@ -6,13 +6,13 @@ module.exports =
     (data, runtime) =>
       if @test_type "array", data
         if data.length > value
-          runtime.error context
+          runtime.error context, data
 
   minItems: (value, context) ->
     (data, runtime) =>
       if @test_type "array", data
         if data.length < value
-          runtime.error context
+          runtime.error context, data
 
   items: (definition, context) ->
     if @test_type "array", definition
@@ -32,7 +32,7 @@ module.exports =
       test = @compile(context, definition)
     else if definition == false
       test = (data, runtime) ->
-        runtime.error context
+        runtime.error context, data
     else if definition == true
       # valid
     else

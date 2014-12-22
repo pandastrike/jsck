@@ -25,14 +25,14 @@ module.exports =
           if test(data, runtime)
             valid = true
         if valid == false
-          runtime.error context
+          runtime.error context, data
 
     else if @test_type "object", definition
       @compile(context, definition)
     else
       (data, runtime) =>
         if !@test_type definition, data
-          runtime.error context
+          runtime.error context, data
 
   # helpers
 

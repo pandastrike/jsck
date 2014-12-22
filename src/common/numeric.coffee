@@ -6,12 +6,12 @@ module.exports =
       (data, runtime) =>
         if @test_type "number", data
           if !(data > value)
-            runtime.error context
+            runtime.error context, data
     else
       (data, runtime) =>
         if @test_type "number", data
           if !(data >= value)
-            runtime.error context
+            runtime.error context, data
 
   maximum: (value, context) ->
     {modifiers: {exclusiveMaximum}} = context
@@ -19,10 +19,10 @@ module.exports =
       (data, runtime) =>
         if @test_type "number", data
           if !(data < value)
-            runtime.error context
+            runtime.error context, data
     else
       (data, runtime) =>
         if @test_type "number", data
           if !(data <= value)
-            runtime.error context
+            runtime.error context, data
 

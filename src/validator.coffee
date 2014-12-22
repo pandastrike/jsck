@@ -88,7 +88,7 @@ module.exports = ({uri, mixins}) ->
             for error in errors
               [base..., attribute] = error.schema.pointer.split("/")
               pointer = base.join("/")
-              error.schema.definition = @resolve_uri(pointer)?[attribute]
+              error.schema.definition ?= @resolve_uri(pointer)?[attribute]
 
           valid = runtime.errors.length == 0
           {valid, errors}
@@ -179,6 +179,9 @@ module.exports = ({uri, mixins}) ->
             @definitions_references new_context, definition
           else if @test_type "object", definition
             @schema_references new_context, definition
+          else if attribute in ["allOf", "anyOf", "not"]
+            for s, i in definition
+              @schema_references new_context.child(i), s
 
 
     resolve_reference: (context, schema, definition) ->
@@ -239,7 +242,7 @@ module.exports = ({uri, mixins}) ->
 
       for key, definition of schema when key != "_test"
         # Create a child context to track our progress into a new attribute.
-        new_context = context.child(key)
+        new_context = context.attribute(key)
 
         if @[key]?
           test = @compile_attribute(new_context, key, schema, definition)
@@ -287,12 +290,16 @@ module.exports = ({uri, mixins}) ->
 
 
     compile_definitions: (context, object) ->
-      if object.type? || object.$ref?
+      if @is_schema(object)
         @compile(context, object)
       else if @test_type "object", object
         for name, definition of object
           @compile_definitions context.child(name), definition
 
+
+    is_schema: (object) ->
+      object.type? || object.$ref? ||
+        object.allOf? || object.anyOf? || object.not?
 
     recursive_test: (schema, {scope, pointer}) ->
       uri = URI.resolve(scope, schema.$ref)
