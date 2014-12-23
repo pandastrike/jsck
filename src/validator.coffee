@@ -193,8 +193,10 @@ module.exports = ({uri, mixins}) ->
       # we're in a recursive reference situation.
       # Ignore recursive references during this stage.
       if pointer.indexOf(uri + "/") != 0
-        schema.$ref = uri
-        if (schema = @resolve_uri(uri, scope))?
+        if (found_schema = @resolve_uri(uri, scope))?
+          delete schema.$ref
+          for k, v of found_schema
+            schema[k] = v
           @schema_references context, schema
         else
           # Store the unresolvable reference so we can try to resolve
