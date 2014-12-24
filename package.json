@@ -1,6 +1,6 @@
 {
   "name": "jsck",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "JSON Schema Compiled checK",
   "scripts": {
     "test": "coffee test",
