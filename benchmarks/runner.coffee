@@ -14,7 +14,7 @@ module.exports = (validators) ->
     for library, {setup, validate, error} of validators
 
       ## preflight to check for incorrect validation errors
-      ## Currently disabled because z-schema doesn't play well with others.
+      ## Currently disabled because of issues with z-schema.
       #validator = setup(schema)
       #e = error(validate({validator, schema, document}))
       #if e
