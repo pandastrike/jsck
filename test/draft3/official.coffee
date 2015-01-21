@@ -1,16 +1,5 @@
-{draft4} = require "../../src/index"
-
+{draft3} = require "../../src/index"
 suite = require "json-schema-tests"
-
-
-#shell = require "shelljs"
-#cmd = "node_modules/.bin/nserver -p 5725 -d test/JSON-Schema-Test-Suite/remotes"
-#proc = shell.exec cmd, (code, output) ->
-#
-#Testify = require "testify"
-#Testify.once "done", ->
-  #console.log "Shutting down the 'remotes' test server"
-  #proc.kill("SIGTERM")
 
 [_node, _script, attribute, test_number] = process.argv
 
@@ -18,12 +7,11 @@ suite {
   attribute
   test_number
 
-  version: "draft4"
+  version: "draft3"
 
   validate: (schema, document) ->
-    v = new draft4(schema)
+    v = new draft3(schema)
     v.validate(document)
-
 
   ignores:
     # Doubtful value for the majority of use cases.
@@ -51,3 +39,4 @@ suite {
     ]
     definitions: true
 }
+
