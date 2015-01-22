@@ -39,6 +39,18 @@ module.exports =
         result
 
 
+  "is-my-json-valid":
+    setup: (schema) ->
+      require("is-my-json-valid")(schema)
+    validate: ({validator, schema, document}) ->
+      validator(document)
+    error: (result) ->
+      if result == true
+        false
+      else
+        validator.errors
+
+
   ## Disabled because it refuses to accept one of our schemas
   #"jsonschema":
     #setup: (schema) ->
