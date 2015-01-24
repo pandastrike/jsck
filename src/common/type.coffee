@@ -3,12 +3,13 @@ module.exports =
   # handlers
 
   type: (definition, context) ->
+    self = @
     if @test_type "array", definition
       tests = []
       for type in definition
-        do (type) =>
-          if @test_type "object", type
-            test = @compile context, type
+        do (type) ->
+          if self.test_type "object", type
+            test = self.compile context, type
             tests.push (data, runtime) =>
               temp = new runtime.constructor
                 pointer: ""
@@ -16,10 +17,10 @@ module.exports =
               test data, temp
               temp.errors.length == 0
           else
-            tests.push (data, runtime) =>
-              @test_type type, data
+            tests.push (data, runtime) ->
+              self.test_type type, data
 
-      (data, runtime) =>
+      (data, runtime) ->
         valid = false
         for test in tests
           if test(data, runtime)
@@ -30,14 +31,14 @@ module.exports =
     else if @test_type "object", definition
       @compile(context, definition)
     else
-      (data, runtime) =>
-        if !@test_type definition, data
+      (data, runtime) ->
+        if !self.test_type definition, data
           runtime.error context, data
 
   # helpers
 
   is_object: (data) ->
-    data? && (typeof data) == "object" &&
+    data instanceof Object &&
       !(data instanceof Array) &&
       !(data instanceof Date)
 
@@ -53,7 +54,9 @@ module.exports =
       when "string"
         typeof(data) == "string"
       when "object"
-        @is_object(data)
+        data instanceof Object &&
+          !(data instanceof Array) &&
+          !(data instanceof Date)
       when "array"
         data instanceof Array
       when "boolean"
@@ -64,4 +67,3 @@ module.exports =
         true
       else
         throw new Error "Bad type: '#{type_name}'"
-

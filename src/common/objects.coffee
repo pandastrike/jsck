@@ -3,6 +3,7 @@ module.exports =
   # handlers
 
   patternProperties: (definition, context) ->
+    self = @
     {additionalProperties} = context.modifiers
     if additionalProperties
       # The additionalProperties compiler runs the patternProperties
@@ -10,7 +11,7 @@ module.exports =
       # additional if they match a pattern.
       return null
 
-    if !@test_type "object", definition
+    if !self.test_type "object", definition
       throw new Error "The 'patternProperties' attribute must be an object"
 
     if Object.keys(definition).length == 0
@@ -18,14 +19,14 @@ module.exports =
 
     tests = {}
     for pattern, schema of definition
-      unless @test_type "object", schema
+      unless self.test_type "object", schema
         throw new Error "Values of 'patternProperties' must be an objects"
 
       tests[pattern] =
         regex: new RegExp(pattern)
-        test: @compile context.child(pattern), schema
+        test: self.compile context.child(pattern), schema
 
-    (data, runtime) =>
+    (data, runtime) ->
       for property, value of data
         for pattern, object of tests
           if object.regex.test(property)
@@ -34,13 +35,14 @@ module.exports =
 
 
   additionalProperties: (definition, context) ->
+    self = @
     # TODO: refactor this method for clarity.  It's likely that this will
     # also improve performance.
     {properties, patternProperties} = context.modifiers
-    if @test_type "object", definition
-      add_prop_test = @compile(context, definition)
+    if self.test_type "object", definition
+      add_prop_test = self.compile(context, definition)
     else if definition == false
-      add_prop_test = (data, runtime) =>
+      add_prop_test = (data, runtime) ->
         runtime.error context, data
     else if definition == undefined
       add_prop_test = null
@@ -51,10 +53,10 @@ module.exports =
     for pattern, schema of patternProperties
       patterns[pattern] =
         regex: new RegExp(pattern)
-        test: @compile(context.sibling("patternProperties").child(pattern), schema)
+        test: self.compile(context.sibling("patternProperties").child(pattern), schema)
 
-    (data, runtime) =>
-      if @test_type "object", data
+    (data, runtime) ->
+      if self.test_type "object", data
         for property, value of data
           explicit = false
           patterned = false
@@ -68,6 +70,3 @@ module.exports =
           if !explicit && !patterned && add_prop_test
             add_prop_test value, runtime.child(property)
         null
-
-
-
