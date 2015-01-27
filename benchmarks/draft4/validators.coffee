@@ -69,8 +69,7 @@ module.exports =
       validator = new z()
       url = "http://json-schema.org/draft-04/schema"
       # don't actually download the draft, because GitHub Pages might be down.
-      actualDraft = require("fs").readFileSync("./test/json-schema/draft-04/schema", "utf8")
-      validator.setRemoteReference(url, JSON.parse(actualDraft))
+      validator.setRemoteReference(url, require('./draft-4-schema.json'))
       validator
 
     validate: ({validator, schema, document}) ->
