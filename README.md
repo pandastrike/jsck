@@ -1,7 +1,10 @@
 # JSON Schema Compiled checK
 
-JSCK is the fastest [JSON Schema](http://json-schema.org) validator for Node.js.
-It supports JSON Schema drafts
+JSCK is the second fastest [JSON Schema](http://json-schema.org) validator for Node.js.
+Unfortunately JSCK got beat by [is-my-json-valid](https://github.com/mafintosh/is-my-json-valid).
+is-my-json-valid is about 7x faster than JSCK.
+
+JSCK supports JSON Schema drafts
 [3][draft3_doc] and
 [4][draft4_doc],
 with a few caveats (see the [Coverage section](#coverage) below).
@@ -72,19 +75,6 @@ working with multiple schemas.
 
 
 
-## Why JSCK?
-
-JSCK is [faster](#benchmarks) than other JavaScript libraries for validating
-JSON Schemas because it "compiles" the schemas. That is, JSCK generates the
-tree of functions needed to validate a particular schema when you construct a
-validator.  The schema is thus traversed only during preparation, and most of
-the work of interpreting the schema is done at this time, rather than for every
-document submitted for validation.  This minimizes the work required during
-validation, which leads to substantial performance improvements over
-non-compiling validators.
-
-
-
 ## Coverage
 
 ### Draft 4
@@ -149,24 +139,25 @@ See [this document](doc/tests.md) for more information on working with JSCK test
 
 ## Benchmarks
 
-JSCK has fairly comprehensive benchmarks which show it to be the fastest JSON
+JSCK has fairly comprehensive benchmarks which show it to be the second fastest JSON
 Schema validator available for Node.js.  Pull requests welcome, of course.
 
 Because performance varies (at very least) based on the complexity
 of the schema being validated, we run benchmarks against several different
 schemas, ranging from quite simple to moderately complex.
 
-For JSON Schema Draft4, we run benchmarks against JSCK, tv4, jayschema, and
+For JSON Schema Draft4, we run benchmarks against JSCK, tv4, jayschema, is-my-json-valid and
 z-schema.  On the
 [trivial schema](benchmarks/draft4/trivial/schema.coffee),
 our benchmarks produce this relative performance for these validators
 (lower is better):
 
 ```coffee
-JSCK: 1
-z-schema: 2.1
-tv4: 3.2
-jayschema: 128
+is-my-json-valid : 1.000
+JSCK : 10.594
+z-schema : 22.337
+tv4 : 22.406
+jayschema : 1553.872
 ```
 
 
@@ -175,10 +166,11 @@ our benchmarks produce this relative performance for the tested validators
 (lower is better):
 
 ```coffee
-JSCK: 1
-z-schema: 2.7
-tv4: 5.1
-jayschema: 146
+is-my-json-valid : 1.000
+JSCK : 7.027
+z-schema : 21.535
+tv4 : 23.891
+jayschema : 1263.114
 ```
 
 For the schema of [higher complexity](benchmarks/draft4/complex/schema.coffee),
@@ -186,14 +178,14 @@ our benchmarks produce this relative performance for the tested validators
 (lower is better):
 
 ```coffee
-JSCK: 1
-z-schema: 3.6
-tv4: 6.5
-jayschema: 626
+is-my-json-valid : 1.000
+JSCK : 8.967
+z-schema : 25.578
+tv4 : 45.908
+jayschema : 3074.659
 ```
 
-As the complexity of the schema increases, the performance benefits of the
-compilation model become more evident.
+is-my-json-valid is currently the fastest.
 
 
 See [this document](doc/benchmarks.md) for detailed results and information on

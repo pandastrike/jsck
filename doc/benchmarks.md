@@ -113,22 +113,22 @@ Validations per sample: 512
 
 
   JSCK: validations/millisecond
-  median: 193.025    max: 202.692    min: 175.945 
+  median: 128.257    max: 172.333    min: 52.958
 
   amanda: validations/millisecond
-  median: 4.258    max: 4.608    min: 3.778 
+  median: 2.234    max: 2.61    min: 1.627
 
   JSV: validations/millisecond
-  median: 2.685    max: 2.748    min: 2.43 
+  median: 1.045    max: 1.717    min: 0.69
 
   json-gate: validations/millisecond
-  median: 82.514    max: 86.036    min: 48.234 
+  median: 51.295    max: 80.605    min: 26.26
 
 Relative speeds:
 JSCK : 1.000
-json-gate : 2.339
-amanda : 45.337
-JSV : 71.896
+json-gate : 2.500
+amanda : 57.414
+JSV : 122.701
 
 
 Schema: 'Configuration'.  A moderately complex schema with some nesting and value constraints
@@ -153,22 +153,22 @@ Validations per sample: 128
 
 
   JSCK: validations/millisecond
-  median: 108.936    max: 109.966    min: 85.964 
+  median: 39.733    max: 74.203    min: 9.848
 
   amanda: validations/millisecond
-  median: 3.788    max: 5.651    min: 2.371 
+  median: 2.172    max: 3.671    min: 1.382
 
   JSV: validations/millisecond
-  median: 1.344    max: 1.359    min: 1.255 
+  median: 0.73    max: 0.827    min: 0.545
 
   json-gate: validations/millisecond
-  median: 44.176    max: 45.845    min: 41.803 
+  median: 29.19    max: 35.271    min: 14.398
 
 Relative speeds:
 JSCK : 1.000
-json-gate : 2.466
-amanda : 28.760
-JSV : 81.025
+json-gate : 1.361
+amanda : 18.295
+JSV : 54.441
 
 ## Benchmarks for Draft 4
 
@@ -184,24 +184,40 @@ Validations per sample: 1024
   Warming up: ................................
   Iterations: ................................................................
 
+  jayschema
+  Warming up: ................................
+  Iterations: ................................................................
+
+  is-my-json-valid
+  Warming up: ................................
+  Iterations: ................................................................
+
   z-schema
   Warming up: ................................
   Iterations: ................................................................
 
 
   JSCK: validations/millisecond
-  median: 186.81    max: 191.617    min: 138.716 
+  median: 114.184    max: 151.032    min: 82.781
 
   tv4: validations/millisecond
-  median: 54.377    max: 55.907    min: 46.942 
+  median: 53.989    max: 78.275    min: 29.879
+
+  jayschema: validations/millisecond
+  median: 0.778    max: 1.048    min: 0.707
+
+  is-my-json-valid: validations/millisecond
+  median: 1209.687    max: 1815.603    min: 619.855
 
   z-schema: validations/millisecond
-  median: 93.657    max: 93.979    min: 89.44 
+  median: 54.157    max: 65.061    min: 36.962
 
 Relative speeds:
-JSCK : 1.000
-z-schema : 1.995
-tv4 : 3.435
+is-my-json-valid : 1.000
+JSCK : 10.594
+z-schema : 22.337
+tv4 : 22.406
+jayschema : 1553.872
 
 
 Schema: 'Configuration'.  A moderately complex schema with some nesting and value constraints
@@ -216,27 +232,43 @@ Validations per sample: 256
   Warming up: ................................
   Iterations: ................................................................
 
+  jayschema
+  Warming up: ................................
+  Iterations: ................................................................
+
+  is-my-json-valid
+  Warming up: ................................
+  Iterations: ................................................................
+
   z-schema
   Warming up: ................................
   Iterations: ................................................................
 
 
   JSCK: validations/millisecond
-  median: 118.573    max: 119.07    min: 105.22 
+  median: 69.461    max: 91.266    min: 38.935
 
   tv4: validations/millisecond
-  median: 19.608    max: 20.389    min: 16.505 
+  median: 20.429    max: 27.7    min: 13.073
+
+  jayschema: validations/millisecond
+  median: 0.386    max: 0.509    min: 0.335
+
+  is-my-json-valid: validations/millisecond
+  median: 488.084    max: 847.682    min: 128.902
 
   z-schema: validations/millisecond
-  median: 40.606    max: 40.934    min: 34.934 
+  median: 22.665    max: 29.64    min: 10.564
 
 Relative speeds:
-JSCK : 1.000
-z-schema : 2.920
-tv4 : 6.047
+is-my-json-valid : 1.000
+JSCK : 7.027
+z-schema : 21.535
+tv4 : 23.891
+jayschema : 1263.114
 
 
-Schema: 'Transaction'.  
+Schema: 'Transaction'.
 Sample size: 64
 Validations per sample: 64
 
@@ -248,24 +280,38 @@ Validations per sample: 64
   Warming up: ................................
   Iterations: ................................................................
 
+  jayschema
+  Warming up: ................................
+  Iterations: ................................................................
+
+  is-my-json-valid
+  Warming up: ................................
+  Iterations: ................................................................
+
   z-schema
   Warming up: ................................
   Iterations: ................................................................
 
 
   JSCK: validations/millisecond
-  median: 12.814    max: 14.873    min: 6.984 
+  median: 7.202    max: 9.674    min: 4.452
 
   tv4: validations/millisecond
-  median: 1.946    max: 1.965    min: 1.832 
+  median: 1.407    max: 1.678    min: 1.166
+
+  jayschema: validations/millisecond
+  median: 0.021    max: 0.031    min: 0.017
+
+  is-my-json-valid: validations/millisecond
+  median: 64.581    max: 78.335    min: 24.568
 
   z-schema: validations/millisecond
-  median: 3.768    max: 3.836    min: 3.297 
+  median: 2.525    max: 3.305    min: 1.365
 
 Relative speeds:
-JSCK : 1.000
-z-schema : 3.401
-tv4 : 6.583
-
+is-my-json-valid : 1.000
+JSCK : 8.967
+z-schema : 25.578
+tv4 : 45.908
+jayschema : 3074.659
 ```
-
