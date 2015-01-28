@@ -67,7 +67,7 @@ validator = new JSCK.draft3(schema)
 ```
 
 
-See these [advanced usage examples](examples/draft4/advanced.coffee) for help
+See these [advanced usage examples](examples/draft4_advanced.coffee) for help
 working with multiple schemas.
 
 
@@ -151,6 +151,15 @@ See [this document](doc/tests.md) for more information on working with JSCK test
 
 JSCK has fairly comprehensive benchmarks which show it to be the fastest JSON
 Schema validator available for Node.js.  Pull requests welcome, of course.
+
+To get started with the benchmarks:
+
+```shell
+git clone git@github.com:pandastrike/jsck.git && \
+git submodule update --init && \
+npm install && \
+coffee benchmarks/
+```
 
 Because performance varies (at very least) based on the complexity
 of the schema being validated, we run benchmarks against several different
