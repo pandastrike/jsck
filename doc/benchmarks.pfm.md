@@ -3,6 +3,15 @@
 JSCK has fairly comprehensive benchmarks which show it to be the fastest JSON
 Schema validator available for Node.js.
 
+To run the benchmarks immediately after you `git clone` the repo:
+
+```shell
+git clone git@github.com:pandastrike/jsck.git && \
+git submodule update --init && \
+npm install && \
+coffee benchmarks/
+```
+
 Benchmarking harness and content lives in `benchmarks`, with separate
 directories for each draft.  For each draft there are a number of different
 benchmarks (contained in subdirectories) that can be run in whole or in part.
