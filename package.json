@@ -28,7 +28,8 @@
     "simple-http-server": "~0.1.8",
     "testify": "~0.2.11",
     "tv4": "~1.1.4",
-    "z-schema": "~3.1.2"
+    "z-schema": "~3.1.2",
+    "themis": "~1.1.5"
   },
   "repository": "git@github.com:pandastrike/jsck.git",
   "author": "Matthew King <matthew@pandastrike.com>",
