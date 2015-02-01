@@ -1,6 +1,6 @@
 # JSON Schema Compiled checK
 
-JSCK is the fastest [JSON Schema](http://json-schema.org) validator for Node.js.
+JSCK is one of the fastest [JSON Schema](http://json-schema.org) validators for Node.js.
 It supports JSON Schema drafts
 [3][draft3_doc] and
 [4][draft4_doc],
@@ -44,13 +44,13 @@ working with multiple schemas.
 
 ## Why JSCK?
 
-JSCK is [faster](#benchmarks) than other JavaScript libraries for validating
-JSON Schemas because it "compiles" the schemas. That is, JSCK generates the
-tree of functions needed to validate a particular schema when you construct a
-validator.  The schema is thus traversed only during preparation, and most of
-the work of interpreting the schema is done at this time, rather than for every
-document submitted for validation.  This minimizes the work required during
-validation, which leads to substantial performance improvements over
+JSCK is [faster](#benchmarks) than most other JavaScript/CoffeeScript libraries
+for validating JSON Schemas because it "compiles" the schemas. That is, JSCK
+generates the tree of functions needed to validate a particular schema when you
+construct a validator. The schema is thus traversed only during preparation, and
+most of the work of interpreting the schema is done at this time, rather than
+for every document submitted for validation. This minimizes the work required
+during validation, which leads to substantial performance improvements over
 non-compiling validators.
 
 
@@ -119,8 +119,9 @@ See [this document](doc/tests.md) for more information on working with JSCK test
 
 ## Benchmarks
 
-JSCK has fairly comprehensive benchmarks which show it to be the fastest JSON
-Schema validator available for Node.js.  Pull requests welcome, of course.
+JSCK has fairly comprehensive benchmarks which show it to be one of the very
+fastest JSON Schema validators available for Node.js. Pull requests welcome, of
+course.
 
 Because performance varies (at very least) based on the complexity
 of the schema being validated, we run benchmarks against several different
