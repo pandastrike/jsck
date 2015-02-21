@@ -24,7 +24,32 @@ module.exports =
       else
         result.error
 
+  "Themis (minimal)":
+    setup: (schema) ->
+      Themis = require('themis')
+      Themis.validator(schema, {
+        enable_defaults: false,
+        algorithm: 'none',
+        errors: { messages: false, validator_value: false, schema: false } })
+    validate: ({validator, schema, document}) ->
+      validator(document, '0')
+    error: (result) ->
+      if result.valid == true
+        false
+      else
+        result.errors
 
+  "Themis":
+    setup: (schema) ->
+      Themis = require('themis')
+      Themis.validator(schema)
+    validate: ({validator, schema, document}) ->
+      validator(document, '0')
+    error: (result) ->
+      if result.valid == true
+        false
+      else
+        result.errors
 
   "jayschema":
     setup: (schema) ->
@@ -37,7 +62,6 @@ module.exports =
         false
       else
         result
-
 
   "is-my-json-valid":
     setup: (schema) ->
