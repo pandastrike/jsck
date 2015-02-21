@@ -24,10 +24,13 @@ module.exports =
       else
         result.error
 
-  "Themis[minimal]":
+  "Themis (minimal)":
     setup: (schema) ->
       Themis = require('themis')
-      Themis.validator(schema, { enable_defaults: false, algorithm: 'none', errors: { messages: false, validator_value: false, schema: false } })
+      Themis.validator(schema, {
+        enable_defaults: false,
+        algorithm: 'none',
+        errors: { messages: false, validator_value: false, schema: false } })
     validate: ({validator, schema, document}) ->
       validator(document, '0')
     error: (result) ->
