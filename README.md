@@ -67,7 +67,7 @@ validator = new JSCK.draft3(schema)
 ```
 
 
-See these [advanced usage examples](examples/draft4_advanced.coffee) for help
+See these [advanced usage examples](examples/draft4/advanced.coffee) for help
 working with multiple schemas.
 
 
