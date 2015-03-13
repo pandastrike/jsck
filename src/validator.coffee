@@ -28,17 +28,16 @@ module.exports = ({uri, mixins}) ->
 
     SCHEMA_URI = uri
 
-    common_modules = [
-      "type"
-      "numeric"
-      "comparison"
-      "arrays"
-      "objects"
-      "strings"
-    ]
+    common_modules =
+      "type": require "./common/type"
+      "numeric": require "./common/numeric"
+      "comparison": require "./common/comparison"
+      "arrays": require "./common/arrays"
+      "objects": require "./common/objects"
+      "strings": require "./common/strings"
 
-    common = for name in common_modules
-      mixin = require "./common/#{name}"
+    common = for name of common_modules
+      mixin = common_modules[name]
       for name, method of mixin
         Validator.prototype[name] = method
 
