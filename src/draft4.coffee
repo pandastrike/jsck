@@ -1,13 +1,11 @@
 validator = require("./validator")
 
-modules = [
-  "type"
-  "logical"
-  "numeric"
-  "objects"
-  "strings"
-]
-
 module.exports = validator
   uri: "http://json-schema.org/draft-04/schema#"
-  mixins: (require "./draft4/#{name}" for name in modules)
+  mixins: [
+    require "./draft4/type"
+    require "./draft4/logical"
+    require "./draft4/numeric"
+    require "./draft4/objects"
+    require "./draft4/strings"
+  ]
