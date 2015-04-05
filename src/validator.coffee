@@ -254,6 +254,7 @@ module.exports = ({uri, mixins}) ->
           @compile_definitions(new_context, definition)
 
       test_function = (data, runtime) ->
+        return null if typeof(data) == "undefined"
         for test in tests
           test(data, runtime)
         null
