@@ -7,6 +7,7 @@ To run the benchmarks immediately after you `git clone` the repo:
 
 ```shell
 git clone git@github.com:pandastrike/jsck.git && \
+cd jsck && \
 git submodule update --init && \
 npm install && \
 coffee benchmarks/
