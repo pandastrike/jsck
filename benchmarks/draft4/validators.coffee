@@ -105,3 +105,14 @@ module.exports =
 
     error: (result) ->
       result || false
+
+  "jsen":
+    setup: (schema) ->
+      require("jsen")(schema)
+    validate: ({validator, schema, document}) ->
+      validator(document)
+    error: (result) ->
+      if result == true
+        false
+      else
+        validator.errors
