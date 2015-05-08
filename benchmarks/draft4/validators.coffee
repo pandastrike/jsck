@@ -75,16 +75,6 @@ module.exports =
         validator.errors
 
 
-  ## Disabled because it refuses to accept one of our schemas
-  #"jsonschema":
-    #setup: (schema) ->
-      #JSONSchema = require('jsonschema').Validator
-      #new JSONSchema()
-    #validate: ({validator, schema, document}) ->
-      #validator.validate(document, schema)
-    #error: (result) ->
-      # throw "unimplemented"
-
   # Putting z-schema last because it appears to be affecting other libs'
   # performance if run first.
   "z-schema":
