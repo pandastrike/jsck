@@ -2,20 +2,21 @@
 module.exports =
 
   anyOf: (definition, context) ->
-    unless @test_type "array", definition
+    self = @
+    unless self.test_type "array", definition
       throw new Error "The 'anyOf' attribute must be an array"
     if definition.length == 0
       throw new Error "The 'anyOf' array may not be empty"
 
     tests = []
     for schema, i in definition
-      unless @test_type "object", schema
+      unless self.test_type "object", schema
         throw new Error "The 'anyOf' array values must be objects"
       new_context = context.child(i)
-      tests.push @compile(new_context, schema)
+      tests.push self.compile(new_context, schema)
 
-    (data, runtime) =>
-      answer = tests.some (test) =>
+    (data, runtime) ->
+      answer = tests.some (test) ->
         temp = new runtime.constructor
           pointer: ""
           errors: []
@@ -30,7 +31,8 @@ module.exports =
   # http://stackoverflow.com/questions/22689900/json-schema-allof-with-additionalproperties/23001194#23001194
   # also https://github.com/fge/json-schema-validator/issues/88
   allOf: (definition, context) ->
-    unless @test_type "array", definition
+    self = @
+    unless self.test_type "array", definition
       throw new Error "The 'allOf' attribute must be an array"
     if definition.length == 0
       throw new Error "The 'allOf' array may not be empty"
@@ -39,19 +41,20 @@ module.exports =
     # runtimes, contexts, etc.?
     tests = []
     for schema, i in definition
-      unless @test_type "object", schema
+      unless self.test_type "object", schema
         throw new Error "The 'allOf' array values must be objects"
 
       new_context = context.child(i)
-      tests.push @compile(new_context, schema)
+      tests.push self.compile(new_context, schema)
 
-    (data, runtime) =>
+    (data, runtime) ->
       for test in tests
         test data, runtime
       null
 
   oneOf: (definition, context) ->
-    unless @test_type "array", definition
+    self = @
+    unless self.test_type "array", definition
       throw new Error "The 'oneOf' attribute must be an array"
 
     if definition.length == 0
@@ -59,14 +62,14 @@ module.exports =
 
     tests = []
     for schema, i in definition
-      unless @test_type "object", schema
+      unless self.test_type "object", schema
         throw new Error "The 'oneOf' array values must be objects"
 
       new_context = context.child(i)
-      tests.push @compile(new_context, schema)
+      tests.push self.compile(new_context, schema)
 
     # TODO optimize?
-    (data, runtime) =>
+    (data, runtime) ->
       valids = 0
       for test in tests
         temp = new runtime.constructor
@@ -81,15 +84,15 @@ module.exports =
 
 
   not: (definition, context) ->
-    unless @test_type "object", definition
+    self = @
+    unless self.test_type "object", definition
       throw new Error "The 'not' attribute must be an object"
 
-    inverse = @compile context, definition
-    (data, runtime) =>
+    inverse = self.compile context, definition
+    (data, runtime) ->
       temp = new runtime.constructor
         pointer: ""
         errors: []
       inverse data, temp
       if temp.errors.length == 0
         runtime.error context, data
-
