@@ -1,0 +1,17 @@
+{
+  "name": "jsck-browser-tests",
+  "version": "0.1.0",
+  "description": "Testing JSCK in the browser",
+  "main": "application.coffee",
+  "repository": "",
+  "author": "Matthew King",
+  "license": "MIT",
+  "dependencies": {
+    "jsck": "^0.2.4",
+    "json-schema-tests": "^0.1.1",
+    "testify": "0.2.x"
+  },
+  "devDependencies": {
+    "ark": "^0.5.2"
+  }
+}
