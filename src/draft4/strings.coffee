@@ -1,19 +1,18 @@
 module.exports =
 
   format: (format_name, context) ->
-    self = @
     if format_name == "regex"
-      (data, runtime) ->
-        if self.test_type "string", data
+      (data, runtime) =>
+        if @test_type "string", data
           try
             new RegExp(data)
           catch error
             runtime.error context, data
 
     else if regex = format_regexes[format_name]
-      do (regex) ->
-        (data, runtime) ->
-          if self.test_type "string", data
+      do (regex) =>
+        (data, runtime) =>
+          if @test_type "string", data
             if !regex.test(data)
               runtime.error context, data
     else
@@ -23,7 +22,7 @@ module.exports =
 # regexes below were derived from
 # https://github.com/tdegrunt/jsonschema
 #
-#Copyright (C) 2012-2013 Tom de Grunt <tomself.degrunt.nl>
+#Copyright (C) 2012-2013 Tom de Grunt <tom@degrunt.nl>
 
 #Permission is hereby granted, free of charge, to any person obtaining a copy of
 #this software and associated documentation files (the "Software"), to deal in
