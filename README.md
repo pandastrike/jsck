@@ -1,6 +1,6 @@
 # JSON Schema Compiled checK
 
-JSCK is the one of the fastest [JSON Schema](http://json-schema.org) validators for Node.js.
+JSCK is one of the fastest [JSON Schema](http://json-schema.org) validators for Node.js.
 It supports JSON Schema drafts
 [3][draft3_doc] and
 [4][draft4_doc],
@@ -152,15 +152,6 @@ See [this document](doc/tests.md) for more information on working with JSCK test
 JSCK has fairly comprehensive benchmarks which show it to be one of the very
 fastest JSON Schema validators available for Node.js. Pull requests welcome, of
 course.
-
-To get started with the benchmarks:
-
-```shell
-git clone git@github.com:pandastrike/jsck.git && \
-git submodule update --init && \
-npm install && \
-coffee benchmarks/
-```
 
 Because performance varies (at very least) based on the complexity
 of the schema being validated, we run benchmarks against several different
