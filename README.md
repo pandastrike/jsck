@@ -184,12 +184,12 @@ our benchmarks produce this relative performance for the tested validators
 ajv : 1
 is-my-json-valid : 3.1
 jsen : 3.3
-Themis (minimal) : 16.954
-Themis : 17.886
-JSCK : 20.914
-z-schema : 57.531
-tv4 : 62.960
-jayschema : 2908.754
+Themis (minimal) : 17.0
+Themis : 17.9
+JSCK : 20.9
+z-schema : 57.5
+tv4 : 63.0
+jayschema : 2908.8
 ```
 
 For the schema of [higher complexity](benchmarks/draft4/complex/schema.coffee),
@@ -197,15 +197,15 @@ our benchmarks produce this relative performance for the tested validators
 (lower is better):
 
 ```coffee
-jsen : 1.000
-is-my-json-valid : 1.155
-ajv : 1.226
-Themis (minimal) : 1.767
-Themis : 1.911
-JSCK : 4.602
-z-schema : 14.782
-tv4 : 22.112
-jayschema : 1612.516
+jsen : 1
+is-my-json-valid : 1.15
+ajv : 1.23
+Themis (minimal) : 1.8
+Themis : 1.9
+JSCK : 4.6
+z-schema : 14.8
+tv4 : 22.1
+jayschema : 1612.5
 ```
 
 As the complexity of the schema increases, the performance benefits of the
