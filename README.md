@@ -158,16 +158,21 @@ of the schema being validated, we run benchmarks against several different
 schemas, ranging from quite simple to moderately complex.
 
 For JSON Schema Draft4, we run benchmarks against JSCK, tv4, jayschema, and
-z-schema.  On the
+z-schema and other validators.  On the
 [trivial schema](benchmarks/draft4/trivial/schema.coffee),
 our benchmarks produce this relative performance for these validators
 (lower is better):
 
 ```coffee
-JSCK: 1
-z-schema: 2.1
-tv4: 3.2
-jayschema: 128
+ajv : 1
+jsen : 3.3
+is-my-json-valid : 5.6
+Themis (minimal) : 6.7
+Themis : 7.0
+JSCK : 27.7
+tv4 : 63.5
+z-schema : 69.4
+jayschema : 3998.1
 ```
 
 
@@ -176,10 +181,15 @@ our benchmarks produce this relative performance for the tested validators
 (lower is better):
 
 ```coffee
-JSCK: 1
-z-schema: 2.7
-tv4: 5.1
-jayschema: 146
+ajv : 1
+is-my-json-valid : 3.1
+jsen : 3.3
+Themis (minimal) : 16.954
+Themis : 17.886
+JSCK : 20.914
+z-schema : 57.531
+tv4 : 62.960
+jayschema : 2908.754
 ```
 
 For the schema of [higher complexity](benchmarks/draft4/complex/schema.coffee),
@@ -187,10 +197,15 @@ our benchmarks produce this relative performance for the tested validators
 (lower is better):
 
 ```coffee
-JSCK: 1
-z-schema: 3.6
-tv4: 6.5
-jayschema: 626
+jsen : 1.000
+is-my-json-valid : 1.155
+ajv : 1.226
+Themis (minimal) : 1.767
+Themis : 1.911
+JSCK : 4.602
+z-schema : 14.782
+tv4 : 22.112
+jayschema : 1612.516
 ```
 
 As the complexity of the schema increases, the performance benefits of the
