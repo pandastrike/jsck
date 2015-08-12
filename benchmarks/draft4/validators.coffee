@@ -12,6 +12,17 @@ module.exports =
       else
         result.errors
 
+  "ajv":
+    setup: (schema) ->
+      ajv = require("ajv")()
+      ajv.compile(schema)
+    validate: ({validator, schema, document}) ->
+      validator(document)
+    error: (result) ->
+      if result == true
+        false
+      else
+        validator.errors
 
   "tv4":
     setup: (schema) ->
