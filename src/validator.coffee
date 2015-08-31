@@ -232,7 +232,9 @@ module.exports = ({uri, mixins}) ->
       # When the schema contains the $ref attribute, locate the referenced
       # schema and use in place of the present schema.
       if (uri = schema.$ref)?
-        return if @uris[uri]
+        if @uris[uri]
+          return (args...) =>
+            @uris[uri]._test(args...)
         uri = URI.resolve(scope, uri)
         if pointer.indexOf(uri) == 0
           # When the URI of a $ref is a substring of the present context's URI,
