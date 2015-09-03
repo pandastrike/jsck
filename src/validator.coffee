@@ -9,7 +9,7 @@ URI = require "./uri"
 clone = (value) ->
   JSON.parse(JSON.stringify(value))
 
-module.exports = ({uri, mixins}) ->
+module.exports = ({schema_uri, mixins}) ->
 
   class Validator
 
@@ -26,7 +26,7 @@ module.exports = ({uri, mixins}) ->
       minimum: [ "exclusiveMinimum" ]
       maximum: [ "exclusiveMaximum" ]
 
-    SCHEMA_URI = uri
+    SCHEMA_URI = schema_uri
 
     common_modules =
       "type": require "./common/type"
