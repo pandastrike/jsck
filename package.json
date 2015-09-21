@@ -1,6 +1,6 @@
 {
   "name": "jsck",
-  "version": "0.2.5",
+  "version": "0.2.8",
   "description": "JSON Schema Compiled checK",
   "scripts": {
     "test": "coffee test",
@@ -15,14 +15,16 @@
   "devDependencies": {
     "ajv": "latest",
     "amanda": "latest",
+    "ajv": "^0.6.1",
+    "amanda": "~0.5.1",
     "coffee-script": "~1.7",
+    "commonjs-everywhere": "^0.9.7",
     "glob": "~3.2.6",
     "is-my-json-valid": "latest",
     "jayschema": "latest",
     "jsen": "latest",
     "json-gate": "latest",
     "json-schema-tests": "^0.1.1",
-    "JSV": "latest",
     "microtime": "^1.0.1",
     "request": "~2.48.0",
     "shelljs": "^0.3.0",

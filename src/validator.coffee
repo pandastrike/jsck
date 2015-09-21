@@ -9,7 +9,7 @@ URI = require "./uri"
 clone = (value) ->
   JSON.parse(JSON.stringify(value))
 
-module.exports = ({uri, mixins}) ->
+module.exports = ({schema_uri, mixins}) ->
 
   class Validator
 
@@ -26,7 +26,7 @@ module.exports = ({uri, mixins}) ->
       minimum: [ "exclusiveMinimum" ]
       maximum: [ "exclusiveMaximum" ]
 
-    SCHEMA_URI = uri
+    SCHEMA_URI = schema_uri
 
     common_modules =
       "type": require "./common/type"
@@ -232,6 +232,9 @@ module.exports = ({uri, mixins}) ->
       # When the schema contains the $ref attribute, locate the referenced
       # schema and use in place of the present schema.
       if (uri = schema.$ref)?
+        if @uris[uri]
+          return (args...) =>
+            @uris[uri]._test(args...)
         uri = URI.resolve(scope, uri)
         if pointer.indexOf(uri) == 0
           # When the URI of a $ref is a substring of the present context's URI,
