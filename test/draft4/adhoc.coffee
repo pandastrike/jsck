@@ -32,4 +32,28 @@ Testify.test "Ad hoc tests", (context) ->
         foo: null
       assert.equal result.valid, false
 
+  context.test "issue #94 from SciencePiggy", ->
+    jsck = new JSCK
+      type: "object"
+      required: [ "fullName" ]
+      properties:
+        fullName:
+          type: "string"
+        settings:
+          $ref: "#/definitions/userSettings"
+
+      definitions:
+        userSettings:
+          type: "object"
+          required: [ "language" ]
+          properties:
+            language:
+              type: "string"
+
+    result = jsck.validate
+      fullName: "Homer Simpson"
+      settings: null
+
+    assert.equal result.valid, false
+
 

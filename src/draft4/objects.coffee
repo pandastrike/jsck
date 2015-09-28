@@ -14,9 +14,10 @@ module.exports =
         throw new Error "The 'required' array may only contain strings"
 
     (data, runtime) =>
-      for property, i in definition
-        if data[property] == undefined
-          runtime.error context.child(i)
+      if @test_type "object", data
+        for property, i in definition
+          if data[property] == undefined
+            runtime.error context.child(i)
       null
 
   properties: (definition, context) ->
