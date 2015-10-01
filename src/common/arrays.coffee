@@ -67,6 +67,5 @@ module.exports =
           add_item_test data.slice(tests.length), runtime
 
   uniqueItems: (definition, context) ->
-    console.error "uniqueItems is a no-op"
     null
 

@@ -9,7 +9,15 @@ URI = require "./uri"
 clone = (value) ->
   JSON.parse(JSON.stringify(value))
 
+DEFINITIONS =
+  "http://json-schema.org/draft-03/schema#":
+    require "../schemas/draft-03/schema.json"
+  "http://json-schema.org/draft-04/schema#":
+    require "../schemas/draft-04/schema.json"
+
 module.exports = ({schema_uri, mixins}) ->
+
+  SCHEMA_URI = schema_uri
 
   class Validator
 
@@ -26,7 +34,6 @@ module.exports = ({schema_uri, mixins}) ->
       minimum: [ "exclusiveMinimum" ]
       maximum: [ "exclusiveMaximum" ]
 
-    SCHEMA_URI = schema_uri
 
     common_modules =
       "type": require "./common/type"
@@ -51,11 +58,12 @@ module.exports = ({schema_uri, mixins}) ->
       @media_types = {}
       @unresolved = {}
 
+      @add(DEFINITIONS[SCHEMA_URI])
       for schema in schemas
         if schema["$schema"]? && schema["$schema"] != SCHEMA_URI
           throw "This validator doesn't support this JSON schema."
-
         @add(schema)
+
 
     add: (schema) ->
       # Clone the schema to prevent any user changes from affecting JSCK.
