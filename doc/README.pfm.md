@@ -153,7 +153,7 @@ our benchmarks produce this relative performance for the tested validators
 ```coffee
 -ajv : 1
 -is-my-json-valid : 2.8
--jsen : 3.0 
+-jsen : 3.0
 -Themis (minimal) : 11.1
 -Themis : 11.6
 -JSCK : 22.0
