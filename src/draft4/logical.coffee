@@ -15,15 +15,24 @@ module.exports =
       tests.push @compile(new_context, schema)
 
     (data, runtime) =>
+      most_items_tested = 0
+      best_errors = []
       answer = tests.some (test) =>
         temp = new runtime.constructor
           pointer: ""
           errors: []
         test(data, temp)
+        if temp.items_tested && temp.items_tested > most_items_tested
+          best_errors = temp.errors
+          most_items_tested = temp.items_tested
         temp.errors.length == 0
 
       unless answer
-        runtime.error context, data
+        if @options.closestMatch
+          Array::push.apply runtime.errors, best_errors
+        else
+          runtime.error context, data
+
 
 
   # Note from author of draft4 on how allOf works w/r/t additionalProperties
@@ -68,6 +77,8 @@ module.exports =
     # TODO optimize?
     (data, runtime) =>
       valids = 0
+      most_items_tested = 0
+      best_errors = []
       for test in tests
         temp = new runtime.constructor
           pointer: ""
@@ -75,9 +86,15 @@ module.exports =
         test(data, temp)
         if temp.errors.length == 0
           valids++
-      if valids != 1
-        runtime.error context, data
+        else
+          if temp.items_tested && temp.items_tested > most_items_tested
+            best_errors = temp.errors
+            most_items_tested = temp.items_tested
 
+      if valids == 0 && @options.closestMatch
+        Array::push.apply runtime.errors, best_errors
+      else if valids != 1
+        runtime.error context, data
 
 
   not: (definition, context) ->
