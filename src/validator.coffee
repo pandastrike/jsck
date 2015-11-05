@@ -242,7 +242,8 @@ module.exports = ({schema_uri, mixins}) ->
       if (uri = schema.$ref)?
         if @uris[uri]
           return (args...) =>
-            @uris[uri]._test(args...)
+            if @uris[uri]._test?
+              @uris[uri]._test(args...)
         uri = URI.resolve(scope, uri)
         if pointer.indexOf(uri) == 0
           # When the URI of a $ref is a substring of the present context's URI,
