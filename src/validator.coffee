@@ -15,6 +15,16 @@ DEFINITIONS =
   "http://json-schema.org/draft-04/schema#":
     require "../schemas/draft-04/schema.json"
 
+SCHEMA_KEYWORDS = [
+  '$schema', 'id',
+  'maxProperties', 'minProperties', 'required'
+  'additionalProperties', 'patternProperties', 'properties'
+  'enum', 'type', 'allOf', 'anyOf', 'oneOf', 'not'
+  'title', 'description', 'default'
+]
+schema_keyword = (name) ->
+  name in SCHEMA_KEYWORDS
+
 module.exports = ({schema_uri, mixins}) ->
 
   SCHEMA_URI = schema_uri
@@ -302,16 +312,25 @@ module.exports = ({schema_uri, mixins}) ->
           return test
 
 
-    compile_definitions: (context, object) ->
+    compile_definitions2: (context, object) ->
       if @is_schema(object)
         @compile(context, object)
-      else if @test_type "object", object
-        for name, definition of object
+      if @test_type "object", object
+        for name, definition of object when !schema_keyword(name)
           @compile_definitions context.child(name), definition
+
+    compile_definitions: (context, object) ->
+      if @test_type "object", object
+        if @is_schema(object)
+          @compile(context, object)
+        else
+          for name, definition of object
+            @compile_definitions context.child(name), definition
 
 
     is_schema: (object) ->
-      object.type? || object.$ref? ||
+      Object.keys(object).length == 0 ||
+        object.type? || object.$ref? ||
         object.allOf? || object.anyOf? || object.not?
 
     recursive_test: (schema, {scope, pointer}) ->
@@ -321,6 +340,5 @@ module.exports = ({schema_uri, mixins}) ->
           schema._test(data, runtime)
       else
         throw new Error "No schema found for $ref '#{uri}'"
-
 
 
