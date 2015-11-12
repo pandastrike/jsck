@@ -20,6 +20,7 @@ module.exports =
       answer = tests.some (test) =>
         temp = new runtime.constructor
           pointer: ""
+          error_pointer: runtime.pointer
           errors: []
         test(data, temp)
         if temp.items_tested && temp.items_tested > most_items_tested
@@ -82,6 +83,7 @@ module.exports =
       for test in tests
         temp = new runtime.constructor
           pointer: ""
+          error_pointer: runtime.pointer
           errors: []
         test(data, temp)
         if temp.errors.length == 0
