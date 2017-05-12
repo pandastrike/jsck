@@ -6,13 +6,15 @@ module.exports =
     (data, runtime) =>
       if @test_type "array", data
         if data.length > value
-          runtime.error context, data
+          runtime.error context, data, description:
+            "Array must have fewer than #{value} items."
 
   minItems: (value, context) ->
     (data, runtime) =>
       if @test_type "array", data
         if data.length < value
-          runtime.error context, data
+          runtime.error context, data, description:
+            "Array must have more than #{value} items."
 
   items: (definition, context) ->
     if @test_type "array", definition
@@ -32,7 +34,8 @@ module.exports =
       test = @compile(context, definition)
     else if definition == false
       test = (data, runtime) ->
-        runtime.error context, data
+        runtime.error context, data, description:
+          "Array is supposed to be a tuple, but has too many items."
     else if definition == true
       # valid
     else

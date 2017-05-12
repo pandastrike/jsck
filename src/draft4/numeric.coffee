@@ -7,5 +7,6 @@ module.exports =
     (data, runtime) =>
       if @test_type "number", data
         if !((data / value) % 1 == 0)
-          runtime.error context, data
+          runtime.error context, data, description:
+            "Value `#{data}` is not a multiple of #{value}"
 

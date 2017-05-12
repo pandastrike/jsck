@@ -22,14 +22,17 @@ module.exports =
           if test(data, runtime)
             valid = true
         if valid == false
-          runtime.error context, data
+          types = definition.join ', '
+          runtime.error context, data, description:
+            "Expected type to be one of [#{types}] but found `#{@get_type(data)}`"
 
     else if @test_type "string", definition
       unless @is_primitive(definition)
         throw new Error "Invalid 'type': #{definition} is not a primitive type"
       (data, runtime) =>
         if !@test_type definition, data
-          runtime.error context, data
+          runtime.error context, data, description:
+            "Expected type to be `#{definition}` but found `#{@get_type(data)}`"
     else
       throw new Error "The value of 'type' must be a string or an array"
 

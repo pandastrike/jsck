@@ -8,7 +8,8 @@ module.exports =
     (data, runtime) =>
       if @test_type "string", data
         if !regex.test(data)
-          runtime.error context, data
+          runtime.error context, data, description:
+            "String did not match regex pattern."
 
   minLength: (value, context) ->
     unless @test_type "integer", value
@@ -17,7 +18,8 @@ module.exports =
     (data, runtime) =>
       if @test_type "string", data
         if !(data.length >= value)
-          runtime.error context, data
+          runtime.error context, data, description:
+            "String must be longer than #{value} bytes."
 
   maxLength: (value, context) ->
     unless @test_type "integer", value
@@ -26,5 +28,6 @@ module.exports =
     (data, runtime) =>
       if @test_type "string", data
         if !(data.length <= value)
-          runtime.error context, data
+          runtime.error context, data, description:
+            "String must be smaller than #{value} bytes."
 

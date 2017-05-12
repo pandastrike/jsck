@@ -41,7 +41,8 @@ module.exports =
       add_prop_test = @compile(context, definition)
     else if definition == false
       add_prop_test = (data, runtime) =>
-        runtime.error context, data
+        runtime.error context, data, description:
+          "Unspecified properties are not allowed on this object."
     else if definition == undefined
       add_prop_test = null
     else

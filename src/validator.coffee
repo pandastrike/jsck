@@ -96,6 +96,8 @@ module.exports = ({schema_uri, mixins}) ->
               [base..., attribute] = error.schema.pointer.split("/")
               pointer = base.join("/")
               error.schema.definition ?= @resolve_uri(pointer)?[attribute]
+              if error.document.value is undefined
+                delete error.document.value
 
           valid = runtime.errors.length == 0
           {valid, errors}
@@ -114,6 +116,9 @@ module.exports = ({schema_uri, mixins}) ->
     find: (arg) ->
       if @test_type "string", arg
         uri = escape(arg)
+        #if /required/.test uri
+          #for u, def of @uris when /required/.test u
+            #console.error u
         @uris[uri]
       else if (uri = arg.uri)?
         uri = escape(uri)

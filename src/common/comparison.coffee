@@ -9,7 +9,9 @@ module.exports =
       (data, runtime) =>
         for value in definition
           return if @equal(data, value)
-        runtime.error context, data
+        values = definition.join ', '
+        runtime.error context, data, description:
+          "Value must be one of #{values}."
     else
       throw new Error "Value of 'enum' MUST be an Array"
 

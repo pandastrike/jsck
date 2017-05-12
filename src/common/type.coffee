@@ -44,6 +44,22 @@ module.exports =
   is_primitive: (name) ->
     name in ["integer", "number", "string", "object", "array", "boolean", "null"]
 
+  get_type: (data) ->
+    if  typeof(data) == "number" && data % 1 == 0
+      return "integer"
+    if typeof(data) == "number"
+      return "number"
+    if typeof(data) == "string"
+      return "string"
+    if @is_object(data)
+      return "object"
+    if data instanceof Array
+      return "array"
+    if typeof data == "boolean"
+      return "boolean"
+    if data == null
+      return "null"
+
   test_type: (type_name, data) ->
     switch type_name
       when "integer"

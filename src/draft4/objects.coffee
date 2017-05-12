@@ -17,7 +17,10 @@ module.exports =
       if @test_type "object", data
         for property, i in definition
           if data[property] == undefined
-            runtime.error context.child(i)
+            c = context.child(i)
+            c.definition = property
+            runtime.error c, undefined, description:
+              "Required property '#{property}' is missing"
       null
 
   properties: (definition, context) ->
@@ -46,13 +49,15 @@ module.exports =
     (data, runtime) =>
       if @test_type "object", data
         if Object.keys(data).length < definition
-          runtime.error context, data
+          runtime.error context, data, description:
+            "Object must have at least #{definition} properties."
 
   maxProperties: (definition, context) ->
     (data, runtime) =>
       if @test_type "object", data
         if Object.keys(data).length > definition
-          runtime.error context, data
+          runtime.error context, data, description:
+            "Object cannot have more than #{definition} properties."
 
   dependencies: (definition, context) ->
     unless @test_type "object", definition

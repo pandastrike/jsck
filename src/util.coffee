@@ -16,15 +16,22 @@ module.exports =
         errors: @errors
         pointer: "#{@pointer}/#{token.toString()}"
 
-    error: (context, value) ->
-      @errors.push
+    path: ->
+      @pointer.slice(2).replace(/\//g, ".")
+
+    error: (context, value, options={}) ->
+      e =
         schema:
           pointer: context.pointer
           attribute: context._attribute
           definition: context.definition
         document:
           pointer: @pointer
+          path: @path()
           value: value
+      if options.description?
+        e.description = options.description
+      @errors.push e
 
 
   # Maintains the URI scope and JSON pointer during traversal

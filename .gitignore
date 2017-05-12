@@ -3,4 +3,5 @@ node_modules
 mine
 .ruby-gemset
 npm-debug.log
+*.tgz
 

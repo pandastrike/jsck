@@ -7,14 +7,16 @@ module.exports =
           try
             new RegExp(data)
           catch error
-            runtime.error context, data
+            runtime.error context, data, description:
+              "String is not in the #{format_name} format."
 
     else if regex = format_regexes[format_name]
       do (regex) =>
         (data, runtime) =>
           if @test_type "string", data
             if !regex.test(data)
-              runtime.error context, data
+              runtime.error context, data, description:
+                "String is not in the #{format_name} format."
     else
       throw new Error "Invalid format_name for 'format'"
 
