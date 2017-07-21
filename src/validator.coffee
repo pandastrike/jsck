@@ -57,6 +57,7 @@ module.exports = ({schema_uri, mixins}) ->
       @uris = {}
       @media_types = {}
       @unresolved = {}
+      @options = {}
 
       @add(DEFINITIONS[SCHEMA_URI])
       for schema in schemas
@@ -64,6 +65,9 @@ module.exports = ({schema_uri, mixins}) ->
           throw "This validator doesn't support this JSON schema."
         @add(schema)
 
+    set_options: (args) ->
+      @options = args
+      return this
 
     add: (schema) ->
       # Clone the schema to prevent any user changes from affecting JSCK.
@@ -271,6 +275,7 @@ module.exports = ({schema_uri, mixins}) ->
 
       test_function = (data, runtime) ->
         return null if typeof(data) == "undefined"
+        runtime.tested_item()
         for test in tests
           test(data, runtime)
         null
