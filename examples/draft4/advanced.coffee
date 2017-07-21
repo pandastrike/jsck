@@ -1,9 +1,9 @@
-JSCK = require("../src/index")
+JSCK = require("../../src/index")
 
 # using a schema that declares a URI with "id"
 
 jsck = new JSCK.draft4
-  $schema: "http://json-schema.org/draft-03/schema#"
+  $schema: "http://json-schema.org/draft-04/schema#"
   id: "urn:jsck.examples.advanced#"
   definitions:
     user:
