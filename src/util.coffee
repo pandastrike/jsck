@@ -9,12 +9,17 @@ module.exports =
   # Used during document validation.  Maintains a list of errors and the
   # JSON pointer for the section of the document.
   Runtime: class Runtime
-    constructor: ({@errors, @pointer}) ->
+    constructor: ({@errors, @pointer, @error_pointer, @tested_item}) ->
+      @items_tested = 0
+      @tested_item ?= => @items_tested++
+      @error_pointer ?= @pointer
 
     child: (token) ->
       new @constructor
         errors: @errors
         pointer: "#{@pointer}/#{token.toString()}"
+        error_pointer: "#{@error_pointer}/#{token.toString()}"
+        tested_item: @tested_item
 
     path: ->
       @pointer.slice(2).replace(/\//g, ".")
@@ -26,7 +31,7 @@ module.exports =
           attribute: context._attribute
           definition: context.definition
         document:
-          pointer: @pointer
+          pointer: @error_pointer
           path: @path()
           value: value
       if options.description?
